@@ -1,0 +1,41 @@
+{
+  "name": "blog-writing-skills",
+  "version": "1.1.0",
+  "description": "Technical and B2B blog writing skills for Codex: brainstorm, research, pressure-test, outline, draft, fact-check, and review source-backed articles.",
+  "author": {
+    "name": "Blog Writing Skills",
+    "url": "https://github.com/lizopower"
+  },
+  "homepage": "https://github.com/lizopower/Blog-Writing-Skill",
+  "repository": "https://github.com/lizopower/Blog-Writing-Skill",
+  "license": "MIT",
+  "keywords": [
+    "blog",
+    "writing",
+    "technical-content",
+    "b2b",
+    "research",
+    "tavily",
+    "codex"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Blog Writing Skills",
+    "shortDescription": "Source-backed technical and B2B article workflows for Codex.",
+    "longDescription": "A Codex-compatible Agent Skills bundle for technical and B2B content production. It supports Trellis-like brainstorm workspaces, Tavily-backed research, strategy pressure testing, context packs, outlines, drafts, fact checking, and editorial review.",
+    "developerName": "Blog Writing Skills",
+    "category": "Productivity",
+    "capabilities": [
+      "Write",
+      "Research",
+      "Review"
+    ],
+    "websiteURL": "https://github.com/lizopower/Blog-Writing-Skill",
+    "defaultPrompt": [
+      "Brainstorm a source-backed B2B article.",
+      "Write a technical article with Tavily research.",
+      "Grill this article angle before drafting."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

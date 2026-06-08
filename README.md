@@ -71,13 +71,64 @@ Local file-only parsing can run without Tavily until the workflow needs online t
 
 ## Install Blog-Writing-Skill
 
+OpenAI Skills are supported in Codex and follow the Agent Skills open standard, but skills do not automatically sync across products. If you installed this bundle for Claude or ChatGPT, install it separately for Codex.
+
+### Install for Codex
+
 Clone this repository:
 
 ```bash
 git clone https://github.com/lizopower/Blog-Writing-Skill.git
 ```
 
-Then install or copy the repository into the skills directory used by your agent environment.
+Option A: ask Codex to install from GitHub:
+
+```text
+Use skill-installer to install https://github.com/lizopower/Blog-Writing-Skill into Codex.
+```
+
+Option B: install manually into Codex skills:
+
+```bash
+mkdir -p ~/.codex/skills
+cp -R Blog-Writing-Skill ~/.codex/skills/blog-writing-skills
+```
+
+On Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.codex\skills"
+Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.codex\skills\blog-writing-skills"
+```
+
+The final Codex skill folder should look like:
+
+```text
+~/.codex/skills/blog-writing-skills/
+  SKILL.md
+  skills/
+  standards/
+  schemas/
+  templates/
+  commands/
+  .codex-plugin/
+```
+
+After installing, restart Codex or start a new Codex thread so the skill index is refreshed.
+
+### Install for Codex as a Plugin Bundle
+
+This repository also includes:
+
+```text
+.codex-plugin/plugin.json
+```
+
+That manifest lets Codex plugin workflows identify this repository as the `blog-writing-skills` plugin bundle. When using a local plugin marketplace workflow, point the plugin source at this repository root and reinstall/restart Codex according to your Codex plugin setup.
+
+Codex plugin installs load skills from `./skills/`. For that path, this repository includes `skills/blog-writing-skills/SKILL.md` as a Codex-facing router. Direct skill installs into `$CODEX_HOME/skills/blog-writing-skills` use the root `SKILL.md` router.
+
+### Install for Claude
 
 For Claude-style local skills, the final folder should look like:
 
@@ -104,6 +155,28 @@ https://github.com/lizopower/Blog-Writing-Skill
 ```
 
 After installation, restart or reload your agent session so it can discover the new skills.
+
+## Codex Setup Checklist
+
+After installing for Codex, verify:
+
+```text
+Ask Codex: "Do you see the blog-writing-skills skill? Summarize its routing rules."
+```
+
+Then confirm Tavily in the same Codex environment:
+
+```bash
+tvly --status
+```
+
+Codex must have access to both:
+
+- this skill bundle in `$CODEX_HOME/skills/blog-writing-skills` or `~/.codex/skills/blog-writing-skills`;
+- Tavily skills from `https://github.com/tavily-ai/skills`;
+- Tavily CLI authentication through `tvly login` or `TAVILY_API_KEY`.
+
+If Codex cannot see the skill after installation, start a new thread or restart the Codex app/CLI. If Codex can see this skill but research stops, install/authenticate Tavily in the Codex environment.
 
 ## Quick Start
 
