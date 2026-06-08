@@ -17,6 +17,7 @@ Works for any technical or B2B domain — industrial equipment, software, manufa
 - [The pipeline](#the-pipeline)
 - [Requirement: Tavily](#requirement-tavily)
 - [Install](#install)
+- [Updating](#updating)
 - [Quick start](#quick-start)
 - [Skill routing](#skill-routing)
 - [The article workspace](#the-article-workspace)
@@ -165,6 +166,33 @@ Or ask Codex: *"Use skill-installer to install https://github.com/lizopower/Blog
 
 `.codex-plugin/plugin.json` identifies this repo as the `blog-writing-skills` plugin bundle. Codex plugin installs load skills from `./skills/`, so the repo ships `skills/blog-writing-skills/SKILL.md` as a Codex-facing router. Point your local plugin source at the repo root and reinstall/restart per your Codex plugin setup.
 </details>
+
+## Updating
+
+Agent Skills are local copies — there is no auto-update. How you refresh depends on how you installed. **For the smoothest updates, install by cloning directly into your skills folder**, then a one-line `git pull` keeps you current:
+
+```bash
+# Recommended install that is trivial to update later
+git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills    # Codex
+git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.claude/skills/blog-writing-skills   # Claude Code
+```
+
+```bash
+# Update anytime (a git-clone install)
+git -C ~/.codex/skills/blog-writing-skills pull
+git -C ~/.claude/skills/blog-writing-skills pull
+```
+
+If you installed by **copying** the folder (no `.git` inside), re-pull by deleting and re-cloning:
+
+```bash
+rm -rf ~/.codex/skills/blog-writing-skills
+git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills
+```
+
+If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
+
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.2.0`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## Quick start
 
