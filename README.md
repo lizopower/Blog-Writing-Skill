@@ -1,6 +1,6 @@
 # Blog Writing Skill
 
-`Blog-Writing-Skill` is a Claude Skills bundle for technical and B2B article production. It is designed for source-backed writing workflows: brainstorm an article, create a Trellis-like article workspace, research with Tavily, pressure-test the strategy, build a context pack, outline, draft, fact-check, and review the final article.
+`Blog-Writing-Skill` is a Claude Skills bundle for technical and B2B article production. It is designed for source-backed writing workflows: brainstorm an article, create an article workspace, research with Tavily, pressure-test the strategy, build a context pack, outline, draft, fact-check, and review the final article.
 
 The bundle is domain-agnostic. It can be used for industrial equipment, software, manufacturing, materials science, logistics, finance, energy, and other technical or B2B topics. The user must provide or confirm the real industry context, audience, business goal, and source material.
 
