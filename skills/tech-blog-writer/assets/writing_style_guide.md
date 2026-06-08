@@ -332,6 +332,55 @@ No "In summary..." or "To conclude..." or "As we've seen..."
 
 The last sentence of every section should push the reader forward — pose a question, introduce a tension, or state what comes next. Summaries are for obituaries.
 
+### Buzzword Constraints
+
+**Rule 9**: Curb the corporate-AI vocabulary. These words are the strongest "written by AI" signal in English. Replace them with plain or specific language. Keep a word only when it is a genuine technical term of art in context (e.g. "robust regression", "harness" as a physical part).
+
+| ❌ AI buzzword | ✅ Replace with |
+|---|---|
+| leverage (verb) | use |
+| utilize | use |
+| robust | reliable / well-tested / proven (or state the number) |
+| seamless / seamlessly | works without extra steps (say how) |
+| delve into | examine / look at |
+| harness (figurative) | use / apply |
+| navigate (figurative) | handle / work through |
+| unlock / elevate / supercharge | improve (say by how much) |
+| transformative / game-changing / revolutionary | name the concrete change |
+| cutting-edge / state-of-the-art | the current standard / name the spec |
+| pivotal / crucial / vital | important — or cut it and show why |
+| realm / landscape / ecosystem / space | market / field / area (or name it) |
+| tapestry / symphony / multifaceted | cut |
+| testament to | shows / proves |
+| foster / bolster / underscore | build / strengthen / show |
+| meticulous / nuanced / intricate | precise / specific (or describe it) |
+
+**Rule 10**: Ban filler and signpost phrases. Delete them or replace with the point itself.
+
+- "It's worth noting that…", "It's important to note…", "Needless to say…" → just state it.
+- "In today's fast-paced / ever-evolving / rapidly changing world…" → cut entirely.
+- "When it comes to X…" → "For X,".
+- "In the realm of…", "In the world of…" → cut.
+- "At the end of the day…", "In essence…", "Simply put…" → cut.
+- "It's not just X, it's Y" / "X isn't only about Y" → state X and Y plainly, no antithesis.
+- "Not only… but also…" → split into two sentences or use "and".
+- "Let's dive in", "Let's explore", "Buckle up" → start with the content.
+
+### Punctuation & Pattern Constraints
+
+**Rule 11**: Em-dash discipline. The em-dash flood is a top AI tell. At most one em-dash per ~200 words; never two em-dash asides in the same paragraph. Default to a comma, a period, or parentheses. Ask: would a period work here? Then use a period.
+
+**Rule 12**: Break the rule of three. AI defaults to three-item lists and tricolons ("fast, cheap, and reliable") even when the content has two items or five. Vary list length deliberately — use 2, 4, 5, 7. Group three things only when there are genuinely three.
+
+**Rule 13**: Vary openers and connectives. Don't start consecutive sentences with the same word or with "This/These/It". Avoid the stacked-hedge ("can help to potentially improve") — commit to the claim and cite it, or drop it.
+
+### What "human" does NOT mean
+
+This is engineer-to-engineer B2B writing. "Removing AI flavor" means **more specificity, not artificial messiness**:
+
+- ✅ Do: concrete numbers, named mechanisms, real test conditions, one clear idea per sentence, a stated point of view.
+- ❌ Do NOT: insert fake typos, filler interjections, slang, or "imperfections" to dodge AI detectors. That destroys B2B credibility and is not the goal. Authenticity comes from real data and real reasoning, not from sounding sloppy.
+
 ### Rhythm Examples
 
 **❌ AI-typical (monotone rhythm)**:
