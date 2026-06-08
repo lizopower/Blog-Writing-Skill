@@ -28,10 +28,13 @@ This skill must trigger before drafting when the user explicitly asks to be ques
 
 1. Ask exactly one question at a time.
 2. For each question, include your recommended answer and why.
-3. Walk the decision tree in dependency order: goal -> audience -> pain -> angle -> evidence -> structure -> claims -> visuals -> CTA -> quality gate.
-4. After each user answer, update the working understanding before asking the next question.
-5. Continue until every material branch is resolved or the user stops the grilling.
-6. When finished, summarize decisions, unresolved risks, and the next sub-skill to invoke.
+3. Do not treat your recommended answer as the user's answer.
+4. After asking a question, stop and wait for an explicit user reply before continuing.
+5. Do not continue to the next question, outline, draft, or handoff until the user answers, unless the user explicitly requested autopilot/no-interaction mode.
+6. Walk the decision tree in dependency order: goal -> audience -> pain -> angle -> evidence -> structure -> claims -> visuals -> CTA -> quality gate.
+7. After each user answer, update the working understanding before asking the next question.
+8. Continue until every material branch is resolved or the user stops the grilling.
+9. When finished, summarize decisions, unresolved risks, and the next sub-skill to invoke.
 
 ## Handoff
 

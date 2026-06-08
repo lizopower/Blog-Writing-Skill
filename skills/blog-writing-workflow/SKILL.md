@@ -81,7 +81,7 @@ If absent and the user wants ideation or strategy discovery, invoke `blog-brains
    Validate Context Pack schema, completeness, sources, units, and consistency.
 
 4. `grill-me` [conditional / mandatory if requested]
-   Pressure-test strategy before outlining.
+   Pressure-test strategy before outlining. This is human-gated: do not let approval/autonomy modes answer on the user's behalf or skip the wait for an explicit user reply.
 
 5. `tech-article-architect` [required]
    Build outline and section plan from validated Context Pack and strategy summary.
@@ -104,6 +104,8 @@ Invoke `grill-me` before outlining when any of these applies:
 - Topic is high-risk, high-competition, strategically vague, or under-evidenced.
 
 If `grill-me` finds missing evidence, return to `tech-research`, `audience-pain-point-research`, or `tech-blog-orchestrator` before continuing.
+
+During `grill-me`, the assistant's recommended answer is not user approval. Wait for the user's explicit answer unless they requested autopilot/no-interaction mode.
 
 ## Context Pack Contract
 
