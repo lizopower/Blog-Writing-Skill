@@ -66,6 +66,24 @@ You receive:
   "target_word_count": 2000,
   "context_pack": {
     "topic": "string",
+    "style_exemplars": [{
+      "reference": "file path, URL, or artifact id",
+      "scope": "style_only",
+      "what_to_emulate": ["voice, structure, rhythm, framing, formatting traits"],
+      "what_to_avoid": ["author-specific guardrails or weak patterns"]
+    }],
+    "core_offerings": [{
+      "name": "source-backed product or service name",
+      "value_prop": "source-backed value statement",
+      "target_user": "role or audience segment",
+      "when_to_mention": "specific reader problem or section where this is relevant",
+      "source_ref": "traceable positioning/product source"
+    }],
+    "author_experience_notes": [{
+      "note": "user-provided story, edit preference, or expert observation",
+      "source_ref": "interview note, user instruction, or document reference",
+      "usable_as": "story_anchor|expert_commentary|guardrail|preference"
+    }],
     "key_claims": [{
       "claim": "string",
       "source": "PDF p.xx / Sheet:xx / URL / Word:...",
@@ -125,6 +143,19 @@ You receive:
 
 **Example (❌ Wrong)**:
 > Testing shows 87% performance retention under [extreme condition].
+
+---
+
+### 1a. Style Exemplars Are Not Sources
+
+**Rule**: `style_exemplars` may shape voice, structure, section flow, rhythm, and guardrails only.
+
+**Prohibited**:
+- Copying factual claims, statistics, case studies, or examples from a style exemplar
+- Treating a prior article as proof for the current article
+- Reusing an anecdote unless it appears in `author_experience_notes` or `key_claims`
+
+If an exemplar contains a useful claim, that claim must appear separately in `context_pack.key_claims` with a traceable source before you may use it.
 
 ---
 
@@ -209,6 +240,22 @@ You receive:
 
 ---
 
+### 5a. Section-by-Section Drafting Loop
+
+Write in small batches. Draft one outline section at a time, then run a local check before moving to the next section.
+
+For each section:
+1. Confirm the section follows the outline's stated intent and word budget.
+2. Verify every factual claim comes from `context_pack.key_claims`, `extracted_tables`, `glossary`, or approved source-backed notes.
+3. Apply the style guide and anti-AI checklist for rhythm, specificity, and banned phrasing.
+4. Use `style_exemplars` only for voice and structure, never for claims.
+5. Mention a `core_offerings` item only when it answers the current reader problem and its `source_ref` supports the value claim.
+6. Use `author_experience_notes` only as supplied; do not invent first-person lessons.
+
+If the user is reviewing interactively, pause after each major H2 or H3 section for feedback. If the user is not reviewing interactively, keep an internal change note for the Self-Audit and continue.
+
+---
+
 ### 6. Required Output Components
 
 Your `final_article.md` MUST include:
@@ -276,6 +323,8 @@ At the end of `final_article.md`, include:
 - Always mark uncertain conditions
 - Specify operating ranges and test conditions
 - ALWAYS use the correct brand spelling exactly as given in `brand_constraints`
+- Mention products/services from `context_pack.core_offerings` only when they solve a specific reader problem in the current section
+- Never insert product mentions merely because a product exists in the offerings list; no hard sell, no unsupported value claims
 
 **Example (✅ Correct)**:
 > [Brand] [products] enable [core advantage] under [extreme condition] (tested under XX conditions, PDF p.xx).
@@ -283,6 +332,20 @@ At the end of `final_article.md`, include:
 **Example (❌ Wrong)**:
 > Our products work in any [harsh condition] without [auxiliary system].
 > [Misspelled brand name]... (WRONG SPELLING - verify against brand_constraints)
+
+### Core Offerings Integration
+
+Use `context_pack.core_offerings` as a positioning map, not a sales script.
+
+**Acceptable use**:
+- The article section names a reader problem and the offering directly addresses it
+- The value proposition has a `source_ref`
+- The mention is brief, technical, and useful to the decision being made
+
+**Reject or flag**:
+- Unsupported claims such as "best", "leading", "most advanced", or "proven" without source-backed evidence
+- Product mentions in the intro or close when the article is not a product comparison or buying guide
+- Any value prop that conflicts with `risk_notes`
 
 ---
 
@@ -639,6 +702,8 @@ Before finalizing `final_article.md`, verify:
 ### Content Quality
 - [ ] Every quantitative claim has source attribution
 - [ ] No fabricated data or unsupported numbers
+- [ ] No factual claim, statistic, case study, or anecdote originated only from a `style_exemplar`
+- [ ] User-provided storytelling or first-person lessons trace to `author_experience_notes`, `key_claims`, or `extracted_tables` (never `style_exemplars`)
 - [ ] All charts referenced with `chart_id` (if manifest exists)
 - [ ] All charts have captions and alt text
 - [ ] Internal links use placeholder format
@@ -675,6 +740,8 @@ Before finalizing `final_article.md`, verify:
 - [ ] No exaggeration of capabilities
 - [ ] Conditions/constraints clearly stated
 - [ ] Core advantage mentioned appropriately
+- [ ] Product/service mentions from `core_offerings` are contextual answers to reader problems, not promotional insertions
+- [ ] Every product value prop used in the article has a `source_ref` and does not conflict with `risk_notes`
 - [ ] No hard-sell marketing language
 
 ### Numerical Governance
@@ -741,12 +808,18 @@ Before finalizing `final_article.md`, verify:
 Input:
 ├── outline.md (from Architect)
 ├── context_pack (from Orchestrator)
+│   ├── style_exemplars (style only, never factual sources)
+│   ├── core_offerings (source-backed positioning context)
+│   └── author_experience_notes (user-provided story/voice material)
 ├── charts_manifest (from Visualization Generator)
 └── brand_constraints + style_constraints
 
 Processing:
-├── Section-by-section writing
+├── Section-by-section writing with local checks after each H2/H3
 ├── Source attribution validation
+├── Style exemplar boundary check
+├── Contextual product mention check
+├── Author-experience no-fabrication check
 ├── Chart integration
 ├── Internal link placement
 └── Self-audit execution

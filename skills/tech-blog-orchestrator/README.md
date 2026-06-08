@@ -48,11 +48,11 @@ Skill 会：
 
 ## Context Pack 输出格式
 
-Skill 输出 Context Pack v2.1.0。结构必须与 `../../schemas/context_pack_schema.json`、`assets/context_pack_template.json` 和 `scripts/validate_context_pack.py` 保持一致。
+Skill 输出 Context Pack v2.2.0。结构必须与 `../../schemas/context_pack_schema.json`、`assets/context_pack_template.json` 和 `scripts/validate_context_pack.py` 保持一致。
 
 ```json
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "generated_at": "2026-06-08T00:00:00Z",
   "topic": "博客主题",
   "audience": ["工程师", "采购经理", "项目经理"],
@@ -186,7 +186,7 @@ python scripts/validate_context_pack.py <context_pack.json>
 **输出示例** (简化版):
 ```json
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "generated_at": "2026-06-08T10:30:00Z",
   "topic": "[目标场景][极限条件]下的[产品类别]解决方案",
   "audience": ["Engineers", "Procurement Managers"],

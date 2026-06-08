@@ -1,5 +1,5 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "generated_at": "2026-06-08T00:00:00Z",
   "workflow_id": "wf_20260608_000000",
   "topic": "Example: [Product/Technology] applications in [deployment scenario]",
@@ -13,6 +13,37 @@
     "market_segment": "B2B [Your Product Category] for [Customer Segment]",
     "core_advantage": "[Core capability] under [important operating condition]"
   },
+  "style_exemplars": [
+    {
+      "reference": "style_samples/author_article.md",
+      "scope": "style_only",
+      "what_to_emulate": [
+        "direct answer-first openings",
+        "short paragraphs with concrete examples",
+        "consultative engineer-to-engineer tone"
+      ],
+      "what_to_avoid": [
+        "copying factual claims from the exemplar",
+        "reusing unsourced statistics or customer stories"
+      ]
+    }
+  ],
+  "core_offerings": [
+    {
+      "name": "[Product or Service Name]",
+      "value_prop": "[Source-backed value statement]",
+      "target_user": "[Specific buyer, operator, or technical role]",
+      "when_to_mention": "[Only when the section addresses this reader problem]",
+      "source_ref": "positioning_doc.md:Core Offerings"
+    }
+  ],
+  "author_experience_notes": [
+    {
+      "note": "[Author-provided experience or edit preference]",
+      "source_ref": "interview_notes.md:Q4",
+      "usable_as": "story_anchor"
+    }
+  ],
   "key_claims": [
     {
       "claim": "[Solution category] can operate under [condition] without [auxiliary workaround].",

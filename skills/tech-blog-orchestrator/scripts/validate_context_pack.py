@@ -32,6 +32,10 @@ VALID_CONFIDENCE = {"high", "medium", "low"}
 VALID_SOURCE_TYPES = {"pdf", "excel", "word", "web", "research", "user_provided"}
 VALID_RISK_TYPES = {"data_gap", "uncertainty", "conflict", "limitation"}
 VALID_COLUMN_TYPES = {"string", "number", "date", "boolean"}
+VALID_EXPERIENCE_USES = {"story_anchor", "expert_commentary", "guardrail", "preference"}
+STYLE_EXEMPLAR_FIELDS = {"reference", "scope", "what_to_emulate", "what_to_avoid"}
+CORE_OFFERING_FIELDS = {"name", "value_prop", "target_user", "when_to_mention", "source_ref"}
+AUTHOR_EXPERIENCE_FIELDS = {"note", "source_ref", "usable_as"}
 
 
 def _is_iso_datetime(value: Any) -> bool:
@@ -59,7 +63,7 @@ def validate_context_pack(data: dict[str, Any]) -> tuple[bool, list[str], list[s
 
     version = data.get("version")
     if not isinstance(version, str) or not version.count(".") == 2:
-        _add(errors, "version", "must be a semantic version string such as 2.1.0")
+        _add(errors, "version", "must be a semantic version string such as 2.2.0")
 
     if not _is_iso_datetime(data.get("generated_at")):
         _add(errors, "generated_at", "must be an ISO 8601 timestamp")
@@ -216,6 +220,68 @@ def validate_context_pack(data: dict[str, Any]) -> tuple[bool, list[str], list[s
         files_processed = file_summary.get("files_processed", [])
         if source_count == 0 and not files_processed:
             _add(warnings, "source_coverage", "no research sources and no files processed")
+
+    style_exemplars = data.get("style_exemplars")
+    if style_exemplars is not None:
+        if not isinstance(style_exemplars, list):
+            _add(errors, "style_exemplars", "must be an array when present")
+        else:
+            for idx, exemplar in enumerate(style_exemplars):
+                loc = f"style_exemplars[{idx}]"
+                if not isinstance(exemplar, dict):
+                    _add(errors, loc, "must be an object")
+                    continue
+                extra = set(exemplar) - STYLE_EXEMPLAR_FIELDS
+                if extra:
+                    _add(errors, loc, f"unexpected fields: {', '.join(sorted(extra))}")
+                if not isinstance(exemplar.get("reference"), str) or not exemplar.get("reference", "").strip():
+                    _add(errors, f"{loc}.reference", "must be a non-empty string")
+                if exemplar.get("scope") != "style_only":
+                    _add(errors, f"{loc}.scope", "must be style_only; exemplars are not factual sources")
+                for field in ["what_to_emulate", "what_to_avoid"]:
+                    if field in exemplar and not isinstance(exemplar.get(field), list):
+                        _add(errors, f"{loc}.{field}", "must be an array when present")
+
+    core_offerings = data.get("core_offerings")
+    if core_offerings is not None:
+        if not isinstance(core_offerings, list):
+            _add(errors, "core_offerings", "must be an array when present")
+        else:
+            for idx, offering in enumerate(core_offerings):
+                loc = f"core_offerings[{idx}]"
+                if not isinstance(offering, dict):
+                    _add(errors, loc, "must be an object")
+                    continue
+                extra = set(offering) - CORE_OFFERING_FIELDS
+                if extra:
+                    _add(errors, loc, f"unexpected fields: {', '.join(sorted(extra))}")
+                for field in ["name", "value_prop", "target_user"]:
+                    if not isinstance(offering.get(field), str) or not offering.get(field, "").strip():
+                        _add(errors, f"{loc}.{field}", "must be a non-empty string")
+                if not isinstance(offering.get("source_ref"), str) or len(offering.get("source_ref", "").strip()) < 5:
+                    _add(errors, f"{loc}.source_ref", "must be a traceable string with at least 5 characters")
+                if "when_to_mention" in offering and not isinstance(offering.get("when_to_mention"), str):
+                    _add(errors, f"{loc}.when_to_mention", "must be a string when present")
+
+    author_experience_notes = data.get("author_experience_notes")
+    if author_experience_notes is not None:
+        if not isinstance(author_experience_notes, list):
+            _add(errors, "author_experience_notes", "must be an array when present")
+        else:
+            for idx, note in enumerate(author_experience_notes):
+                loc = f"author_experience_notes[{idx}]"
+                if not isinstance(note, dict):
+                    _add(errors, loc, "must be an object")
+                    continue
+                extra = set(note) - AUTHOR_EXPERIENCE_FIELDS
+                if extra:
+                    _add(errors, loc, f"unexpected fields: {', '.join(sorted(extra))}")
+                if not isinstance(note.get("note"), str) or not note.get("note", "").strip():
+                    _add(errors, f"{loc}.note", "must be a non-empty string")
+                if not isinstance(note.get("source_ref"), str) or len(note.get("source_ref", "").strip()) < 5:
+                    _add(errors, f"{loc}.source_ref", "must be a traceable string with at least 5 characters")
+                if "usable_as" in note and note.get("usable_as") not in VALID_EXPERIENCE_USES:
+                    _add(errors, f"{loc}.usable_as", f"must be one of {sorted(VALID_EXPERIENCE_USES)}")
 
     return not errors, errors, warnings
 

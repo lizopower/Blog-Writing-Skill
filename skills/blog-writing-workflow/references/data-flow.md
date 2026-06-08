@@ -11,7 +11,7 @@ audience-pain-point-research (optional)
 tech-blog-orchestrator
       |
       v
-Context Pack v2.1.0
+Context Pack v2.2.0
       |
       v
 data-validator

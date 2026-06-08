@@ -7,7 +7,7 @@ earlier releases.
 | Scope | Source of truth | Current | Bump when |
 |-------|-----------------|---------|-----------|
 | **Release version** | `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.claude-plugin/marketplace.json` (must always agree) | `2.2.0` | Any user-visible change to skills, routing, docs, or packaging. |
-| **Context Pack data contract** | `schemas/context_pack_schema.json` (`version` field) | `2.1.0` | The Context Pack JSON shape changes (fields added/removed/retyped). Downstream validators key off this. |
+| **Context Pack data contract** | `schemas/context_pack_schema.json` (`version` field) | `2.2.0` | The Context Pack JSON shape changes (fields added/removed/retyped). Downstream validators key off this. |
 | **Standards / templates** | Front-matter `version:` in `standards/*.md` and `templates/*.md` | per file | The individual standard or template changes. These are reusable documents with their own lifecycle. |
 
 ## Rules

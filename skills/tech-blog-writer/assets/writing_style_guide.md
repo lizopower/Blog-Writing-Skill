@@ -213,6 +213,8 @@ I've seen projects specify excellent [core components] paired with bargain [cont
 - "In my experience, [pattern]..."
 - "Real-world performance validates..."
 
+**Boundary**: Use first-person experience only when the user supplied it in `author_experience_notes`, an interview, or source-backed case material from `context_pack.key_claims` or `context_pack.extracted_tables` (never from `style_exemplars`). If no real experience is available, convert the point into a sourced pattern or decision rule. Never invent a story to make the article feel more human.
+
 ### Conditional Precision
 
 **Use**:

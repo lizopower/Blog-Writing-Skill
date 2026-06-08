@@ -75,7 +75,7 @@ If absent and the user wants ideation or strategy discovery, invoke `blog-brains
    Run for audience research, SEO/search-intent strategy, or unfamiliar topics.
 
 2. `tech-blog-orchestrator` [required]
-   Prepare Context Pack v2.1.0 from topic research and/or local files.
+   Prepare Context Pack v2.2.0 from topic research and/or local files.
 
 3. `data-validator` [required]
    Validate Context Pack schema, completeness, sources, units, and consistency.
@@ -107,7 +107,7 @@ If `grill-me` finds missing evidence, return to `tech-research`, `audience-pain-
 
 ## Context Pack Contract
 
-Use Context Pack v2.1.0. Validate against:
+Use Context Pack v2.2.0. Validate against:
 
 ```text
 schemas/context_pack_schema.json
@@ -116,12 +116,21 @@ skills/tech-blog-orchestrator/scripts/validate_context_pack.py
 
 Downstream writing and fact-checking must use only source-backed claims from the Context Pack unless the user explicitly provides new source material.
 
+Before handoff to `tech-blog-writer`, confirm the Context Pack includes all available context:
+- Topic, audience, industry, and core advantage
+- Source-backed claims, tables, glossary, and risk notes
+- Optional `style_exemplars` for voice and structure only
+- Optional `core_offerings` for contextual, non-promotional product/service mentions
+- Optional `author_experience_notes` for real stories, preferences, and expert commentary
+
 ## Execution Notes
 
 - Pass outputs forward without silently reshaping them.
 - Stop on failed validation unless the user explicitly accepts the risk.
 - Skip visualization when data is insufficient; do not invent chart values.
 - Present validation and fact-check warnings clearly in the final report.
+- Draft section by section through `tech-blog-writer`; for interactive work, pause after each major H2/H3 for user feedback.
+- Treat user edits as project-level guardrails for the current workspace or article. Do not claim the model has permanently learned; persist reusable feedback only when the user wants a local style guide or guardrails update.
 
 ## References
 

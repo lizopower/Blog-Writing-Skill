@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Context Pack Schema",
   "description": "Standard Context Pack contract for Blog-Writing-Skill.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "object",
   "required": [
     "version",
@@ -66,6 +66,93 @@
         }
       },
       "additionalProperties": true
+    },
+    "style_exemplars": {
+      "type": "array",
+      "description": "Optional author-approved examples used for voice, structure, rhythm, and guardrails only. They are not factual sources.",
+      "items": {
+        "type": "object",
+        "required": ["reference", "scope"],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "description": "File path, URL, or artifact id for the exemplar."
+          },
+          "scope": {
+            "type": "string",
+            "enum": ["style_only"],
+            "description": "Must be style_only; factual claims still require key_claims sources."
+          },
+          "what_to_emulate": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Voice, structure, pacing, framing, or formatting traits to emulate."
+          },
+          "what_to_avoid": {
+            "type": "array",
+            "items": {"type": "string"},
+            "description": "Author-specific guardrails or patterns not to repeat."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "core_offerings": {
+      "type": "array",
+      "description": "Optional source-backed product/service context for contextual, non-promotional mentions.",
+      "items": {
+        "type": "object",
+        "required": ["name", "value_prop", "target_user", "source_ref"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value_prop": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_user": {
+            "type": "string",
+            "minLength": 1
+          },
+          "when_to_mention": {
+            "type": "string",
+            "description": "Specific reader problem or article section where this offering is relevant."
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 5,
+            "description": "Traceable source for the offering, positioning, and value claim."
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "author_experience_notes": {
+      "type": "array",
+      "description": "Optional user-provided experiences, edits, or stories that may support personalization. Do not invent these downstream.",
+      "items": {
+        "type": "object",
+        "required": ["note", "source_ref"],
+        "properties": {
+          "note": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 5
+          },
+          "usable_as": {
+            "type": "string",
+            "enum": ["story_anchor", "expert_commentary", "guardrail", "preference"],
+            "description": "How the writer may use this note."
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "key_claims": {
       "type": "array",

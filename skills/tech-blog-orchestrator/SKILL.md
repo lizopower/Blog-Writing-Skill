@@ -40,6 +40,7 @@ Identify which inputs are present:
 - **Topic-Only**: User provides a topic/theme description, no files
 - **Files-Only**: User uploads files (PDF/Word/Excel), no topic
 - **Topic + Files**: Both topic and files are provided
+- **Style / Offering Materials**: User provides prior articles, brand/product notes, positioning docs, editorial guardrails, or author experience notes
 
 ### 2. Parallel Task Orchestration
 
@@ -64,13 +65,22 @@ Based on input type, trigger tasks **in parallel**:
   - Structured data from Word documents
   - Metadata (page numbers, sections, sources)
 
+#### If Style / Offering Materials are Present:
+- **Trigger**: Parse and classify the material before Context Pack assembly
+- **Purpose**: Separate writing guidance from factual evidence
+- **Expected Output**:
+  - `style_exemplars`: prior articles or samples used for voice, structure, rhythm, and guardrails only
+  - `core_offerings`: source-backed product/service names, value props, target users, and when-to-mention guidance
+  - `author_experience_notes`: user-provided stories, edit preferences, and expert observations
+  - `risk_notes`: any product claim, anecdote, or statistic that lacks a traceable source
+
 ### 3. Context Pack Assembly
 
 Aggregate results from all triggered tasks into a unified JSON structure called the **Context Pack**.
 
 ## Context Pack Output Format
 
-Use Context Pack v2.1.0. Keep this shape aligned with:
+Use Context Pack v2.2.0. Keep this shape aligned with:
 - `../../schemas/context_pack_schema.json`
 - `assets/context_pack_template.json`
 - `scripts/validate_context_pack.py`
@@ -79,7 +89,7 @@ Output the following JSON structure:
 
 ```json
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "generated_at": "ISO-8601 timestamp",
   "workflow_id": "wf_YYYYMMDD_HHMMSS",
   "topic": "string - The main topic/theme of the blog article",
@@ -89,6 +99,30 @@ Output the following JSON structure:
     "market_segment": "string - e.g. 'B2B [Product Category] for [Customer Segment]'",
     "core_advantage": "string - the differentiating claim the article needs to support"
   },
+  "style_exemplars": [
+    {
+      "reference": "string - file path, URL, or artifact id for the style sample",
+      "scope": "style_only",
+      "what_to_emulate": ["array - voice, structure, rhythm, framing, formatting traits"],
+      "what_to_avoid": ["array - author-specific guardrails or weak patterns"]
+    }
+  ],
+  "core_offerings": [
+    {
+      "name": "string - product or service name",
+      "value_prop": "string - source-backed value statement",
+      "target_user": "string - role or audience segment",
+      "when_to_mention": "string - reader problem or article section where it is relevant",
+      "source_ref": "string - traceable source for positioning and value claim"
+    }
+  ],
+  "author_experience_notes": [
+    {
+      "note": "string - user-provided story, expert observation, edit preference, or guardrail",
+      "source_ref": "string - interview note, user instruction, or document reference",
+      "usable_as": "story_anchor | expert_commentary | guardrail | preference"
+    }
+  ],
   "key_claims": [
     {
       "claim": "string - Key technical or business claim",
@@ -169,6 +203,9 @@ Output the following JSON structure:
 5. **Source Attribution**: Every key_claim MUST include a traceable source
 6. **Risk Flagging**: Flag any uncertain, contradictory, or unverified information in risk_notes
 7. **Structured Output Only**: Always output the Context Pack as valid JSON
+8. **Style Exemplar Boundary**: Style exemplars shape voice and structure only; never promote their facts, stats, case studies, or claims into `key_claims` without an independent traceable source
+9. **Product Context Boundary**: Core offerings may guide contextual mentions, but unsupported value claims must become `risk_notes`, not article-ready claims
+10. **Experience Boundary**: Author stories and first-person lessons must come from `author_experience_notes`, `key_claims`, or `extracted_tables`; never derive them from `style_exemplars` or invent them
 
 ## Execution Steps
 
@@ -176,11 +213,13 @@ Output the following JSON structure:
 - Parse the user request
 - Identify if topic is provided
 - Identify if files are attached
-- Determine workflow path (Topic-Only / Files-Only / Topic+Files)
+- Identify if style exemplars, product/offering docs, editorial guardrails, or author experience notes are attached
+- Determine workflow path (Topic-Only / Files-Only / Topic+Files / Style+Offering Materials)
 
 ### Step 2: Trigger Parallel Tasks
 - If topic exists: Initiate research workflow to gather online information
 - If files exist: Initiate file parsing workflow to extract content
+- If style/offering materials exist: Classify them into `style_exemplars`, `core_offerings`, `author_experience_notes`, and unsupported claims in `risk_notes`
 - Execute both simultaneously if both inputs present
 
 ### Step 3: Aggregate Results
@@ -188,6 +227,9 @@ Output the following JSON structure:
 - Collect parsed file content (if applicable)
 - Identify key claims and their sources
 - Extract any tables with source metadata
+- Classify prior articles as `style_exemplars` only unless their factual claims are independently sourced
+- Extract source-backed product/service context into `core_offerings`
+- Capture user-provided stories, expert edits, and voice preferences as `author_experience_notes`
 - Build glossary of technical terms
 - Flag any uncertainties or contradictions
 
@@ -262,7 +304,7 @@ Warnings:
 
 ## Resources
 
-- `assets/context_pack_template.json`: Context Pack v2.1.0 example.
+- `assets/context_pack_template.json`: Context Pack v2.2.0 example.
 - `scripts/validate_context_pack.py`: dependency-free Context Pack validator.
 - `references/research_strategy.md`: research planning guide.
 - `references/file_parsing_guide.md`: file parsing guide.

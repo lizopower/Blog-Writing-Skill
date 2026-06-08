@@ -279,7 +279,7 @@ python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-roo
 
 ## Evidence model
 
-`context_pack.json` (contract **v2.1.0**) is the evidence object passed to the architect, writer, chart planner, and fact-checker. Minimum fields: `version`, `generated_at`, `topic`, `audience`, `key_claims`, `extracted_tables`, `glossary`, `risk_notes`, plus file/research source metadata.
+`context_pack.json` (contract **v2.2.0**) is the evidence object passed to the architect, writer, chart planner, and fact-checker. Minimum fields: `version`, `generated_at`, `topic`, `audience`, `key_claims`, `extracted_tables`, `glossary`, `risk_notes`, plus file/research source metadata.
 
 Each key claim carries: claim text · source reference · source type · confidence level · units & test conditions (if numerical) · stated limitations.
 
