@@ -1,0 +1,240 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Context Pack Schema",
+  "description": "标准化的 Context Pack 数据结构定义",
+  "version": "2.0.0",
+  "type": "object",
+  "required": ["version", "generated_at", "topic", "key_claims", "extracted_tables"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Context Pack 版本号"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "生成时间戳 (ISO 8601)"
+    },
+    "workflow_id": {
+      "type": "string",
+      "pattern": "^wf_\\d{8}_\\d{6}$",
+      "description": "工作流ID (格式: wf_YYYYMMDD_HHMMSS)"
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 5,
+      "maxLength": 200,
+      "description": "文章主题"
+    },
+    "audience": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["Engineers", "Procurement Managers", "Project Managers", "Executives", "Technical Staff"]
+      },
+      "minItems": 1,
+      "description": "目标受众"
+    },
+    "key_claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["claim", "source", "confidence"],
+        "properties": {
+          "claim": {
+            "type": "string",
+            "minLength": 10,
+            "description": "关键声明内容"
+          },
+          "source": {
+            "type": "object",
+            "required": ["type", "reference"],
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["pdf", "excel", "word", "web", "research"]
+              },
+              "reference": {
+                "type": "string",
+                "minLength": 5,
+                "description": "来源引用 (如: performance_test_report.pdf:Page 12, Table 3)"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "description": "可点击的文件链接"
+              },
+              "credibility": {
+                "type": "string",
+                "enum": ["high", "medium", "low"],
+                "description": "来源可信度"
+              },
+              "verified_by": {
+                "type": "string",
+                "description": "验证者 (技能名称)"
+              },
+              "verified_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "验证时间"
+              }
+            }
+          },
+          "confidence": {
+            "type": "string",
+            "enum": ["high", "medium", "low"],
+            "description": "声明可信度"
+          },
+          "data": {
+            "type": "object",
+            "description": "结构化数据 (如果声明包含数值)"
+          }
+        }
+      }
+    },
+    "extracted_tables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["table_id", "source", "columns", "data"],
+        "properties": {
+          "table_id": {
+            "type": "string",
+            "pattern": "^table_\\d+$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 5,
+            "description": "数据来源"
+          },
+          "title": {
+            "type": "string",
+            "description": "表格标题"
+          },
+          "columns": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": ["name"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "unit": {
+                  "type": "string",
+                  "description": "单位 (数值列必须有)"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["string", "number", "date", "boolean"],
+                  "default": "string"
+                }
+              }
+            }
+          },
+          "data": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object"
+            }
+          },
+          "data_format": {
+            "type": "string",
+            "enum": ["array_of_objects", "array_of_arrays"],
+            "default": "array_of_objects"
+          },
+          "data_hash": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$",
+            "description": "数据完整性校验"
+          },
+          "extracted_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "notes": {
+            "type": "string",
+            "description": "备注信息"
+          }
+        }
+      }
+    },
+    "glossary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["term", "definition"],
+        "properties": {
+          "term": {
+            "type": "string"
+          },
+          "definition": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "object",
+            "properties": {
+              "en": {"type": "string"},
+              "zh": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "risk_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["risk_type", "description"],
+        "properties": {
+          "risk_type": {
+            "type": "string",
+            "enum": ["data_gap", "uncertainty", "conflict", "limitation"]
+          },
+          "description": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          "mitigation": {
+            "type": "string",
+            "description": "缓解措施"
+          }
+        }
+      }
+    },
+    "data_lineage": {
+      "type": "object",
+      "description": "数据血缘追踪",
+      "patternProperties": {
+        "^table_\\d+$": {
+          "type": "object",
+          "properties": {
+            "source_file": {"type": "string"},
+            "extraction_method": {"type": "string"},
+            "transformations": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "files_processed": {"type": "integer", "minimum": 0},
+        "research_sources": {"type": "integer", "minimum": 0},
+        "total_data_points": {"type": "integer", "minimum": 0},
+        "processing_time_seconds": {"type": "number", "minimum": 0}
+      }
+    }
+  }
+}

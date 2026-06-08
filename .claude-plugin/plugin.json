@@ -1,0 +1,14 @@
+{
+  "name": "blog-writing-skills",
+  "description": "Technical blog writing skills for content creation, research, and optimization",
+  "version": "1.0.0",
+  "author": {
+    "name": "Blog Writing Skills",
+    "email": ""
+  },
+  "homepage": "https://github.com/lizopower/Blog-Writing-Skill",
+  "repository": "https://github.com/lizopower/Blog-Writing-Skill",
+  "license": "MIT",
+  "keywords": ["blog", "writing", "technical-content", "research", "content-creation"]
+}
+

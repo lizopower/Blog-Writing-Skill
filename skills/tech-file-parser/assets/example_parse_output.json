@@ -1,0 +1,384 @@
+{
+  "files_processed": [
+    {
+      "filename": "performance_test_report.pdf",
+      "file_type": "PDF",
+      "pages": 45,
+      "creation_date": "2024-01-15",
+      "summary": {
+        "subject": "[Extreme-condition] performance testing",
+        "key_conclusions": [
+          "[Product unit] maintains [X]% [performance metric] at [extreme threshold]",
+          "No [auxiliary system] required for [core operation] down to [more-extreme threshold]",
+          "Stable [secondary metric] output during [transition event]"
+        ],
+        "scope": "Laboratory testing under controlled conditions, [N] cycles",
+        "applicability": "Suitable for [target deployment scenario] in [extreme-condition regions]"
+      }
+    },
+    {
+      "filename": "field_test_data.xlsx",
+      "file_type": "Excel",
+      "sheets": 3,
+      "creation_date": "2024-02-20",
+      "summary": {
+        "subject": "Field deployment data from [region] pilot project",
+        "key_conclusions": [
+          "Zero failures over [N]-month deployment",
+          "Average [condition value]: [value]",
+          "No [auxiliary system] required"
+        ],
+        "scope": "Real-world deployment, [N] [deployment units], [N] months",
+        "applicability": "Validation for commercial deployment"
+      }
+    }
+  ],
+
+  "extracted_tables": [
+    {
+      "table_id": "table_1",
+      "source": "performance_test_report.pdf:Page 12, Table 3",
+      "title": "[Performance Metric] vs. [Condition Variable]",
+      "columns": [
+        {"name": "[Condition Variable]", "unit": "[condition unit]"},
+        {"name": "[Performance Metric]", "unit": "[metric unit]"},
+        {"name": "[Performance Metric] Retention", "unit": "%"},
+        {"name": "Test Cycles", "unit": "count"}
+      ],
+      "data": [
+        {"[Condition Variable]": "[baseline]", "[Performance Metric]": 100, "[Performance Metric] Retention": 100, "Test Cycles": 100},
+        {"[Condition Variable]": "[mild]", "[Performance Metric]": 95, "[Performance Metric] Retention": 95, "Test Cycles": 100},
+        {"[Condition Variable]": "[moderate]", "[Performance Metric]": 90, "[Performance Metric] Retention": 90, "Test Cycles": 100},
+        {"[Condition Variable]": "[extreme threshold]", "[Performance Metric]": 87, "[Performance Metric] Retention": 87, "Test Cycles": 100},
+        {"[Condition Variable]": "[more-extreme threshold]", "[Performance Metric]": 82, "[Performance Metric] Retention": 82, "Test Cycles": 50}
+      ],
+      "notes": "Test conditions: [test rate/load], [soak duration] soak time at each [condition value]",
+      "missing_values": "None",
+      "needs_confirmation": []
+    },
+    {
+      "table_id": "table_2",
+      "source": "performance_test_report.pdf:Page 18, Table 5",
+      "title": "[Transition Event] Performance",
+      "columns": [
+        {"name": "[Condition Variable]", "unit": "[condition unit]"},
+        {"name": "[Transition] Time", "unit": "seconds"},
+        {"name": "Initial [Secondary Metric]", "unit": "[unit]"},
+        {"name": "[Secondary Metric] After 60s", "unit": "[unit]"}
+      ],
+      "data": [
+        {"[Condition Variable]": "[baseline]", "[Transition] Time": 0.3, "Initial [Secondary Metric]": 48.5, "[Secondary Metric] After 60s": 48.2},
+        {"[Condition Variable]": "[moderate]", "[Transition] Time": 0.5, "Initial [Secondary Metric]": 48.2, "[Secondary Metric] After 60s": 47.8},
+        {"[Condition Variable]": "[extreme threshold]", "[Transition] Time": 0.8, "Initial [Secondary Metric]": 47.8, "[Secondary Metric] After 60s": 47.5}
+      ],
+      "notes": "Load: [test load] ([test rate]), no [auxiliary system]",
+      "missing_values": "None",
+      "needs_confirmation": []
+    },
+    {
+      "table_id": "table_3",
+      "source": "field_test_data.xlsx:Sheet1!A1:E11",
+      "title": "Monthly Average Performance - [Region] Deployment",
+      "columns": [
+        {"name": "Month", "unit": "YYYY-MM"},
+        {"name": "Avg [Condition Variable]", "unit": "[condition unit]"},
+        {"name": "Uptime", "unit": "%"},
+        {"name": "Failures", "unit": "count"},
+        {"name": "[Resource] Consumption", "unit": "[resource unit]"}
+      ],
+      "data": [
+        {"Month": "2024-01", "Avg [Condition Variable]": "[value 1]", "Uptime": 99.8, "Failures": 0, "[Resource] Consumption": 1250},
+        {"Month": "2024-02", "Avg [Condition Variable]": "[value 2]", "Uptime": 99.9, "Failures": 0, "[Resource] Consumption": 1280},
+        {"Month": "2024-03", "Avg [Condition Variable]": "[value 3]", "Uptime": 99.7, "Failures": 0, "[Resource] Consumption": 1300},
+        {"Month": "2024-04", "Avg [Condition Variable]": "[value 4]", "Uptime": 99.9, "Failures": 0, "[Resource] Consumption": 1270},
+        {"Month": "2024-05", "Avg [Condition Variable]": "[value 5]", "Uptime": 100.0, "Failures": 0, "[Resource] Consumption": 1220},
+        {"Month": "2024-06", "Avg [Condition Variable]": "[value 6]", "Uptime": 100.0, "Failures": 0, "[Resource] Consumption": 1200}
+      ],
+      "notes": "[N] [deployment units], data aggregated monthly",
+      "missing_values": "None",
+      "needs_confirmation": []
+    }
+  ],
+
+  "time_series": [
+    {
+      "series_id": "series_1",
+      "source": "performance_test_report.pdf:Page 15, Figure 4 (data extracted)",
+      "title": "[Secondary Metric] During [Transition Event] at [Extreme Threshold]",
+      "x_axis": {"name": "Time", "unit": "seconds"},
+      "y_axis": {"name": "[Secondary Metric]", "unit": "[unit]"},
+      "data_points": 120,
+      "conditions": "Ambient [condition variable]: [extreme threshold], Load: [test load] ([test rate]), no [auxiliary system]",
+      "sample_data": [
+        {"Time": 0, "[Secondary Metric]": 48.2},
+        {"Time": 10, "[Secondary Metric]": 47.8},
+        {"Time": 20, "[Secondary Metric]": 47.6},
+        {"Time": 30, "[Secondary Metric]": 47.5},
+        {"Time": 60, "[Secondary Metric]": 47.5},
+        {"Time": 120, "[Secondary Metric]": 47.4}
+      ],
+      "notes": "Full dataset shows stable [core operation], [metric] drop <2% in first 2 minutes",
+      "trend": "Stable after initial 30-second settling period"
+    },
+    {
+      "series_id": "series_2",
+      "source": "field_test_data.xlsx:Sheet2!A1:C180",
+      "title": "[N]-Month [Condition Variable] vs. Uptime",
+      "x_axis": {"name": "Date", "unit": "YYYY-MM-DD"},
+      "y_axis": {"name": "Uptime", "unit": "%"},
+      "secondary_y_axis": {"name": "[Condition Variable]", "unit": "[condition unit]"},
+      "data_points": 180,
+      "conditions": "Real-world deployment, [N] [deployment units] in [region]",
+      "sample_data": [
+        {"Date": "2024-01-01", "Uptime": 99.8, "[Condition Variable]": "[value 1]"},
+        {"Date": "2024-02-01", "Uptime": 99.9, "[Condition Variable]": "[value 2]"},
+        {"Date": "2024-03-01", "Uptime": 99.7, "[Condition Variable]": "[value 3]"},
+        {"Date": "2024-04-01", "Uptime": 99.9, "[Condition Variable]": "[value 4]"},
+        {"Date": "2024-05-01", "Uptime": 100.0, "[Condition Variable]": "[value 5]"},
+        {"Date": "2024-06-01", "Uptime": 100.0, "[Condition Variable]": "[value 6]"}
+      ],
+      "notes": "Daily data averaged to monthly for clarity",
+      "trend": "Consistent >99.7% uptime regardless of [condition variable]"
+    }
+  ],
+
+  "comparisons": [
+    {
+      "comparison_id": "comp_1",
+      "source": "performance_test_report.pdf:Page 25, Table 8",
+      "title": "[Our Solution] vs. Traditional [Auxiliary-System-Dependent Alternative]",
+      "dimensions": [
+        {
+          "parameter": "Operating [Condition Variable] Range",
+          "our_product": "[extreme range]",
+          "traditional": "[narrower range] (with [auxiliary system])",
+          "unit": "[condition unit]"
+        },
+        {
+          "parameter": "[Auxiliary System] [Resource] Consumption",
+          "our_product": "0",
+          "traditional": "150-300",
+          "unit": "[resource unit]"
+        },
+        {
+          "parameter": "[Transition] Time",
+          "our_product": "<1",
+          "traditional": "300-900",
+          "unit": "seconds"
+        },
+        {
+          "parameter": "[Performance Metric] Retention at [Extreme Threshold]",
+          "our_product": "87",
+          "traditional": "N/A (requires [auxiliary system])",
+          "unit": "%"
+        },
+        {
+          "parameter": "System Complexity",
+          "our_product": "Low (no [auxiliary system])",
+          "traditional": "High ([auxiliary system] control)",
+          "unit": "qualitative"
+        },
+        {
+          "parameter": "Estimated TCO Savings",
+          "our_product": "25-35",
+          "traditional": "baseline",
+          "unit": "% vs. traditional"
+        }
+      ],
+      "notes": "Traditional [alternative] data from industry average and competitor datasheets",
+      "needs_confirmation": [
+        "Traditional [alternative] [auxiliary system] [resource] consumption varies by model and ambient [condition variable]",
+        "TCO calculation based on [N]-year deployment, needs customer-specific validation"
+      ]
+    },
+    {
+      "comparison_id": "comp_2",
+      "source": "field_test_data.xlsx:Sheet3!A1:D5",
+      "title": "[Deployment Unit] Types - [Resource] Requirements",
+      "dimensions": [
+        {
+          "parameter": "[Deployment Unit Type A]",
+          "power_requirement": "4-6",
+          "backup_duration": "4-8",
+          "product_capacity": "200-300",
+          "unit_power": "[resource unit]",
+          "unit_duration": "hours",
+          "unit_capacity": "[capacity unit]"
+        },
+        {
+          "parameter": "[Deployment Unit Type B]",
+          "power_requirement": "1-2",
+          "backup_duration": "4-8",
+          "product_capacity": "50-100",
+          "unit_power": "[resource unit]",
+          "unit_duration": "hours",
+          "unit_capacity": "[capacity unit]"
+        },
+        {
+          "parameter": "[Deployment Unit Type C]",
+          "power_requirement": "0.3-0.8",
+          "backup_duration": "4-8",
+          "product_capacity": "20-40",
+          "unit_power": "[resource unit]",
+          "unit_duration": "hours",
+          "unit_capacity": "[capacity unit]"
+        }
+      ],
+      "notes": "Industry standard requirements for [target infrastructure category]",
+      "needs_confirmation": []
+    }
+  ],
+
+  "visualization_recommendations": [
+    {
+      "viz_id": "viz_1",
+      "data_ref": "table_1",
+      "chart_type": "line_chart",
+      "reason": "Shows continuous trend of [performance metric] retention vs. [condition variable], key selling point",
+      "x_axis": "[Condition Variable] ([condition unit])",
+      "y_axis": "[Performance Metric] Retention (%)",
+      "suggested_title": "[Product Unit] [Performance Metric] Retention Across Extreme [Condition] Range",
+      "annotation_opportunities": [
+        "Highlight [extreme threshold] point showing [X]% retention",
+        "Add reference line at [Y]% (industry minimum)",
+        "Annotate [more-extreme threshold] performance as '[core capability] without [auxiliary system]'"
+      ],
+      "priority": "high"
+    },
+    {
+      "viz_id": "viz_2",
+      "data_ref": "comp_1",
+      "chart_type": "comparison_table",
+      "reason": "Side-by-side specs are clearest in table format, emphasizes advantages",
+      "highlight_rows": ["[Auxiliary System] [Resource] Consumption", "[Transition] Time", "TCO Savings"],
+      "suggested_title": "[Our Solution] vs. Traditional [Alternative]: Key Metrics",
+      "annotation_opportunities": [
+        "Highlight 0[unit] [auxiliary system] [resource] consumption",
+        "Emphasize <1s [transition] vs. 5-15min traditional"
+      ],
+      "priority": "high"
+    },
+    {
+      "viz_id": "viz_3",
+      "data_ref": "series_1",
+      "chart_type": "line_chart",
+      "reason": "Time-series shows stability during critical [transition event]",
+      "x_axis": "Time (seconds)",
+      "y_axis": "[Secondary Metric] ([unit])",
+      "suggested_title": "[Secondary Metric] Stability During [Extreme Threshold] [Transition Event] (No [Auxiliary System])",
+      "annotation_opportunities": [
+        "Mark acceptable [secondary metric] range ([range])",
+        "Annotate stabilization at 30 seconds",
+        "Show <2% [secondary metric] drop"
+      ],
+      "priority": "medium"
+    },
+    {
+      "viz_id": "viz_4",
+      "data_ref": "table_3",
+      "chart_type": "bar_chart",
+      "reason": "Monthly performance overview shows consistency across [extreme-condition] months",
+      "x_axis": "Month",
+      "y_axis": "Uptime (%)",
+      "secondary_y_axis": "Avg [Condition Variable] ([condition unit])",
+      "suggested_title": "[N]-Month Field Deployment: Uptime vs. [Condition Variable]",
+      "annotation_opportunities": [
+        "Highlight 99.7%+ uptime even at [extreme value]",
+        "Show zero failures across all months"
+      ],
+      "priority": "high"
+    },
+    {
+      "viz_id": "viz_5",
+      "data_ref": "comp_2",
+      "chart_type": "comparison_table",
+      "reason": "Clear overview of [resource] requirements by [deployment unit] type",
+      "suggested_title": "[Deployment Unit] Types: [Resource] and Backup Requirements",
+      "annotation_opportunities": [
+        "Add row for our [product category] solutions per type"
+      ],
+      "priority": "low"
+    },
+    {
+      "viz_id": "viz_6",
+      "data_ref": "table_2",
+      "chart_type": "bar_chart",
+      "reason": "Comparison of [transition] times at different [condition values]",
+      "x_axis": "[Condition Variable] ([condition unit])",
+      "y_axis": "[Transition] Time (seconds)",
+      "suggested_title": "[Transition] Time vs. [Condition Variable] (Instant Operation)",
+      "annotation_opportunities": [
+        "Compare with traditional 5-15 min [auxiliary-system warm-up] time",
+        "All values under 1 second"
+      ],
+      "priority": "medium"
+    }
+  ],
+
+  "metadata": {
+    "parse_timestamp": "2024-12-26T10:30:00Z",
+    "files_count": 2,
+    "tables_extracted": 3,
+    "time_series_extracted": 2,
+    "comparisons_extracted": 2,
+    "visualization_recommendations": 6,
+    "total_data_points": 450,
+    "uncertainties_flagged": 2,
+    "processing_time_seconds": 18
+  },
+
+  "quality_notes": {
+    "high_confidence_data": [
+      "table_1: Clear laboratory test data with controlled conditions",
+      "table_2: [Transition event] performance data with specific load conditions",
+      "table_3: Field deployment data from real-world installation",
+      "series_1: Extracted from clear chart with labeled axes",
+      "comp_2: Industry standard data from [standards body] specifications"
+    ],
+    "needs_confirmation": [
+      "comp_1: Traditional [alternative] [auxiliary system] [resource] consumption range is wide (150-300[unit]), varies by ambient [condition variable] and [product] size",
+      "comp_1: TCO savings estimate (25-35%) based on [N]-year model, customer-specific validation recommended"
+    ],
+    "missing_information": [
+      "[Core material/formulation] details not specified in test report (likely proprietary)",
+      "Sample size for [more-extreme threshold] testing (only 50 cycles vs. 100 for other conditions)",
+      "Cost breakdown for TCO calculation not included",
+      "Specific [deployment unit] models in [region] deployment not disclosed"
+    ],
+    "parsing_issues": [
+      "series_1: Data extracted from chart (Figure 4), not table - values are approximate",
+      "table_3: Excel file had some merged header cells, manually reconstructed column names"
+    ],
+    "data_quality_excellent": [
+      "All test conditions clearly documented",
+      "Units consistently specified",
+      "Source attribution complete",
+      "No missing data in primary tables"
+    ]
+  },
+
+  "extraction_summary": {
+    "tables": {
+      "total": 3,
+      "with_units": 3,
+      "with_test_conditions": 2,
+      "complete": 3
+    },
+    "time_series": {
+      "total": 2,
+      "with_conditions": 2,
+      "data_points_total": 300
+    },
+    "comparisons": {
+      "total": 2,
+      "dimensions_total": 9,
+      "needs_confirmation_items": 2
+    },
+    "visualization_opportunities": {
+      "total": 6,
+      "high_priority": 3,
+      "medium_priority": 2,
+      "low_priority": 1
+    }
+  }
+}

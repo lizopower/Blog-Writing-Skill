@@ -1,0 +1,376 @@
+{
+  "charts_manifest": {
+    "total_charts": 4,
+    "language": "zh",
+    "generated_at": "2024-12-26T14:00:00Z",
+    "dataset_source": "context_pack from tech-blog-orchestrator",
+
+    "charts": [
+      {
+        "chart_id": "chart_01",
+        "type": "line_chart",
+        "title": "[性能指标]保持率 vs. [条件变量]范围",
+
+        "data_paths": [
+          "context_pack.extracted_tables[0].data"
+        ],
+
+        "source_ref": "performance_test_report.pdf:Page 12, Table 3",
+
+        "metric": "[Performance Metric] Retention",
+        "unit": "%",
+
+        "grouping": "[Condition Variable] ([condition unit])",
+        "filters": "Test conditions: [test rate/load], [soak duration] soak time at each [condition value]",
+
+        "assumptions": "All tests conducted at same [rate/load] and soak duration",
+        "limitations": "Laboratory conditions only, field validation recommended for production deployment",
+
+        "recommended_size": {
+          "width": "800px",
+          "aspect_ratio": "16:9",
+          "responsive": "scale_down_mobile"
+        },
+
+        "caption": "展示[产品单元]在[极限范围]内的[性能指标]保持率变化趋势。数据显示在[极限阈值]时仍能保持87%的[性能指标]，无需[辅助系统]即可直接[核心操作]。",
+        "alt": "折线图显示[性能指标]保持率（%）与[条件变量]（[条件单位]）的关系。X轴为[条件变量]从[极限范围下限]到[基准范围上限]，Y轴为[性能指标]保持率从0%到100%。数据点显示：[基准条件]时100%，[轻度条件]时95%，[中度条件]时90%，[极限阈值]时87%，[更极限阈值]时82%。",
+
+        "data_gaps": [],
+        "chart_error": null
+      },
+
+      {
+        "chart_id": "chart_02",
+        "type": "comparison_table",
+        "title": "[我方方案] vs. [传统辅助系统依赖方案] - 关键参数对比",
+
+        "data_paths": [
+          "context_pack.extracted_tables[1].data",
+          "context_pack.key_claims[3,5,7]"
+        ],
+
+        "source_ref": "comparison_report.pdf:Page 25, Table 8 + field_test_data.xlsx:Sheet3",
+
+        "metric": "Multiple (Operating Range, [Resource], Time, Retention, Complexity)",
+        "unit": "Various ([condition unit], [resource unit], seconds, %, qualitative)",
+
+        "grouping": "Product Type ([Our Solution] vs. [Traditional Alternative])",
+        "filters": "Standard laboratory and field deployment conditions",
+
+        "assumptions": "",
+        "limitations": "Traditional [alternative] data aggregated from competitor datasheets; [auxiliary system] [resource] consumption varies by ambient [condition variable] and [product] size",
+
+        "recommended_size": {
+          "width": "100%",
+          "aspect_ratio": "auto",
+          "responsive": "horizontal_scroll_mobile"
+        },
+
+        "caption": "详细对比[我方方案]与[传统辅助系统依赖方案]在工作[条件]范围、[辅助系统][资源]消耗、[过渡]时间、[极限条件][性能指标]保持率和系统复杂度等关键参数上的差异。[我方方案]在[极限范围]内无需[辅助系统]，实现零[资源]消耗和瞬时[过渡]。",
+        "alt": "对比表包含5个参数行：工作[条件]范围（[我方方案]：[极限范围] vs. [传统方案]：[较窄范围]需[辅助系统]）、[辅助系统][资源]消耗（[我方方案]：0 vs. [传统方案]：150-300）、[过渡]时间（[我方方案]：<1秒 vs. [传统方案]：5-15分钟）、[极限阈值][性能指标]保持率（[我方方案]：87% vs. [传统方案]：N/A需[辅助系统]）、系统复杂度（[我方方案]：低 vs. [传统方案]：高）。",
+
+        "data_gaps": [],
+        "chart_error": null
+      },
+
+      {
+        "chart_id": "chart_03",
+        "type": "bar_chart",
+        "title": "[部署单元]类型[资源]需求与备用需求对比",
+
+        "data_paths": [
+          "context_pack.extracted_tables[2].data"
+        ],
+
+        "source_ref": "field_test_data.xlsx:Sheet3!A1:D5 + [Standards Body] [Standard Number] (via context_pack.key_claims[1])",
+
+        "metric": "[Resource] Requirement",
+        "unit": "[resource unit]",
+
+        "grouping": "[Deployment Unit] Type ([Type A], [Type B], [Type C])",
+        "filters": "Typical [target deployment] configurations",
+
+        "assumptions": "[Resource] values represent typical range midpoints",
+        "limitations": "Actual [resource] requirements vary by configuration, load, and vendor",
+
+        "recommended_size": {
+          "width": "640px",
+          "aspect_ratio": "4:3",
+          "responsive": "scale_down_mobile"
+        },
+
+        "caption": "展示三种[部署单元]类型（[类型A]、[类型B]、[类型C]）的典型[资源]需求。[类型A][资源]4-6[单位]，[类型B] 1-2[单位]，[类型C] 0.3-0.8[单位]。备用方案需提供4-8小时续航。",
+        "alt": "柱状图显示三种[部署单元]类型的[资源]对比。X轴为[部署单元]类型，Y轴为[资源]（[单位]）。[类型A]柱高约5[单位]，[类型B]约1.5[单位]，[类型C]约0.5[单位]。每个柱上标注[资源]范围。",
+
+        "data_gaps": [],
+        "chart_error": null
+      },
+
+      {
+        "chart_id": "chart_04",
+        "type": "line_chart",
+        "title": "[地区]现场部署[N]个月正常运行时间趋势",
+
+        "data_paths": [
+          "context_pack.extracted_tables[3].data"
+        ],
+
+        "source_ref": "field_test_data.xlsx:Sheet1!A1:E11",
+
+        "metric": "Uptime",
+        "unit": "%",
+
+        "grouping": "Month (2024-01 to 2024-06)",
+        "filters": "[N] [deployment units] in [region], monthly aggregated data",
+
+        "assumptions": "Daily data averaged to monthly for clarity",
+        "limitations": "Single deployment site; extended testing in diverse [extreme-condition environments] recommended",
+
+        "recommended_size": {
+          "width": "800px",
+          "aspect_ratio": "16:9",
+          "responsive": "scale_down_mobile"
+        },
+
+        "caption": "展示[地区][极限条件]环境下[N]个[部署单元]在[N]个月部署期间的正常运行时间。月平均[条件变量]从[极限范围]，系统保持99.7%以上的正常运行时间，零故障记录。",
+        "alt": "折线图显示正常运行时间（%）随月份变化。X轴为2024年1月至6月，Y轴为正常运行时间从99.5%到100%。数据点：1月99.8%（[条件值1]），2月99.9%（[条件值2]），3月99.7%（[条件值3]），4月99.9%（[条件值4]），5月100.0%（[条件值5]），6月100.0%（[条件值6]）。辅助Y轴显示月平均[条件变量]。",
+
+        "data_gaps": [],
+        "chart_error": null
+      }
+    ]
+  },
+
+  "chart_bodies": [
+    {
+      "chart_id": "chart_01",
+      "format": "drawing_instructions",
+      "content": {
+        "type": "line_chart",
+        "library": "matplotlib",
+        "data": [
+          {"x": "[基准值]", "y": 100},
+          {"x": "[轻度值]", "y": 95},
+          {"x": "[中度值]", "y": 90},
+          {"x": "[极限阈值]", "y": 87},
+          {"x": "[更极限阈值]", "y": 82}
+        ],
+        "x_axis": {
+          "label": "[条件变量] ([条件单位])",
+          "range": ["[极限范围下限]", "[基准范围上限]"],
+          "ticks": ["[更极限阈值]", "[极限阈值]", "[中度值]", "[轻度值]", "[基准值]"]
+        },
+        "y_axis": {
+          "label": "[性能指标]保持率 (%)",
+          "range": [0, 110],
+          "ticks": [0, 20, 40, 60, 80, 100]
+        },
+        "series": [
+          {
+            "name": "[性能指标]保持率",
+            "color": "#1f77b4",
+            "line_width": 2.5,
+            "marker": "o",
+            "marker_size": 8
+          }
+        ],
+        "grid": {
+          "enabled": true,
+          "alpha": 0.3
+        },
+        "annotations": [
+          {
+            "x": "[极限阈值]",
+            "y": 87,
+            "text": "[极限阈值]时保持87%",
+            "color": "#d62728",
+            "font_size": 10,
+            "position": "top_right"
+          }
+        ],
+        "legend": {
+          "enabled": true,
+          "position": "lower_left"
+        },
+        "font": {
+          "family": "Noto Sans CJK SC, Source Han Sans CN, Microsoft YaHei, sans-serif",
+          "size": 12,
+          "fallback": "sans-serif"
+        },
+        "size": {
+          "width": 800,
+          "height": 450,
+          "dpi": 150
+        },
+        "export_format": "PNG",
+        "background_color": "white"
+      }
+    },
+
+    {
+      "chart_id": "chart_02",
+      "format": "markdown",
+      "content": "| 参数 | [我方方案] | [传统辅助系统依赖方案] | 单位 |\n|------|----------|--------------|------|\n| 工作[条件]范围 | [极限范围] | [较窄范围]（需[辅助系统]） | [条件单位] |\n| [辅助系统][资源]消耗 | 0 | 150-300 | [资源单位] |\n| [过渡]时间 | <1 | 300-900 | 秒 |\n| [极限阈值][性能指标]保持率 | 87 | N/A（需[辅助系统]） | % |\n| 系统复杂度 | 低（无[辅助系统]） | 高（需[辅助系统]控制） | - |\n| 预计TCO节省 | 25-35 vs. 传统 | 基准 | % |\n\n**数据来源**: comparison_report.pdf:Page 25, Table 8 + field_test_data.xlsx:Sheet3  \n**测试条件**: 实验室标准条件（[我方方案]）；现场部署数据（[传统方案]来自行业平均值）  \n**注**: [传统方案][辅助系统][资源]消耗随环境[条件变量]和[产品]规模变化；TCO节省基于[N]年部署模型，需客户特定验证。"
+    },
+
+    {
+      "chart_id": "chart_03",
+      "format": "drawing_instructions",
+      "content": {
+        "type": "bar_chart",
+        "library": "matplotlib",
+        "data": [
+          {"category": "[类型A]", "value": 5.0, "range_min": 4.0, "range_max": 6.0},
+          {"category": "[类型B]", "value": 1.5, "range_min": 1.0, "range_max": 2.0},
+          {"category": "[类型C]", "value": 0.55, "range_min": 0.3, "range_max": 0.8}
+        ],
+        "x_axis": {
+          "label": "[部署单元]类型",
+          "categories": ["[类型A]", "[类型B]", "[类型C]"]
+        },
+        "y_axis": {
+          "label": "[资源]需求 ([单位])",
+          "range": [0, 7]
+        },
+        "bars": {
+          "colors": ["#1f77b4", "#ff7f0e", "#2ca02c"],
+          "width": 0.6,
+          "error_bars": true
+        },
+        "value_labels": {
+          "enabled": true,
+          "format": "{value} [单位]\n({range_min}-{range_max})",
+          "font_size": 10
+        },
+        "font": {
+          "family": "Noto Sans CJK SC, Source Han Sans CN, sans-serif",
+          "size": 12
+        },
+        "size": {
+          "width": 640,
+          "height": 480,
+          "dpi": 150
+        },
+        "export_format": "PNG"
+      }
+    },
+
+    {
+      "chart_id": "chart_04",
+      "format": "drawing_instructions",
+      "content": {
+        "type": "line_chart_dual_axis",
+        "library": "matplotlib",
+        "primary_data": [
+          {"x": "2024-01", "y": 99.8},
+          {"x": "2024-02", "y": 99.9},
+          {"x": "2024-03", "y": 99.7},
+          {"x": "2024-04", "y": 99.9},
+          {"x": "2024-05", "y": 100.0},
+          {"x": "2024-06", "y": 100.0}
+        ],
+        "secondary_data": [
+          {"x": "2024-01", "y": "[条件值1]"},
+          {"x": "2024-02", "y": "[条件值2]"},
+          {"x": "2024-03", "y": "[条件值3]"},
+          {"x": "2024-04", "y": "[条件值4]"},
+          {"x": "2024-05", "y": "[条件值5]"},
+          {"x": "2024-06", "y": "[条件值6]"}
+        ],
+        "x_axis": {
+          "label": "月份",
+          "type": "datetime",
+          "format": "%Y-%m"
+        },
+        "y_axis_primary": {
+          "label": "正常运行时间 (%)",
+          "range": [99.5, 100.2],
+          "color": "#1f77b4"
+        },
+        "y_axis_secondary": {
+          "label": "月平均[条件变量] ([条件单位])",
+          "range": ["[极限范围下限]", "[基准范围上限]"],
+          "color": "#ff7f0e"
+        },
+        "series": [
+          {
+            "name": "正常运行时间",
+            "axis": "primary",
+            "color": "#1f77b4",
+            "line_width": 2.5,
+            "marker": "o"
+          },
+          {
+            "name": "月平均[条件变量]",
+            "axis": "secondary",
+            "color": "#ff7f0e",
+            "line_width": 2,
+            "marker": "s",
+            "line_style": "dashed"
+          }
+        ],
+        "annotations": [
+          {
+            "x": "2024-03",
+            "y": 99.7,
+            "text": "最[极限条件值]\n仍保持99.7%正常运行",
+            "color": "#d62728",
+            "font_size": 9
+          }
+        ],
+        "legend": {
+          "enabled": true,
+          "position": "lower_right"
+        },
+        "font": {
+          "family": "Noto Sans CJK SC, Source Han Sans CN, sans-serif",
+          "size": 12
+        },
+        "size": {
+          "width": 800,
+          "height": 450,
+          "dpi": 150
+        },
+        "export_format": "PNG"
+      }
+    }
+  ],
+
+  "quality_report": {
+    "total_charts_generated": 4,
+    "charts_skipped": 0,
+    "data_gaps_found": 0,
+    "errors": 0,
+    "warnings": [],
+    "validation_passed": true,
+    "generation_time_seconds": 3.2,
+
+    "data_sources_used": {
+      "extracted_tables": 4,
+      "key_claims": 3,
+      "glossary": 0,
+      "risk_notes": 0
+    },
+
+    "chart_type_distribution": {
+      "line_chart": 2,
+      "bar_chart": 1,
+      "comparison_table": 1,
+      "pie_chart": 0,
+      "flowchart": 0,
+      "timeline": 0
+    },
+
+    "accessibility_check": {
+      "all_charts_have_alt": true,
+      "all_charts_have_caption": true,
+      "chinese_font_specified": true
+    },
+
+    "traceability_check": {
+      "all_source_refs_valid": true,
+      "all_data_paths_traceable": true,
+      "no_fabricated_sources": true
+    }
+  }
+}

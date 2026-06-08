@@ -1,0 +1,21 @@
+{
+  "name": "blog-writing-marketplace",
+  "description": "Marketplace for blog writing skills",
+  "owner": {
+    "name": "Blog Writing Skills",
+    "email": ""
+  },
+  "plugins": [
+    {
+      "name": "blog-writing-skills",
+      "description": "Technical blog writing skills for content creation, research, and optimization",
+      "version": "1.0.0",
+      "source": "./",
+      "author": {
+        "name": "Blog Writing Skills",
+        "email": ""
+      }
+    }
+  ]
+}
+
