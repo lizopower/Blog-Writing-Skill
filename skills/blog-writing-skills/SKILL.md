@@ -11,6 +11,14 @@ This is the Codex plugin-facing router for the Blog-Writing-Skill bundle. It mir
 
 A request to write/create/draft a full article from a topic (with or without files) defaults to the **complete `blog-writing-workflow` pipeline**: research → validation → (pressure test) → outline → draft → fact-check. Do not shortcut a topic-level request to `tech-blog-writer`, and do not skip research, validation, outline, or fact-check on your own. Skip a step only on an explicit user request ("直接写" / "跳过研究" / "skip research" / "just draft"), and say which steps you skipped.
 
+Execution contract: invoking this router means executing the selected sub-skill workflow, not using the bundle as a style guide. This bundle describes a production pipeline with evidence-gathering, validation, outline, drafting, and fact-check gates; treating it as a style reference skips those gates and produces unsupported output.
+
+If `blog-writing-workflow` is selected, produce or continue the workflow artifacts. Do not extract writing-style or voice guidance from any file in this skill bundle (including sub-skill `SKILL.md` files, references, assets, templates, or examples) and use it to draft directly.
+
+If a dependency blocks the workflow, stop and report the blocker. Ask whether the user wants to install/authenticate the dependency, provide local sources, or explicitly accept a degraded non-workflow draft.
+
+Disabling or declining CCG, project management, task archival, or any other process framework, whether by user instruction or configuration, does not waive Blog-Writing-Skill stages. Only an explicit waiver of Blog-Writing-Skill stages may skip them.
+
 ## Required Dependency
 
 Online research requires Tavily in the same Codex environment.
@@ -45,6 +53,7 @@ If the request is still under-specified, ask one clarifying question.
 
 ## Common Mistakes
 
+- Do not "reference blog-writing-skill style" and draft directly when a full article request should route to `blog-writing-workflow`.
 - Do not jump straight to `tech-blog-writer`, or skip research/validation/outline/fact-check, for a topic-only article request. The full pipeline is the default; only the user can waive a step.
 - Do not skip `blog-brainstorm` for vague article ideas.
 - Do not miss mandatory `grill-me` routing when the user asks to be challenged or pressure-tested.

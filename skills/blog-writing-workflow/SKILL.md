@@ -14,10 +14,13 @@ Run **every step by default.** The core evidence chain is mandatory and must NEV
 > **2 orchestrate/research → 3 validate → 5 outline → 7 draft → 8 fact-check**
 
 Rules:
+- **Execution contract**: this workflow is not a style reference. It is a production pipeline with evidence-gathering, validation, outline, drafting, and fact-check gates; treating it as style guidance skips those gates and produces unsupported output.
+- If invoked, produce or continue the concrete workflow artifacts (context_pack, validation report, outline, draft, fact-check report, etc.) for each required stage, or stop and explain which dependency/user waiver prevents completion.
 - **Do not jump straight to drafting (step 7 / `tech-blog-writer`).** A draft produced without an upstream validated context_pack and an outline is a failure, even if the user only said "write an article about X."
 - The user only naming a topic, audience, word count, or keyword density is **not** a request to skip steps. Run the whole pipeline.
 - Skip a step **only** on an explicit user request — "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft" / "no fact-check". When you skip on request, state which steps you skipped.
 - Conditional steps (1 audience research, 4 grill-me, 6 visualization) may be skipped when genuinely inapplicable, but **announce each skip and why** — never skip silently. `grill-me` is mandatory when the user asks to be grilled/pressure-tested.
+- A user disabling or declining CCG, project management, task archival, or any other process framework, whether by user instruction or configuration, is not a waiver of this workflow. Continue the Blog-Writing-Skill pipeline unless they explicitly waive Blog-Writing-Skill stages.
 
 ## When to Use This Skill
 
@@ -131,6 +134,7 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 - Stop on failed validation unless the user explicitly accepts the risk.
 - Skip visualization when data is insufficient; do not invent chart values.
 - Present validation and fact-check warnings clearly in the final report.
+- When the workflow is blocked before completion, produce a partial workflow receipt showing completed stages and the blocking stage.
 - Draft section by section through `tech-blog-writer`; for interactive work, pause after each major H2/H3 for user feedback.
 - Treat user edits as project-level guardrails for the current workspace or article. Do not claim the model has permanently learned; persist reusable feedback only when the user wants a local style guide or guardrails update.
 
@@ -144,6 +148,7 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 ## Success Criteria
 
 - Required steps complete or failures are explicitly reported.
+- Final response includes the workflow receipt format from `references/output-format.md`: completed stages, artifact paths/names, skipped stages with explicit user waiver or inapplicability, blockers, and fact-check status.
 - Context Pack validates or warnings are disclosed.
 - Article word count is within target tolerance when specified.
 - Quantitative claims are source-backed.

@@ -12,6 +12,10 @@ This is an entry skill that routes requests to the right blog-writing sub-skill 
 
 When the user asks to write, create, or draft a full article, blog post, or white paper from a topic — with or without files — the **default is the complete `blog-writing-workflow` pipeline**: research/orchestration → validation → (pressure test) → outline → draft → fact-check. Running the whole pipeline is the norm, not the exception.
 
+- **Execution contract**: When this skill routes to `blog-writing-workflow`, execute the workflow stages. This bundle describes a production pipeline with evidence-gathering, validation, outline, drafting, and fact-check gates; treating it as a style reference skips those gates and produces unsupported output.
+- Do not extract writing-style or voice guidance from any file in this skill bundle (including sub-skill `SKILL.md` files, references, assets, templates, or examples) and use it to draft directly.
+- Disabling or declining CCG, project management, task archival, or any other process framework, whether by user instruction or configuration, does **not** disable this skill's article workflow. Continue the Blog-Writing-Skill pipeline unless the user explicitly waives specific Blog-Writing-Skill stages.
+- If a required dependency blocks a stage (for example Tavily is unavailable for online research), stop and report that the complete workflow is blocked. Ask whether the user wants to install/authenticate the dependency, provide local sources, or explicitly accept a degraded non-workflow draft.
 - **Never** shortcut a topic-level article request straight to `tech-blog-writer`. That skill is the final drafting stage only; it requires an upstream validated context_pack and outline.
 - **Never** skip research, validation, outline, or fact-check on your own initiative to "save time." A request that merely names a topic, audience, word count, or keyword density is **not** permission to skip steps.
 - Skip a step **only** when the user explicitly asks for it — e.g. "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft it" / "no fact-check". When you do skip on explicit request, say which steps you skipped and why.
@@ -149,6 +153,7 @@ Action: Invoke `content-taste-advisor`.
 Acceptance: The output identifies weak angles, stronger positioning, and concrete editorial changes.
 
 ## Common Mistakes
+- **Treating this bundle as a writing-style reference instead of executing the routed sub-skill workflow. If the user asks for a full article, produce workflow artifacts or clearly say the full workflow was blocked/waived.**
 - **Jumping straight to `tech-blog-writer`, or skipping research / validation / outline / fact-check, for a topic-only article request. The full `blog-writing-workflow` pipeline is the default; only the user can waive a step (see Default Discipline).**
 - Invoking `blog-writing-skills` directly instead of the specific sub-skill.
 - Sending vague ideation or Trellis-like article workspace creation directly to `blog-writing-workflow` instead of `blog-brainstorm`.

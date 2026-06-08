@@ -30,6 +30,21 @@ Use this final report shape after workflow completion.
 
 Saved to: `<path>` or attached below.
 
+## Workflow Receipt
+
+Use execution statuses (`completed`, `skipped`, `blocked`) for work stages. Use validation statuses (`passed`, `warnings`, `failed`, `skipped`, `blocked`) for validation and fact-check stages. Choose exactly one status per row.
+
+| Stage | Status | Artifact / Evidence | Notes |
+|---|---|---|---|
+| Audience research | <completed | skipped | blocked> | `<path>` / source list / N/A | <reason if skipped or blocked> |
+| Research / orchestration | <completed | skipped | blocked> | `<context_pack path>` / research notes | <reason if skipped or blocked> |
+| Context validation | <passed | warnings | failed | skipped | blocked> | `<validation report path>` | <key issue or waiver> |
+| Strategy pressure test (`grill-me`) | <completed | skipped | blocked> | `<strategy notes>` / user answers | <explicit waiver or inapplicability> |
+| Outline | <completed | skipped | blocked> | `<outline path>` | <reason if skipped or blocked> |
+| Visualization | <completed | skipped | blocked> | `<charts manifest path>` / N/A | <data insufficiency or waiver> |
+| Draft | <completed | skipped | blocked> | `<draft path>` | <word count / target> |
+| Fact-check | <passed | warnings | failed | skipped | blocked> | `<fact_check path>` | <claim count / issue summary> |
+
 ## Issues Requiring Attention
 
 <warnings, failures, unsupported claims, source gaps>
