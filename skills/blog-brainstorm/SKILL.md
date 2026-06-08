@@ -52,6 +52,26 @@ content/articles/<slug>/
 
 If `content/articles/<slug>/` already exists, inspect it and continue from `article.json.currentPhase` instead of overwriting existing work.
 
+## Script-First Workspace Creation
+
+When local scripts are available, create the workspace with:
+
+```bash
+python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
+```
+
+Then validate it with:
+
+```bash
+python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-root>/content/articles/<slug>
+```
+
+Rules:
+- Prefer the script over manual file creation.
+- If the script is unavailable, create the same skeleton manually and then inspect every required artifact.
+- Never overwrite existing files; continue from the existing workspace state.
+- Treat validation failure as a blocker before continuing the brainstorm.
+
 ## article.json
 
 Create or update `article.json` as the state file:
@@ -143,10 +163,12 @@ Keep `brief.md` as the human-readable source of truth:
 
 ## Completion Gate
 
-When the brainstorm converges, present exactly two options:
+When the brainstorm converges, present exactly two button-style options and no extra choices:
 
-1. Continue to research / workflow
-2. Stop at confirmed brief
+```text
+[Continue to research / workflow]
+[Stop at confirmed brief]
+```
 
 If the user continues, update `article.json`:
 
@@ -165,6 +187,8 @@ If the user stops, update `article.json`:
   "nextAction": "await user approval to continue research"
 }
 ```
+
+After updating `article.json`, run workspace validation again when the validator script is available.
 
 ## Handoff
 

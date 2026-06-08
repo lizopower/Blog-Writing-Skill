@@ -31,14 +31,13 @@ Based on the user's topic, identify specific research questions:
 
 ### Step 2: Conduct Targeted Searches
 
-Use web search and web_fetch tools to gather information:
+Use Tavily-backed tools to gather information. Do not silently fall back to generic web search.
 
 **Search Strategy**:
-1. **Technical specifications**: "[product category] [extreme condition threshold] performance", "[product category] [extreme-condition] specifications"
-2. **Industry standards**: "[product category] [extreme-condition] standards", "[standards body] [product category] [condition] rating"
-3. **Use cases**: "[deployment scenario] power/system requirements", "[extreme-environment] [product category] solutions"
-4. **Competitive landscape**: "[product category] manufacturers", "[extreme-condition] [product category] comparison"
-5. **Academic research**: "[product category] [extreme condition] research paper"
+1. **Search** with `tavily-search`: "[product category] [extreme condition threshold] performance"
+2. **Extract** known authoritative URLs with `tavily-extract`
+3. **Research** broader multi-source questions with `tavily-research`
+4. **Map/crawl** known documentation sites with `tavily-map` or `tavily-crawl`
 
 **Prioritize Sources**:
 - Academic journals and papers (high credibility)
@@ -91,7 +90,12 @@ Format each claim with full traceability:
 ```json
 {
   "claim": "[Our solution category] can operate efficiently at [extreme condition threshold] without [auxiliary system]",
-  "source": "[Journal name], Vol. [N], [year], https://...",
+  "source": {
+    "type": "research",
+    "reference": "[Journal name], Vol. [N], [year]",
+    "url": "https://...",
+    "credibility": "high"
+  },
   "confidence": "high",
   "relevance": "Directly supports core product advantage",
   "context": "Conventional [product category] requires [auxiliary systems] that add weight and consume resources"
@@ -293,7 +297,7 @@ Map research findings to Context Pack fields:
 ## Tools and Techniques
 
 **Recommended Tools**:
-- `web_fetch`: For retrieving specific URLs and extracting content
+- `tavily-extract`: For retrieving specific URLs and extracting content
 - Web search: For broad information gathering
 - PDF reader: For accessing research papers and technical documents
 - Translation: For accessing Chinese-language technical resources

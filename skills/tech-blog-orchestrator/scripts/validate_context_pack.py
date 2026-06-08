@@ -1,222 +1,265 @@
 #!/usr/bin/env python3
-"""
-Context Pack Validator
+"""Validate a Blog-Writing-Skill Context Pack.
 
-Validates that a Context Pack JSON output meets the required schema and quality standards.
-
-Usage:
-    python validate_context_pack.py <context_pack.json>
-    
-Or use as a module:
-    from validate_context_pack import validate_context_pack
-    result = validate_context_pack(context_pack_data)
+This validator intentionally avoids third-party dependencies so it can run in
+agent environments before article drafting.
 """
+
+from __future__ import annotations
 
 import json
 import sys
 from datetime import datetime
-from typing import Dict, List, Any, Tuple
+from pathlib import Path
+from typing import Any
 
 
-def validate_context_pack(data: Dict[str, Any]) -> Tuple[bool, List[str]]:
-    """
-    Validate a Context Pack against the required schema.
-    
-    Args:
-        data: Dictionary containing the Context Pack data
-        
-    Returns:
-        Tuple of (is_valid, list_of_errors)
-    """
-    errors = []
-    
-    # Required top-level fields
-    required_fields = [
-        'topic',
-        'audience',
-        'industry_context',
-        'key_claims',
-        'extracted_tables',
-        'glossary',
-        'risk_notes',
-        'research_summary',
-        'file_summary'
-    ]
-    
-    for field in required_fields:
-        if field not in data:
-            errors.append(f"Missing required field: {field}")
-    
-    # Validate 'topic'
-    if 'topic' in data:
-        if not isinstance(data['topic'], str) or not data['topic'].strip():
-            errors.append("Field 'topic' must be a non-empty string")
-    
-    # Validate 'audience'
-    if 'audience' in data:
-        if not isinstance(data['audience'], list):
-            errors.append("Field 'audience' must be a list")
-        elif not data['audience']:
-            errors.append("Field 'audience' cannot be empty")
-    
-    # Validate 'industry_context'
-    if 'industry_context' in data:
-        ic = data['industry_context']
-        if not isinstance(ic, dict):
-            errors.append("Field 'industry_context' must be an object")
-        else:
-            required_ic_fields = ['industry', 'market_segment', 'core_advantage']
-            for field in required_ic_fields:
-                if field not in ic:
-                    errors.append(f"Missing field in industry_context: {field}")
-    
-    # Validate 'key_claims'
-    if 'key_claims' in data:
-        if not isinstance(data['key_claims'], list):
-            errors.append("Field 'key_claims' must be a list")
-        else:
-            for idx, claim in enumerate(data['key_claims']):
-                if not isinstance(claim, dict):
-                    errors.append(f"key_claims[{idx}] must be an object")
-                    continue
-                
-                # Check required fields in each claim
-                if 'claim' not in claim or not claim['claim']:
-                    errors.append(f"key_claims[{idx}] missing 'claim' field")
-                if 'source' not in claim or not claim['source']:
-                    errors.append(f"key_claims[{idx}] missing 'source' field")
-                if 'confidence' in claim:
-                    if claim['confidence'] not in ['high', 'medium', 'low']:
-                        errors.append(f"key_claims[{idx}] has invalid confidence level")
-    
-    # Validate 'extracted_tables'
-    if 'extracted_tables' in data:
-        if not isinstance(data['extracted_tables'], list):
-            errors.append("Field 'extracted_tables' must be a list")
-        else:
-            for idx, table in enumerate(data['extracted_tables']):
-                if not isinstance(table, dict):
-                    errors.append(f"extracted_tables[{idx}] must be an object")
-                    continue
-                
-                required_table_fields = ['table_name', 'source', 'data']
-                for field in required_table_fields:
-                    if field not in table:
-                        errors.append(f"extracted_tables[{idx}] missing '{field}'")
-    
-    # Validate 'glossary'
-    if 'glossary' in data:
-        if not isinstance(data['glossary'], list):
-            errors.append("Field 'glossary' must be a list")
-        else:
-            for idx, term in enumerate(data['glossary']):
-                if not isinstance(term, dict):
-                    errors.append(f"glossary[{idx}] must be an object")
-                    continue
-                
-                if 'term' not in term or not term['term']:
-                    errors.append(f"glossary[{idx}] missing 'term' field")
-                if 'definition' not in term or not term['definition']:
-                    errors.append(f"glossary[{idx}] missing 'definition' field")
-    
-    # Validate 'risk_notes'
-    if 'risk_notes' in data:
-        if not isinstance(data['risk_notes'], list):
-            errors.append("Field 'risk_notes' must be a list")
-        else:
-            for idx, risk in enumerate(data['risk_notes']):
-                if not isinstance(risk, dict):
-                    errors.append(f"risk_notes[{idx}] must be an object")
-                    continue
-                
-                required_risk_fields = ['issue', 'reason', 'recommendation']
-                for field in required_risk_fields:
-                    if field not in risk:
-                        errors.append(f"risk_notes[{idx}] missing '{field}'")
-    
-    # Validate 'research_summary'
-    if 'research_summary' in data:
-        rs = data['research_summary']
-        if not isinstance(rs, dict):
-            errors.append("Field 'research_summary' must be an object")
-        else:
-            if 'sources_count' in rs and not isinstance(rs['sources_count'], (int, float)):
-                errors.append("research_summary.sources_count must be a number")
-            if 'last_updated' in rs:
-                try:
-                    datetime.fromisoformat(rs['last_updated'].replace('Z', '+00:00'))
-                except (ValueError, AttributeError):
-                    errors.append("research_summary.last_updated must be valid ISO timestamp")
-            if 'key_findings' in rs and not isinstance(rs['key_findings'], list):
-                errors.append("research_summary.key_findings must be a list")
-    
-    # Validate 'file_summary'
-    if 'file_summary' in data:
-        fs = data['file_summary']
-        if not isinstance(fs, dict):
-            errors.append("Field 'file_summary' must be an object")
-        else:
-            if 'files_processed' in fs and not isinstance(fs['files_processed'], list):
-                errors.append("file_summary.files_processed must be a list")
-            if 'total_pages' in fs and not isinstance(fs['total_pages'], (int, float)):
-                errors.append("file_summary.total_pages must be a number")
-            if 'extraction_notes' in fs and not isinstance(fs['extraction_notes'], list):
-                errors.append("file_summary.extraction_notes must be a list")
-    
-    # Quality checks
-    if 'key_claims' in data and isinstance(data['key_claims'], list):
-        if len(data['key_claims']) == 0:
-            errors.append("QUALITY WARNING: No key_claims provided (expected at least 1)")
-    
-    if 'research_summary' in data and isinstance(data['research_summary'], dict):
-        if data['research_summary'].get('sources_count', 0) == 0:
-            if 'file_summary' not in data or len(data['file_summary'].get('files_processed', [])) == 0:
-                errors.append("QUALITY WARNING: No research sources and no files processed")
-    
-    is_valid = len(errors) == 0
-    return is_valid, errors
+REQUIRED_TOP_LEVEL = [
+    "version",
+    "generated_at",
+    "topic",
+    "audience",
+    "industry_context",
+    "key_claims",
+    "extracted_tables",
+    "glossary",
+    "risk_notes",
+    "research_summary",
+    "file_summary",
+]
+
+VALID_CONFIDENCE = {"high", "medium", "low"}
+VALID_SOURCE_TYPES = {"pdf", "excel", "word", "web", "research", "user_provided"}
+VALID_RISK_TYPES = {"data_gap", "uncertainty", "conflict", "limitation"}
+VALID_COLUMN_TYPES = {"string", "number", "date", "boolean"}
 
 
-def validate_from_file(file_path: str) -> Tuple[bool, List[str]]:
-    """
-    Validate a Context Pack from a JSON file.
-    
-    Args:
-        file_path: Path to JSON file containing Context Pack
-        
-    Returns:
-        Tuple of (is_valid, list_of_errors)
-    """
+def _is_iso_datetime(value: Any) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        return validate_context_pack(data)
-    except json.JSONDecodeError as e:
-        return False, [f"Invalid JSON: {str(e)}"]
+        datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return True
+    except ValueError:
+        return False
+
+
+def _add(errors: list[str], location: str, message: str) -> None:
+    errors.append(f"{location}: {message}")
+
+
+def validate_context_pack(data: dict[str, Any]) -> tuple[bool, list[str], list[str]]:
+    """Return (is_valid, errors, warnings)."""
+    errors: list[str] = []
+    warnings: list[str] = []
+
+    for field in REQUIRED_TOP_LEVEL:
+        if field not in data:
+            _add(errors, field, "missing required field")
+
+    version = data.get("version")
+    if not isinstance(version, str) or not version.count(".") == 2:
+        _add(errors, "version", "must be a semantic version string such as 2.1.0")
+
+    if not _is_iso_datetime(data.get("generated_at")):
+        _add(errors, "generated_at", "must be an ISO 8601 timestamp")
+
+    topic = data.get("topic")
+    if not isinstance(topic, str) or len(topic.strip()) < 5:
+        _add(errors, "topic", "must be a string with at least 5 characters")
+
+    audience = data.get("audience")
+    if not isinstance(audience, list) or not audience:
+        _add(errors, "audience", "must be a non-empty array")
+    elif not all(isinstance(item, str) and item.strip() for item in audience):
+        _add(errors, "audience", "all items must be non-empty strings")
+
+    industry_context = data.get("industry_context")
+    if not isinstance(industry_context, dict):
+        _add(errors, "industry_context", "must be an object")
+    else:
+        for field in ["industry", "market_segment", "core_advantage"]:
+            if not isinstance(industry_context.get(field), str) or not industry_context.get(field, "").strip():
+                _add(errors, f"industry_context.{field}", "must be a non-empty string")
+
+    key_claims = data.get("key_claims")
+    if not isinstance(key_claims, list) or not key_claims:
+        _add(errors, "key_claims", "must be a non-empty array")
+    else:
+        for idx, claim in enumerate(key_claims):
+            loc = f"key_claims[{idx}]"
+            if not isinstance(claim, dict):
+                _add(errors, loc, "must be an object")
+                continue
+            if not isinstance(claim.get("claim"), str) or len(claim.get("claim", "").strip()) < 10:
+                _add(errors, f"{loc}.claim", "must be a meaningful claim string")
+            if claim.get("confidence") not in VALID_CONFIDENCE:
+                _add(errors, f"{loc}.confidence", "must be high, medium, or low")
+
+            source = claim.get("source")
+            if not isinstance(source, dict):
+                _add(errors, f"{loc}.source", "must be an object with type and reference")
+            else:
+                if source.get("type") not in VALID_SOURCE_TYPES:
+                    _add(errors, f"{loc}.source.type", f"must be one of {sorted(VALID_SOURCE_TYPES)}")
+                if not isinstance(source.get("reference"), str) or len(source.get("reference", "").strip()) < 5:
+                    _add(errors, f"{loc}.source.reference", "must be a traceable reference string")
+                if source.get("credibility") and source.get("credibility") not in VALID_CONFIDENCE:
+                    _add(errors, f"{loc}.source.credibility", "must be high, medium, or low")
+                if source.get("verified_at") and not _is_iso_datetime(source.get("verified_at")):
+                    _add(errors, f"{loc}.source.verified_at", "must be an ISO 8601 timestamp")
+
+    extracted_tables = data.get("extracted_tables")
+    if not isinstance(extracted_tables, list):
+        _add(errors, "extracted_tables", "must be an array")
+    else:
+        for idx, table in enumerate(extracted_tables):
+            loc = f"extracted_tables[{idx}]"
+            if not isinstance(table, dict):
+                _add(errors, loc, "must be an object")
+                continue
+            for field in ["table_id", "source", "columns", "data"]:
+                if field not in table:
+                    _add(errors, f"{loc}.{field}", "missing required field")
+            if not isinstance(table.get("table_id"), str) or not table.get("table_id", "").startswith("table_"):
+                _add(errors, f"{loc}.table_id", "must start with table_")
+            if not isinstance(table.get("source"), str) or len(table.get("source", "").strip()) < 5:
+                _add(errors, f"{loc}.source", "must be a traceable source string")
+
+            columns = table.get("columns")
+            if not isinstance(columns, list) or not columns:
+                _add(errors, f"{loc}.columns", "must be a non-empty array")
+                column_names: list[str] = []
+            else:
+                column_names = []
+                for col_idx, column in enumerate(columns):
+                    col_loc = f"{loc}.columns[{col_idx}]"
+                    if not isinstance(column, dict):
+                        _add(errors, col_loc, "must be an object")
+                        continue
+                    name = column.get("name")
+                    if not isinstance(name, str) or not name.strip():
+                        _add(errors, f"{col_loc}.name", "must be a non-empty string")
+                    else:
+                        column_names.append(name)
+                    col_type = column.get("type", "string")
+                    if col_type not in VALID_COLUMN_TYPES:
+                        _add(errors, f"{col_loc}.type", f"must be one of {sorted(VALID_COLUMN_TYPES)}")
+                    if col_type == "number" and not column.get("unit"):
+                        _add(errors, f"{col_loc}.unit", "numeric columns must include a unit")
+
+            rows = table.get("data")
+            if not isinstance(rows, list):
+                _add(errors, f"{loc}.data", "must be an array")
+            else:
+                for row_idx, row in enumerate(rows):
+                    row_loc = f"{loc}.data[{row_idx}]"
+                    if not isinstance(row, dict):
+                        _add(errors, row_loc, "must be an object; use array_of_objects format")
+                        continue
+                    missing = [name for name in column_names if name not in row]
+                    if missing:
+                        _add(warnings, row_loc, f"missing values for columns: {', '.join(missing)}")
+
+    glossary = data.get("glossary")
+    if not isinstance(glossary, list):
+        _add(errors, "glossary", "must be an array")
+    else:
+        for idx, item in enumerate(glossary):
+            loc = f"glossary[{idx}]"
+            if not isinstance(item, dict):
+                _add(errors, loc, "must be an object")
+                continue
+            if not item.get("term"):
+                _add(errors, f"{loc}.term", "must be present")
+            if not item.get("definition"):
+                _add(errors, f"{loc}.definition", "must be present")
+
+    risk_notes = data.get("risk_notes")
+    if not isinstance(risk_notes, list):
+        _add(errors, "risk_notes", "must be an array")
+    else:
+        for idx, risk in enumerate(risk_notes):
+            loc = f"risk_notes[{idx}]"
+            if not isinstance(risk, dict):
+                _add(errors, loc, "must be an object")
+                continue
+            if risk.get("risk_type") not in VALID_RISK_TYPES:
+                _add(errors, f"{loc}.risk_type", f"must be one of {sorted(VALID_RISK_TYPES)}")
+            if not risk.get("description"):
+                _add(errors, f"{loc}.description", "must be present")
+
+    research_summary = data.get("research_summary")
+    if not isinstance(research_summary, dict):
+        _add(errors, "research_summary", "must be an object")
+    else:
+        if not isinstance(research_summary.get("sources_count"), int):
+            _add(errors, "research_summary.sources_count", "must be an integer")
+        if not _is_iso_datetime(research_summary.get("last_updated")):
+            _add(errors, "research_summary.last_updated", "must be an ISO 8601 timestamp")
+        if not isinstance(research_summary.get("key_findings"), list):
+            _add(errors, "research_summary.key_findings", "must be an array")
+
+    file_summary = data.get("file_summary")
+    if not isinstance(file_summary, dict):
+        _add(errors, "file_summary", "must be an object")
+    else:
+        if not isinstance(file_summary.get("files_processed"), list):
+            _add(errors, "file_summary.files_processed", "must be an array")
+        if not isinstance(file_summary.get("total_pages"), int):
+            _add(errors, "file_summary.total_pages", "must be an integer")
+        if not isinstance(file_summary.get("extraction_notes"), list):
+            _add(errors, "file_summary.extraction_notes", "must be an array")
+
+    if isinstance(research_summary, dict) and isinstance(file_summary, dict):
+        source_count = research_summary.get("sources_count", 0)
+        files_processed = file_summary.get("files_processed", [])
+        if source_count == 0 and not files_processed:
+            _add(warnings, "source_coverage", "no research sources and no files processed")
+
+    return not errors, errors, warnings
+
+
+def validate_from_file(file_path: str | Path) -> tuple[bool, list[str], list[str]]:
+    try:
+        with open(file_path, "r", encoding="utf-8") as handle:
+            data = json.load(handle)
+    except json.JSONDecodeError as exc:
+        return False, [f"invalid JSON: {exc}"], []
     except FileNotFoundError:
-        return False, [f"File not found: {file_path}"]
-    except Exception as e:
-        return False, [f"Error reading file: {str(e)}"]
+        return False, [f"file not found: {file_path}"], []
+
+    if not isinstance(data, dict):
+        return False, ["root: must be a JSON object"], []
+
+    return validate_context_pack(data)
 
 
-def main():
+def main() -> int:
     if len(sys.argv) != 2:
         print("Usage: python validate_context_pack.py <context_pack.json>")
-        sys.exit(1)
-    
-    file_path = sys.argv[1]
-    is_valid, errors = validate_from_file(file_path)
-    
+        return 2
+
+    is_valid, errors, warnings = validate_from_file(sys.argv[1])
+
     if is_valid:
-        print("✅ Context Pack is VALID")
-        sys.exit(0)
-    else:
-        print("❌ Context Pack is INVALID")
-        print(f"\nFound {len(errors)} error(s):")
-        for idx, error in enumerate(errors, 1):
-            print(f"  {idx}. {error}")
-        sys.exit(1)
+        print("Context Pack is VALID")
+        if warnings:
+            print(f"\nWarnings ({len(warnings)}):")
+            for idx, warning in enumerate(warnings, 1):
+                print(f"  {idx}. {warning}")
+        return 0
+
+    print("Context Pack is INVALID")
+    print(f"\nErrors ({len(errors)}):")
+    for idx, error in enumerate(errors, 1):
+        print(f"  {idx}. {error}")
+    if warnings:
+        print(f"\nWarnings ({len(warnings)}):")
+        for idx, warning in enumerate(warnings, 1):
+            print(f"  {idx}. {warning}")
+    return 1
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

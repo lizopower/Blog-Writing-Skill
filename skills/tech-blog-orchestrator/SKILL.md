@@ -70,10 +70,18 @@ Aggregate results from all triggered tasks into a unified JSON structure called 
 
 ## Context Pack Output Format
 
+Use Context Pack v2.1.0. Keep this shape aligned with:
+- `../../schemas/context_pack_schema.json`
+- `assets/context_pack_template.json`
+- `scripts/validate_context_pack.py`
+
 Output the following JSON structure:
 
 ```json
 {
+  "version": "2.1.0",
+  "generated_at": "ISO-8601 timestamp",
+  "workflow_id": "wf_YYYYMMDD_HHMMSS",
   "topic": "string - The main topic/theme of the blog article",
   "audience": ["Engineers", "Procurement Managers", "Project Managers"],
   "industry_context": {
@@ -84,16 +92,38 @@ Output the following JSON structure:
   "key_claims": [
     {
       "claim": "string - Key technical or business claim",
-      "source": "string - URL, file name + page number, or 'Research: [date]'",
-      "confidence": "high | medium | low"
+      "source": {
+        "type": "pdf | excel | word | web | research | user_provided",
+        "reference": "string - URL, file name + page number, or research note reference",
+        "url": "optional URL",
+        "credibility": "high | medium | low",
+        "verified_by": "skill or reviewer name",
+        "verified_at": "ISO-8601 timestamp"
+      },
+      "confidence": "high | medium | low",
+      "data": "optional structured numeric data"
     }
   ],
   "extracted_tables": [
     {
-      "table_name": "string - Descriptive name for the table",
+      "table_id": "table_1",
       "source": "string - Filename + sheet/page (e.g., 'data.xlsx:Sheet1' or 'report.pdf:p5')",
-      "data": "array or structured representation of table data",
-      "description": "string - What this table represents"
+      "title": "string - Descriptive name for the table",
+      "description": "string - What this table represents",
+      "columns": [
+        {
+          "name": "Column name",
+          "type": "string | number | date | boolean",
+          "unit": "required for numeric columns"
+        }
+      ],
+      "data": [
+        {
+          "Column name": "value"
+        }
+      ],
+      "data_format": "array_of_objects",
+      "extracted_at": "ISO-8601 timestamp"
     }
   ],
   "glossary": [
@@ -105,9 +135,10 @@ Output the following JSON structure:
   ],
   "risk_notes": [
     {
-      "issue": "string - What is uncertain or needs verification",
-      "reason": "string - Why this is flagged",
-      "recommendation": "string - Suggested action for human review"
+      "risk_type": "data_gap | uncertainty | conflict | limitation",
+      "description": "string - What is uncertain or needs verification",
+      "severity": "high | medium | low",
+      "mitigation": "string - Suggested action for human review"
     }
   ],
   "research_summary": {
@@ -119,6 +150,12 @@ Output the following JSON structure:
     "files_processed": ["array of strings - Filenames processed"],
     "total_pages": "number - Total pages across all files",
     "extraction_notes": ["array of strings - Any issues or special notes during extraction"]
+  },
+  "metadata": {
+    "files_processed": "number",
+    "research_sources": "number",
+    "total_data_points": "number",
+    "processing_time_seconds": "number"
   }
 }
 ```
@@ -157,6 +194,7 @@ Output the following JSON structure:
 ### Step 4: Output Context Pack
 - Format all aggregated data into the JSON Context Pack structure
 - Validate JSON syntax
+- Run `python scripts/validate_context_pack.py <context_pack.json>` when a local file is available
 - Present to user with brief summary of what was processed
 
 ### Step 5: Validate Context Pack (NEW - v2.0)
@@ -224,11 +262,14 @@ Warnings:
 
 ## Resources
 
-This skill does not include bundled scripts, references, or assets as it focuses purely on workflow orchestration. All actual research and parsing work should be delegated to appropriate downstream tools or skills.
+- `assets/context_pack_template.json`: Context Pack v2.1.0 example.
+- `scripts/validate_context_pack.py`: dependency-free Context Pack validator.
+- `references/research_strategy.md`: research planning guide.
+- `references/file_parsing_guide.md`: file parsing guide.
 
 ## Important Notes
 
 - **Role Clarity**: This skill is an orchestrator/router ONLY. It coordinates work but does not perform content generation.
 - **Human Review**: The Context Pack output is designed for human review before article writing begins.
-- **Extensibility**: If Research or Parse skills are not available, fallback to manual tool usage (web_fetch, read_file, etc.) to accomplish the same goals.
+- **Extensibility**: If a Parse skill is not available, use local file-reading/parsing tools where possible. Online research still requires Tavily and must not fall back to generic web search.
 - **Quality Control**: Prioritize source attribution and risk flagging to ensure downstream content is trustworthy.

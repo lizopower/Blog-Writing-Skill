@@ -1,5 +1,8 @@
 {
-  "topic": "Example: [Product/Technology] applications in [extreme-condition deployment scenario]",
+  "version": "2.1.0",
+  "generated_at": "2026-06-08T00:00:00Z",
+  "workflow_id": "wf_20260608_000000",
+  "topic": "Example: [Product/Technology] applications in [deployment scenario]",
   "audience": [
     "Engineers",
     "Procurement Managers",
@@ -7,99 +10,151 @@
   ],
   "industry_context": {
     "industry": "[Your Industry]",
-    "market_segment": "B2B [Your Product Category] Customization",
-    "core_advantage": "[Core capability] under [extreme condition] without [auxiliary system]"
+    "market_segment": "B2B [Your Product Category] for [Customer Segment]",
+    "core_advantage": "[Core capability] under [important operating condition]"
   },
   "key_claims": [
     {
-      "claim": "[Our solution category] can operate efficiently at [extreme threshold] without [auxiliary system]",
-      "source": "Research: [Journal Name], Vol. 456, 2024-01-15",
-      "confidence": "high"
+      "claim": "[Solution category] can operate under [condition] without [auxiliary workaround].",
+      "source": {
+        "type": "research",
+        "reference": "Research notes: [Journal/Report Name], 2026-06-08",
+        "url": "https://example.com/source",
+        "credibility": "high",
+        "verified_by": "tech-research",
+        "verified_at": "2026-06-08T00:00:00Z"
+      },
+      "confidence": "high",
+      "data": {
+        "metric": "[performance metric]",
+        "value": 92,
+        "unit": "%",
+        "conditions": "[test conditions]"
+      }
     },
     {
-      "claim": "Eliminating [auxiliary systems] reduces total system weight by approximately 30%",
-      "source": "technical_whitepaper.pdf:p12",
-      "confidence": "high"
-    },
-    {
-      "claim": "Market for [extreme-condition-resilient product category] is growing at 18% CAGR through 2028",
-      "source": "Research: Market Research Report, 2024-03-10, https://example.com/report",
+      "claim": "Eliminating [auxiliary workaround] may reduce total system weight by approximately 30% under [stated assumptions].",
+      "source": {
+        "type": "pdf",
+        "reference": "technical_whitepaper.pdf:Page 12",
+        "credibility": "medium",
+        "verified_by": "tech-file-parser",
+        "verified_at": "2026-06-08T00:00:00Z"
+      },
       "confidence": "medium"
     }
   ],
   "extracted_tables": [
     {
-      "table_name": "Performance Comparison at Different [Condition Values]",
-      "source": "performance_test_results.xlsx:Sheet1",
-      "data": [
-        ["[Condition Variable] ([unit])", "[Performance Metric] Retention (%)", "[Secondary Capability] Rate"],
-        ["[extreme threshold]", "92", "0.5"],
-        ["[moderate threshold]", "95", "1.0"],
-        ["[mild threshold]", "98", "2.0"],
-        ["[baseline]", "100", "3.0"]
+      "table_id": "table_1",
+      "source": "performance_test_results.xlsx:Sheet1!A1:C5",
+      "title": "Performance Comparison Under [Condition]",
+      "description": "[Performance metric] and [secondary metric] across operating conditions.",
+      "columns": [
+        {
+          "name": "Condition",
+          "type": "string"
+        },
+        {
+          "name": "Performance Retention",
+          "type": "number",
+          "unit": "%"
+        },
+        {
+          "name": "Secondary Rate",
+          "type": "number",
+          "unit": "x"
+        }
       ],
-      "description": "[Performance metric] retention and [secondary capability] rates across [condition variable] range from [extreme threshold] to [baseline]"
+      "data": [
+        {
+          "Condition": "[extreme threshold]",
+          "Performance Retention": 92,
+          "Secondary Rate": 0.5
+        },
+        {
+          "Condition": "[moderate threshold]",
+          "Performance Retention": 95,
+          "Secondary Rate": 1.0
+        },
+        {
+          "Condition": "[baseline]",
+          "Performance Retention": 100,
+          "Secondary Rate": 3.0
+        }
+      ],
+      "data_format": "array_of_objects",
+      "extracted_at": "2026-06-08T00:00:00Z",
+      "notes": "Values are examples; replace with source-backed data only."
     },
     {
-      "table_name": "Certification Summary",
-      "source": "certification_report.pdf:p5",
-      "data": [
-        ["Standard", "Status", "Date"],
-        ["[Standard 1]", "Passed", "2023-11-20"],
-        ["[Standard 2]", "Passed", "2023-12-05"],
-        ["[Standard 3]", "Passed", "2024-01-10"]
+      "table_id": "table_2",
+      "source": "certification_report.pdf:Page 5",
+      "title": "Certification Summary",
+      "description": "Safety and compliance certification status.",
+      "columns": [
+        {
+          "name": "Standard",
+          "type": "string"
+        },
+        {
+          "name": "Status",
+          "type": "string"
+        },
+        {
+          "name": "Date",
+          "type": "date"
+        }
       ],
-      "description": "Safety and compliance certifications"
+      "data": [
+        {
+          "Standard": "[Standard 1]",
+          "Status": "Passed",
+          "Date": "2026-01-20"
+        },
+        {
+          "Standard": "[Standard 2]",
+          "Status": "Passed",
+          "Date": "2026-02-05"
+        }
+      ],
+      "data_format": "array_of_objects",
+      "extracted_at": "2026-06-08T00:00:00Z"
     }
   ],
   "glossary": [
     {
-      "term": "[Core Capability Term, e.g. Direct Operation]",
-      "definition": "Ability to operate [product unit] without [pre-conditioning step], even under [extreme condition]",
-      "context": "Critical advantage for [target deployment scenario] where [auxiliary systems] add complexity, weight, and resource consumption"
+      "term": "[Core Capability Term]",
+      "definition": "Ability to perform [operation] under [condition] without [workaround].",
+      "context": "Critical advantage for [target deployment scenario]."
     },
     {
       "term": "[Performance Metric] Retention",
-      "definition": "The percentage of rated [performance metric] available at a given [condition value] compared to baseline conditions",
-      "context": "Key performance metric for evaluating [product category] performance under [extreme condition]"
-    },
-    {
-      "term": "[Rate Term, e.g. C-Rate]",
-      "definition": "[Operation] rate expressed as a multiple of rated [capacity metric] (e.g. 1x = full cycle in 1 hour)",
-      "context": "Higher rates under [extreme condition] indicate better [secondary capability]"
-    },
-    {
-      "term": "[Control System, e.g. monitoring/management unit]",
-      "definition": "Electronic system that manages [core operation] and monitoring to ensure safe [product unit] operation",
-      "context": "Specialized [control system] required for [our-solution-category] to handle unique [extreme-condition] characteristics"
+      "definition": "Percentage of rated [performance metric] available under a stated condition compared with baseline conditions.",
+      "context": "Key metric for evaluating performance under [condition]."
     }
   ],
   "risk_notes": [
     {
-      "issue": "Conflicting [secondary capability] rate specifications across sources",
-      "reason": "Research paper claims [rate A] at [extreme threshold], but test data shows [rate B] maximum",
-      "recommendation": "Verify with engineering team which specification is current and accurate"
+      "risk_type": "conflict",
+      "description": "Two sources report different [secondary metric] values under [condition].",
+      "severity": "high",
+      "mitigation": "Verify which source is current before drafting the claim."
     },
     {
-      "issue": "Market growth projection is from a [year] report",
-      "reason": "Data may be outdated; more recent projections may be available",
-      "recommendation": "Search for newer market reports to validate growth figures"
-    },
-    {
-      "issue": "No information found about long-term [longevity metric] under [extreme condition]",
-      "reason": "Most research focuses on immediate performance, not [lifecycle metric] over years",
-      "recommendation": "Consider including disclaimer about long-term performance data availability"
+      "risk_type": "data_gap",
+      "description": "No long-term field data found for [lifecycle metric].",
+      "severity": "medium",
+      "mitigation": "Flag the gap in the article or collect additional field evidence."
     }
   ],
   "research_summary": {
     "sources_count": 12,
-    "last_updated": "2024-12-26T10:30:00Z",
+    "last_updated": "2026-06-08T00:00:00Z",
     "key_findings": [
-      "[Target deployment scenario] requires [resource range] continuous [output] with [duration range] backup capability",
-      "Conventional [product category] loses 60-70% [performance metric] below [moderate threshold] without [auxiliary system]",
-      "[Auxiliary systems] consume 15-30% of total [deployment unit] [resource] in [extreme condition]",
-      "[Our solution category] reduces total cost of ownership (TCO) by 20-35% over [N]-year lifecycle",
-      "Key certifications for [target deployment scenario]: [Standard 1], [Standard 2], [Standard 3]"
+      "[Target scenario] requires [resource range] continuous [output].",
+      "Conventional alternatives require [workaround] below [threshold].",
+      "[Solution category] may reduce total cost of ownership under [assumptions]."
     ]
   },
   "file_summary": {
@@ -110,9 +165,14 @@
     ],
     "total_pages": 47,
     "extraction_notes": [
-      "Excel file contained 3 sheets; processed all successfully",
-      "PDF certification report had some text quality issues on pages 8-9 but critical data extracted",
-      "Technical whitepaper included several charts that could not be extracted as text; noted in figures list"
+      "Excel file contained 3 sheets; processed all successfully.",
+      "Certification report had text quality issues on pages 8-9; critical data was extracted."
     ]
+  },
+  "metadata": {
+    "files_processed": 3,
+    "research_sources": 12,
+    "total_data_points": 12,
+    "processing_time_seconds": 90
   }
 }

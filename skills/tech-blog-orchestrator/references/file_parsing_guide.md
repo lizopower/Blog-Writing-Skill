@@ -32,8 +32,9 @@ This reference provides detailed instructions for parsing different file types w
   },
   "tables": [
     {
+      "table_id": "table_1",
       "page": 5,
-      "table_name": "Performance Comparison",
+      "title": "Performance Comparison",
       "data": [[row1], [row2]],
       "headers": ["Column1", "Column2"]
     }

@@ -10,7 +10,7 @@ This repository is a skill bundle, not an application server.
 
 - `SKILL.md`: the entry router that selects the right sub-skill.
 - `skills/blog-brainstorm/`: early ideation and article workspace creation.
-- `skills/blog-writing-workflow/`: full 8-step writing workflow.
+- `skills/blog-writing-workflow/`: full 8-step writing workflow with long-form details in `references/`.
 - `skills/grill-me/`: one-question-at-a-time strategy pressure test.
 - `skills/tech-research/`: Tavily-backed technical/B2B research.
 - `skills/tech-blog-orchestrator/`: context pack preparation from a topic and/or files.
@@ -180,6 +180,13 @@ content/articles/<slug>/
 
 The slug should be lowercase kebab-case, derived from the topic or working title.
 
+When scripts are available, create and validate the workspace with:
+
+```bash
+python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-root>/content/articles/<slug>
+```
+
 `article.json` is the workflow state file. It tracks the article id, title, status, current phase, next action, article type, business goal, audience, keyword, angle, and timestamps. Update it after each meaningful phase.
 
 The normal lifecycle is:
@@ -298,7 +305,7 @@ Every key claim should carry:
 
 ## Context Pack Expectations
 
-`context_pack.json` is the evidence object passed downstream to the architect, writer, chart planner, and fact checker.
+`context_pack.json` is the evidence object passed downstream to the architect, writer, chart planner, and fact checker. The current contract is Context Pack v2.1.0.
 
 At minimum, it should include:
 
@@ -313,6 +320,12 @@ At minimum, it should include:
 - metadata about files and research sources when available
 
 Validate against `schemas/context_pack_schema.json` and run `data-validator` before drafting.
+
+If using the bundled validator directly:
+
+```bash
+python skills/tech-blog-orchestrator/scripts/validate_context_pack.py <context_pack.json>
+```
 
 ## Example Prompts
 

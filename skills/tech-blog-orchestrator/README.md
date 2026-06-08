@@ -48,10 +48,12 @@ Skill 会：
 
 ## Context Pack 输出格式
 
-Skill 输出的 JSON 结构包含以下字段：
+Skill 输出 Context Pack v2.1.0。结构必须与 `../../schemas/context_pack_schema.json`、`assets/context_pack_template.json` 和 `scripts/validate_context_pack.py` 保持一致。
 
 ```json
 {
+  "version": "2.1.0",
+  "generated_at": "2026-06-08T00:00:00Z",
   "topic": "博客主题",
   "audience": ["工程师", "采购经理", "项目经理"],
   "industry_context": {
@@ -62,15 +64,21 @@ Skill 输出的 JSON 结构包含以下字段：
   "key_claims": [
     {
       "claim": "关键技术或商业声明",
-      "source": "来源（URL、文件名+页码）",
+      "source": {
+        "type": "pdf | excel | word | web | research | user_provided",
+        "reference": "来源（URL、文件名+页码、研究笔记引用）",
+        "credibility": "high | medium | low"
+      },
       "confidence": "high | medium | low"
     }
   ],
   "extracted_tables": [
     {
-      "table_name": "表格名称",
+      "table_id": "table_1",
       "source": "来源文件+Sheet/页码",
-      "data": "表格数据",
+      "title": "表格名称",
+      "columns": [{"name": "列名", "type": "number", "unit": "%"}],
+      "data": [{"列名": 92}],
       "description": "表格说明"
     }
   ],
@@ -83,9 +91,10 @@ Skill 输出的 JSON 结构包含以下字段：
   ],
   "risk_notes": [
     {
-      "issue": "不确定的内容",
-      "reason": "为什么标记",
-      "recommendation": "建议的人工审核操作"
+      "risk_type": "data_gap | uncertainty | conflict | limitation",
+      "description": "不确定的内容",
+      "severity": "high | medium | low",
+      "mitigation": "建议的人工审核操作"
     }
   ],
   "research_summary": {
@@ -148,7 +157,7 @@ python scripts/validate_context_pack.py <context_pack.json>
 
 ## 扩展性
 
-如果系统中没有专门的 Research 或 Parse Skills，Skill 会降级使用基础工具（如 web_fetch、read_file 等）来完成相同的目标。
+如果系统中没有专门的 Parse Skill，可以使用可用的本地文件解析工具完成文件提取。在线研究必须通过 Tavily，不允许静默降级到 generic web search。
 
 ## 示例工作流
 
@@ -177,36 +186,56 @@ python scripts/validate_context_pack.py <context_pack.json>
 **输出示例** (简化版):
 ```json
 {
+  "version": "2.1.0",
+  "generated_at": "2026-06-08T10:30:00Z",
   "topic": "[目标场景][极限条件]下的[产品类别]解决方案",
+  "audience": ["Engineers", "Procurement Managers"],
+  "industry_context": {
+    "industry": "[你的行业]",
+    "market_segment": "B2B [产品类别] for [客户群体]",
+    "core_advantage": "[核心差异化优势]"
+  },
   "key_claims": [
     {
-      "claim": "[部署场景]需要[资源规格]，[N]小时续航",
-      "source": "Research: [Standards body] [standard number], 2024-01-15",
-      "confidence": "high"
-    },
-    {
-      "claim": "现场测试显示[极限条件]下[性能指标]保持率92%",
-      "source": "field_test_results.pdf:p15",
+      "claim": "[部署场景]需要[资源规格]，[N]小时续航。",
+      "source": {
+        "type": "research",
+        "reference": "Research notes: [Standards body] [standard number], 2026-06-08",
+        "credibility": "high"
+      },
       "confidence": "high"
     }
   ],
   "extracted_tables": [
     {
-      "table_name": "不同[条件变量]下的[资源]需求",
-      "source": "requirements.xlsx:Sheet1",
-      "data": [["[条件变量]", "[资源]", "续航"], ["[极限条件]", "3.2kW", "6h"]]
+      "table_id": "table_1",
+      "source": "requirements.xlsx:Sheet1!A1:C2",
+      "title": "不同[条件变量]下的[资源]需求",
+      "columns": [
+        {"name": "条件变量", "type": "string"},
+        {"name": "资源", "type": "number", "unit": "kW"},
+        {"name": "续航", "type": "number", "unit": "h"}
+      ],
+      "data": [
+        {"条件变量": "[极限条件]", "资源": 3.2, "续航": 6}
+      ],
+      "data_format": "array_of_objects"
     }
   ],
-  "glossary": [
-    {
-      "term": "OPEX",
-      "definition": "运营支出 - 设备运行和维护的持续成本",
-      "context": "[我方方案]通过消除[辅助系统]降低OPEX"
-    }
-  ]
+  "glossary": [],
+  "risk_notes": [],
+  "research_summary": {
+    "sources_count": 6,
+    "last_updated": "2026-06-08T10:30:00Z",
+    "key_findings": ["[关键发现]"]
+  },
+  "file_summary": {
+    "files_processed": ["requirements.xlsx"],
+    "total_pages": 0,
+    "extraction_notes": []
+  }
 }
 ```
-
 ## 后续步骤
 
 获得 Context Pack 后，你可以：
@@ -226,7 +255,7 @@ python scripts/validate_context_pack.py <context_pack.json>
 
 ## 版本信息
 
-- **版本**: 1.0.0
-- **创建日期**: 2024-12-26
+- **版本**: 1.1.0
+- **更新日期**: 2026-06-08
 - **适用行业**: 通用 - 适用于任何技术/B2B领域（替换"行业背景"部分即可）
 - **AI 模型要求**: 支持工具调用和并发执行的大语言模型

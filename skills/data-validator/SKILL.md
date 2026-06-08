@@ -19,7 +19,7 @@ description: Use when validating a context_pack for schema compliance, completen
 
 2. **数据质量检查**
    - 所有数值必须有单位
-   - 所有表格必须有 source_ref
+   - 所有表格必须有 source
    - key_claims 必须有 confidence 字段
    - extracted_tables 的 data 格式必须一致
 
@@ -50,11 +50,10 @@ description: Use when validating a context_pack for schema compliance, completen
 ### Required
 - `context_pack`: 待验证的 Context Pack (JSON)
 
-### Optional
 - `strict_mode`: 严格模式 (default: false)
   - true: 任何错误都返回 failed
   - false: 只有严重错误才返回 failed
-- `schema_version`: Schema 版本 (default: "2.0.0")
+- `schema_version`: Schema 版本 (default: "2.1.0")
 
 ## Validation Rules
 
@@ -65,13 +64,20 @@ description: Use when validating a context_pack for schema compliance, completen
 - version ✓
 - generated_at ✓
 - topic ✓
+- audience ✓
+- industry_context ✓
 - key_claims ✓
 - extracted_tables ✓
+- glossary ✓
+- risk_notes ✓
+- research_summary ✓
+- file_summary ✓
 
 数据类型检查:
 - version: string (格式: x.y.z)
 - generated_at: ISO 8601 datetime
 - topic: string (5-200 字符)
+- audience: array (至少 1 个)
 - key_claims: array (至少 1 个)
 - extracted_tables: array
 ```
@@ -94,27 +100,32 @@ description: Use when validating a context_pack for schema compliance, completen
 条件: 必须是 "high" | "medium" | "low"
 严重性: medium
 
-规则 4: 数据格式一致
+规则 4: 声明来源必须可追溯
+检查: key_claims[*].source
+条件: 必须是对象，且包含 source.type 和 source.reference
+严重性: high
+
+规则 5: 数据格式一致
 检查: extracted_tables[*].data
-条件: 同一表格内所有行的字段必须一致
+条件: 使用 array_of_objects，同一表格内所有行应匹配 columns[*].name
 严重性: high
 ```
 
 ### 3. 一致性规则
 
 ```markdown
-规则 5: 数值一致性
+规则 6: 数值一致性
 检查: 同一指标在不同位置的数值
 示例: "87% capacity" 在 key_claims 和 extracted_tables 中必须一致
 严重性: high
 
-规则 6: 单位统一
+规则 7: 单位统一
 检查: 同一指标的单位
 示例: 温度统一用 °C 或 °F，不能混用
 严重性: medium
 
-规则 7: 来源格式统一
-检查: source_ref 格式
+规则 8: 来源格式统一
+检查: key_claims[*].source.reference 和 extracted_tables[*].source
 标准格式:
 - PDF: "filename.pdf:Page xx, Table x"
 - Excel: "filename.xlsx:Sheetxx!A1:D20"
@@ -131,8 +142,8 @@ description: Use when validating a context_pack for schema compliance, completen
   "validation_result": {
     "status": "passed" | "passed_with_warnings" | "failed",
     "quality_score": 85,
-    "validated_at": "2024-12-26T10:30:00Z",
-    "schema_version": "2.0.0",
+    "validated_at": "2026-06-08T10:30:00Z",
+    "schema_version": "2.1.0",
 
     "summary": {
       "total_checks": 25,
@@ -261,8 +272,8 @@ quality_score = (
 ```json
 {
   "context_pack": {
-    "version": "2.0.0",
-    "generated_at": "2024-12-26T10:30:00Z",
+    "version": "2.1.0",
+    "generated_at": "2026-06-08T10:30:00Z",
     "topic": "[产品/技术]在[应用场景]中的应用",
     "key_claims": [...],
     "extracted_tables": [...]
@@ -292,19 +303,27 @@ quality_score = (
 ```json
 {
   "context_pack": {
-    "version": "2.0.0",
+    "version": "2.1.0",
     "topic": "[产品/技术主题]",
     "key_claims": [
       {
         "claim": "87% performance retention under [stated test condition]",
-        "source": "test_report.pdf",
+        "source": {
+          "type": "pdf",
+          "reference": "test_report.pdf:Page 12",
+          "credibility": "high"
+        },
         "confidence": "high"
       }
     ],
     "extracted_tables": [
       {
         "table_id": "table_1",
-        "source": "test_report.pdf:Page 12",
+        "source": {
+          "type": "pdf",
+          "reference": "test_report.pdf:Page 12",
+          "credibility": "high"
+        },
         "columns": [
           {"name": "Test Condition", "type": "number"},
           {"name": "Result"}
@@ -372,6 +391,6 @@ quality_score = (
 
 ---
 
-*Version: 1.0.0*
+*Version: 1.1.0*
 *Role: Data Quality Validator*
 *Output: Validation Report (不修改输入数据)*

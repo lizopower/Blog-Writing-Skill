@@ -33,6 +33,17 @@ content/articles/<slug>/
 
 Do not overwrite existing files. If a workspace already exists, inspect `article.json` and continue from its current phase.
 
+## Scaffold and Validation Scripts
+
+When using this bundle from a checked-out repository, prefer the scripts provided by `blog-brainstorm`:
+
+```bash
+python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-root>/content/articles/<slug>
+```
+
+The scaffold script creates the full skeleton and does not overwrite existing files. The validator checks required artifacts, `article.json`, `context_pack.json`, and lifecycle phase validity.
+
 ## State File
 
 `article.json` is the machine-readable state file:
