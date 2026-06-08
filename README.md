@@ -1,624 +1,319 @@
 # Blog Writing Skill
 
-`Blog-Writing-Skill` is a Claude Skills bundle for technical and B2B article production. It is designed for source-backed writing workflows: brainstorm an article, create an article workspace, research with Tavily, pressure-test the strategy, build a context pack, outline, draft, fact-check, and review the final article.
+> A source-backed **Agent Skills** bundle for technical and B2B article production — brainstorm, research, pressure-test, draft, fact-check, and review, all grounded in real evidence.
 
-The bundle is domain-agnostic. It can be used for industrial equipment, software, manufacturing, materials science, logistics, finance, energy, and other technical or B2B topics. The user must provide or confirm the real industry context, audience, business goal, and source material.
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-ready-8A2BE2.svg)](#install)
+[![Codex](https://img.shields.io/badge/Codex-ready-10A37F.svg)](#install)
+[![Research: Tavily](https://img.shields.io/badge/Research-Tavily%20required-FF6F00.svg)](#requirement-tavily)
 
-## What This Repository Contains
+Works for any technical or B2B domain — industrial equipment, software, manufacturing, materials science, logistics, finance, energy — as long as **you** supply the real industry context, audience, business goal, and source material. The skills never invent statistics, quotes, or citations.
 
-This repository is a skill bundle, not an application server.
+---
 
-- `SKILL.md`: the entry router that selects the right sub-skill.
-- `skills/blog-brainstorm/`: early ideation and article workspace creation.
-- `skills/blog-writing-workflow/`: full 8-step writing workflow with long-form details in `references/`.
-- `skills/grill-me/`: one-question-at-a-time strategy pressure test.
-- `skills/tech-research/`: Tavily-backed technical/B2B research.
-- `skills/tech-blog-orchestrator/`: context pack preparation from a topic and/or files.
-- `skills/tech-file-parser/`: extraction from PDF, Word, Excel, and structured files.
-- `skills/data-validator/`: context pack schema and quality validation.
-- `skills/tech-article-architect/`: outline and section planning.
-- `skills/tech-visualization-generator/`: chart and visualization manifest planning.
-- `skills/tech-blog-writer/`: final article drafting from an outline and context pack.
-- `skills/fact-checker/`: claim, number, unit, and source verification.
-- `skills/content-taste-advisor/`: editorial taste, differentiation, and publishability review.
-- `standards/`: shared contracts for workspaces, source attribution, Tavily usage, progress, errors, and caching.
-- `schemas/context_pack_schema.json`: JSON schema for structured article evidence.
-- `templates/article_templates.md`: reusable article templates.
-- `commands/`: command-style wrappers for common workflow steps.
+## Table of Contents
 
-## Required Dependency: Tavily
+- [Why this bundle](#why-this-bundle)
+- [The pipeline](#the-pipeline)
+- [Requirement: Tavily](#requirement-tavily)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Skill routing](#skill-routing)
+- [The article workspace](#the-article-workspace)
+- [Evidence model](#evidence-model)
+- [Troubleshooting](#troubleshooting)
+- [Maintaining this repo](#maintaining-this-repo)
+- [License](#license)
 
-Online research in this bundle requires Tavily. Tavily is a hard prerequisite for research-dependent workflows, not an optional enhancement.
+---
 
-Install Tavily skills first:
+## Why this bundle
+
+Most "write me a blog" prompts hallucinate numbers and produce generic copy. This bundle is built around three hard rules:
+
+- **Evidence first.** Every quantitative claim traces back to a validated *context pack*; unsupported claims are flagged, not shipped.
+- **Real research, not guesswork.** Online research goes through [Tavily](#requirement-tavily) — never a silent fallback to generic web search.
+- **Strategy before prose.** A Trellis-like workspace, a one-question-at-a-time pressure test, and a fact-check gate sit between the idea and the published article.
+
+It ships **13 composable sub-skills** plus a single router that picks the right one from natural language.
+
+## The pipeline
+
+The `blog-writing-workflow` skill runs an 8-step pipeline. Required steps are solid; optional/conditional steps branch on the topic, the data, and what you ask for.
+
+```mermaid
+flowchart LR
+    A[1 · Audience research<br/><i>optional</i>] -.-> B
+    B[2 · Orchestrate<br/>context pack] --> C[3 · Validate]
+    C --> D[4 · Grill-me<br/><i>conditional</i>]
+    D --> E[5 · Architect<br/>outline]
+    E --> F[6 · Visualize<br/><i>conditional</i>]
+    F --> G[7 · Write draft]
+    G --> H[8 · Fact-check]
+    H --> Z([Publication-ready])
+```
+
+| Step | Skill | Status |
+|---|---|---|
+| 1 | `audience-pain-point-research` | optional — run for SEO / unfamiliar topics |
+| 2 | `tech-blog-orchestrator` | **required** — builds the context pack |
+| 3 | `data-validator` | **required** — quality gate before writing |
+| 4 | `grill-me` | conditional — **mandatory when you ask to be grilled** |
+| 5 | `tech-article-architect` | **required** — outline + section plan |
+| 6 | `tech-visualization-generator` | conditional — only when data supports charts |
+| 7 | `tech-blog-writer` | **required** — drafts from outline + context pack |
+| 8 | `fact-checker` | **required** — numbers, units, logic, traceability |
+
+> Prefer manual control? Invoke any sub-skill directly — see [Skill routing](#skill-routing).
+
+## Requirement: Tavily
+
+Online research is a **hard prerequisite**, not an enhancement. Research-dependent skills stop and ask for setup rather than falling back to generic web search. (Local file-only parsing runs without Tavily until the workflow needs online research or external claim verification.)
 
 ```bash
+# 1. Add the Tavily skills
 npx skills add https://github.com/tavily-ai/skills
-```
 
-Install and authenticate the Tavily CLI:
+# 2. Install the Tavily CLI
+curl -fsSL https://cli.tavily.com/install.sh | bash   # or: uv tool install tavily-cli / pip install tavily-cli
 
-```bash
-curl -fsSL https://cli.tavily.com/install.sh | bash
-tvly login --api-key tvly-YOUR_KEY
-```
+# 3. Authenticate
+tvly login --api-key tvly-YOUR_KEY                    # or: export TAVILY_API_KEY=tvly-YOUR_KEY
 
-Alternative CLI installs:
-
-```bash
-uv tool install tavily-cli
-# or
-pip install tavily-cli
-```
-
-Alternative authentication:
-
-```bash
-tvly login
-# or
-export TAVILY_API_KEY=tvly-YOUR_KEY
-```
-
-Verify Tavily before using online research:
-
-```bash
+# 4. Verify
 tvly --status
 ```
 
-Research-dependent skills must stop if Tavily skills, `tvly`, or authentication are unavailable. They should not silently fall back to generic web search.
+<details>
+<summary>How research maps to Tavily skills</summary>
 
-Local file-only parsing can run without Tavily until the workflow needs online topic research, source discovery, or claim verification beyond the provided files.
+| Task | Tavily skill |
+|---|---|
+| Targeted source discovery | `tavily-search` |
+| Clean extraction from known URLs | `tavily-extract` |
+| Deeper multi-source reports | `tavily-research` |
+| URL discovery on a known site | `tavily-map` |
+| Bulk collection from a docs section | `tavily-crawl` |
+| Implementation reference | `tavily-best-practices` |
 
-## Install Blog-Writing-Skill
+Prefer authoritative sources (standards bodies, peer-reviewed papers, government/university research, manufacturer white papers, credible analyst reports). Avoid unsourced blogs, marketing brochures, and social-media claims.
+</details>
 
-OpenAI Skills are supported in Codex and follow the Agent Skills open standard, but skills do not automatically sync across products. If you installed this bundle for Claude or ChatGPT, install it separately for Codex.
+## Install
 
-### Install for Codex
+Agent Skills follow an open standard, but installs **do not sync across products** — install separately for each agent you use.
 
-Clone this repository:
+| Agent | Method | Skill folder |
+|---|---|---|
+| Claude Code | standalone skill | `~/.claude/skills/blog-writing-skills/` |
+| Claude Code | plugin marketplace | repo root via `.claude-plugin/` |
+| Codex | standalone skill | `~/.codex/skills/blog-writing-skills/` |
+| Codex | plugin bundle | repo root via `.codex-plugin/` |
 
 ```bash
 git clone https://github.com/lizopower/Blog-Writing-Skill.git
 ```
 
-Option A: ask Codex to install from GitHub:
-
-```text
-Use skill-installer to install https://github.com/lizopower/Blog-Writing-Skill into Codex.
-```
-
-Option B: install manually into Codex skills:
-
-```bash
-mkdir -p ~/.codex/skills
-cp -R Blog-Writing-Skill ~/.codex/skills/blog-writing-skills
-```
-
-On Windows PowerShell:
-
-```powershell
-New-Item -ItemType Directory -Force "$HOME\.codex\skills"
-Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.codex\skills\blog-writing-skills"
-```
-
-The final Codex skill folder should look like:
-
-```text
-~/.codex/skills/blog-writing-skills/
-  SKILL.md
-  skills/
-  standards/
-  schemas/
-  templates/
-  commands/
-  .codex-plugin/
-```
-
-After installing, restart Codex or start a new Codex thread so the skill index is refreshed.
-
-### Install for Codex as a Plugin Bundle
-
-This repository also includes:
-
-```text
-.codex-plugin/plugin.json
-```
-
-That manifest lets Codex plugin workflows identify this repository as the `blog-writing-skills` plugin bundle. When using a local plugin marketplace workflow, point the plugin source at this repository root and reinstall/restart Codex according to your Codex plugin setup.
-
-Codex plugin installs load skills from `./skills/`. For that path, this repository includes `skills/blog-writing-skills/SKILL.md` as a Codex-facing router. Direct skill installs into `$CODEX_HOME/skills/blog-writing-skills` use the root `SKILL.md` router.
-
-### Install for Claude Code as a Standalone Skill
-
-Use this path when you want Claude Code to load the root `SKILL.md` as the top-level `blog-writing-skills` router.
-
-```text
-~/.claude/skills/blog-writing-skills/
-  SKILL.md
-  skills/
-  standards/
-  schemas/
-  templates/
-  commands/
-```
-
-On Windows, that is commonly:
-
-```text
-C:\Users\<you>\.claude\skills\blog-writing-skills\
-```
-
-Manual install:
+<details>
+<summary><b>Claude Code — standalone skill</b></summary>
 
 ```bash
 mkdir -p ~/.claude/skills
 cp -R Blog-Writing-Skill ~/.claude/skills/blog-writing-skills
 ```
 
-On Windows PowerShell:
-
 ```powershell
+# Windows PowerShell
 New-Item -ItemType Directory -Force "$HOME\.claude\skills"
 Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.claude\skills\blog-writing-skills"
 ```
 
-If you only want normal standalone skill behavior, install the repository as a skill folder and use the root `SKILL.md`. Do not rely on plugin namespace routing.
+Claude Code loads the root `SKILL.md` as the `blog-writing-skills` router. Restart or start a new session afterward. **Verify:** ask Claude Code *"Do you see the blog-writing-skills skill? Summarize its routing rules."*, then run `tvly --status`.
+</details>
 
-If your environment supports installing skills directly from a GitHub repository, install from:
+<details>
+<summary><b>Claude Code — plugin</b></summary>
 
-```text
-https://github.com/lizopower/Blog-Writing-Skill
-```
-
-After installation, restart or reload your agent session so it can discover the new skills.
-
-### Install for Claude Code as a Plugin
-
-This repository includes Claude Code plugin metadata:
-
-```text
-.claude-plugin/plugin.json
-.claude-plugin/marketplace.json
-```
-
-Validate the plugin:
+Plugin metadata lives in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Point your plugin marketplace at the repo root, then:
 
 ```bash
 claude plugin validate <path-to-Blog-Writing-Skill>
 ```
 
-When installing through Claude Code plugin marketplaces, point the marketplace/plugin source at this repository root. Plugin skills may be exposed with plugin namespacing rather than the same standalone skill name. If a prompt does not trigger the expected router, invoke the plugin skill explicitly or install as a standalone skill.
+Plugin skills are exposed with **namespacing** (`blog-writing-skills:<skill>`) rather than the bare skill name — see [Troubleshooting](#troubleshooting) if a router prompt does not trigger.
+</details>
 
-### Claude Code Setup Checklist
-
-After installing for Claude Code, verify:
-
-```text
-Ask Claude Code: "Do you see the blog-writing-skills skill? Summarize its routing rules."
-```
-
-For plugin installs, also verify:
+<details>
+<summary><b>Codex — standalone skill</b></summary>
 
 ```bash
-claude plugin validate <path-to-Blog-Writing-Skill>
+mkdir -p ~/.codex/skills
+cp -R Blog-Writing-Skill ~/.codex/skills/blog-writing-skills
 ```
 
-Then confirm Tavily in the same Claude Code environment:
-
-```bash
-tvly --status
+```powershell
+# Windows PowerShell
+New-Item -ItemType Directory -Force "$HOME\.codex\skills"
+Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.codex\skills\blog-writing-skills"
 ```
 
-Claude Code must have access to:
+Or ask Codex: *"Use skill-installer to install https://github.com/lizopower/Blog-Writing-Skill into Codex."* Restart Codex / start a new thread afterward. **Verify** the same way as Claude Code, plus `tvly --status`.
+</details>
 
-- this skill bundle in `~/.claude/skills/blog-writing-skills` for standalone skill installs, or this repository root through the plugin marketplace flow;
-- Tavily skills from `https://github.com/tavily-ai/skills`;
-- Tavily CLI authentication through `tvly login` or `TAVILY_API_KEY`.
+<details>
+<summary><b>Codex — plugin bundle</b></summary>
 
-If Claude Code can see this skill but research stops, install/authenticate Tavily in the Claude Code environment. If Claude Code cannot see the skill after installation, restart Claude Code or start a new session.
+`.codex-plugin/plugin.json` identifies this repo as the `blog-writing-skills` plugin bundle. Codex plugin installs load skills from `./skills/`, so the repo ships `skills/blog-writing-skills/SKILL.md` as a Codex-facing router. Point your local plugin source at the repo root and reinstall/restart per your Codex plugin setup.
+</details>
 
-## Codex Setup Checklist
+## Quick start
 
-After installing for Codex, verify:
-
-```text
-Ask Codex: "Do you see the blog-writing-skills skill? Summarize its routing rules."
-```
-
-Then confirm Tavily in the same Codex environment:
-
-```bash
-tvly --status
-```
-
-Codex must have access to both:
-
-- this skill bundle in `$CODEX_HOME/skills/blog-writing-skills` or `~/.codex/skills/blog-writing-skills`;
-- Tavily skills from `https://github.com/tavily-ai/skills`;
-- Tavily CLI authentication through `tvly login` or `TAVILY_API_KEY`.
-
-If Codex cannot see the skill after installation, start a new thread or restart the Codex app/CLI. If Codex can see this skill but research stops, install/authenticate Tavily in the Codex environment.
-
-## Quick Start
-
-Use the entry skill naturally. The router in `SKILL.md` will select the sub-skill when the user asks for brainstorming, research, article creation, pressure testing, outlining, drafting, fact-checking, or editorial review.
-
-Example prompts:
+Just describe what you want — the router selects the sub-skill. Examples (English and 中文 both work):
 
 ```text
 帮我头脑风暴一篇关于工业视觉检测软件的文章方向，要像 Trellis 一样建工作区。
 ```
-
 ```text
 Create a 2000-word technical article about warehouse automation ROI. Use Tavily research and fact-check all claims.
 ```
-
 ```text
-Grill me on this article angle until the positioning is defensible.
+Grill me on this article angle until the positioning is defensible — one question at a time.
 ```
-
+```text
+根据我提供的测试报告和 Excel 数据，写一篇关于新材料耐温性能的技术文章，需要图表建议和事实检查。
+```
 ```text
 I have a context_pack and outline. Write the final article, then fact-check it.
 ```
 
-## Recommended Workflow
+## Skill routing
 
-For a serious article, use this path:
+The router in `SKILL.md` picks the **most specific** skill for the intent. When unclear, it asks one clarifying question instead of guessing.
 
-1. `blog-brainstorm`: turn a vague topic into a confirmed brief and article workspace.
-2. `tech-research` or `audience-pain-point-research`: gather source-backed evidence with Tavily.
-3. `tech-blog-orchestrator`: assemble source material into `context_pack.json`.
-4. `data-validator`: check the context pack before writing.
-5. `grill-me`: pressure-test the strategy if the angle is risky, vague, competitive, under-evidenced, or explicitly requested.
-6. `tech-article-architect`: create the outline and section plan.
-7. `tech-visualization-generator`: plan charts when structured data is available.
-8. `tech-blog-writer`: write the article from the outline and context pack.
-9. `fact-checker`: verify numbers, units, claims, and source traceability.
-10. `content-taste-advisor`: review differentiation, clarity, and publishability.
+| Intent | Skill |
+|---|---|
+| Vague idea, topic selection, content strategy, Trellis-like workspace | `blog-brainstorm` |
+| Full article from topic/files to final draft | `blog-writing-workflow` |
+| "Grill me", pressure-test, challenge, interrogate | `grill-me` |
+| Source-backed technical/B2B research | `tech-research` |
+| Audience pain, social listening, real search intent | `audience-pain-point-research` |
+| Convert topic and/or files into a context pack | `tech-blog-orchestrator` |
+| Extract data from PDF, Word, Excel, or tables | `tech-file-parser` |
+| Validate context-pack completeness and quality | `data-validator` |
+| Turn a context pack into an outline | `tech-article-architect` |
+| Plan charts from structured data | `tech-visualization-generator` |
+| Draft from outline + context pack | `tech-blog-writer` |
+| Check facts, numbers, units, sources, logic | `fact-checker` |
+| Judge whether content is compelling / publishable | `content-taste-advisor` |
 
-If the user asks for a complete article directly, use `blog-writing-workflow`. It coordinates the full pipeline.
+<details>
+<summary>How <code>blog-brainstorm</code> and <code>grill-me</code> behave</summary>
 
-## Full Article Workflow
-
-`blog-writing-workflow` runs an 8-step pipeline:
-
-1. Audience Pain Point Research, optional.
-2. Content Preparation with `tech-blog-orchestrator`.
-3. Data Validation with `data-validator`.
-4. Strategy Pressure Test with `grill-me`, conditional and mandatory when requested.
-5. Article Architecture with `tech-article-architect`.
-6. Visualization planning with `tech-visualization-generator`, conditional.
-7. Article Writing with `tech-blog-writer`.
-8. Fact Check with `fact-checker`.
-
-Required steps are content preparation, validation, architecture, writing, and fact-checking. Visualization depends on available data. Audience research depends on the topic and user request. `grill-me` must run when the user explicitly asks to be grilled, challenged, pressure-tested, or deeply questioned.
-
-## Article Workspace Contract
-
-`blog-brainstorm` creates a Trellis-like article workspace in the user's current project:
+**`blog-brainstorm`** feels closer to Trellis than a one-shot prompt. It creates the full workspace up front, recommends a direction *before* asking you to decide, asks exactly one question at a time, updates `brief.md` + `article.json` after each answer, and converges on a confirmed brief. Decision order:
 
 ```text
-content/articles/<slug>/
-  article.json
-  brief.md
-  research/
-  sources.jsonl
-  context_pack.json
-  strategy.md
-  outline.md
-  draft.md
-  fact_check.md
-  editorial_review.md
-  finish.md
+business goal → audience → reader pain → angle → evidence → CTA → scope → success criteria
 ```
 
-The slug should be lowercase kebab-case, derived from the topic or working title.
+**`grill-me`** pressure-tests one branch at a time. It inspects existing files/workspace/context-pack/outline first, asks one question at a time *with its own recommended answer and rationale*, and ends with resolved decisions, open risks, and the next sub-skill. Decision tree:
 
-When scripts are available, create and validate the workspace with:
+```text
+goal → audience → pain → angle → evidence → structure → claims → visuals → CTA → quality gate
+```
+</details>
+
+## The article workspace
+
+`blog-brainstorm` creates a Trellis-like workspace in your current project. `article.json` is the workflow-state file; never overwrite an existing workspace — read it and continue from its current phase.
+
+```text
+content/articles/<slug>/        # slug = lowercase kebab-case
+├── article.json   # workflow state: id, title, status, phase, next action, goal, audience…
+├── brief.md       # strategy: audience, pain, angle, CTA, success criteria
+├── research/      # durable notes by topic/source cluster
+├── sources.jsonl  # one source-inventory record per line
+├── context_pack.json   # structured claims, data, glossary, risk notes
+├── strategy.md    # pressure-test decisions, rejected angles, evidence gaps
+├── outline.md     # structure + reader decision path
+├── draft.md       # article body
+├── fact_check.md  # numeric / unit / source / logic review
+├── editorial_review.md  # taste, differentiation, SEO, CTA, publishability
+└── finish.md      # final summary, reusable learnings, follow-up ideas
+```
+
+Lifecycle: `brainstorming → brief_confirmed → research_planning → context_building → strategy_pressure_test → outlining → drafting → fact_checking → editorial_review → completed`
 
 ```bash
+# When the bundled scripts are available
 python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
 python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-root>/content/articles/<slug>
 ```
 
-`article.json` is the workflow state file. It tracks the article id, title, status, current phase, next action, article type, business goal, audience, keyword, angle, and timestamps. Update it after each meaningful phase.
+## Evidence model
 
-The normal lifecycle is:
+`context_pack.json` (contract **v2.1.0**) is the evidence object passed to the architect, writer, chart planner, and fact-checker. Minimum fields: `version`, `generated_at`, `topic`, `audience`, `key_claims`, `extracted_tables`, `glossary`, `risk_notes`, plus file/research source metadata.
 
-```text
-brainstorming
-brief_confirmed
-research_planning
-context_building
-strategy_pressure_test
-outlining
-drafting
-fact_checking
-editorial_review
-completed
-```
-
-Do not overwrite an existing article workspace. If `content/articles/<slug>/` already exists, read `article.json` and continue from the current phase.
-
-## Key Artifacts
-
-- `brief.md`: human-readable article strategy, audience, pain, angle, CTA, and success criteria.
-- `research/`: durable notes grouped by topic or source cluster.
-- `sources.jsonl`: one source inventory record per line.
-- `context_pack.json`: structured claims, sources, data, glossary, risk notes, and metadata.
-- `strategy.md`: pressure-test decisions, rejected angles, evidence gaps, and risk tradeoffs.
-- `outline.md`: article structure and reader decision path.
-- `draft.md`: article body.
-- `fact_check.md`: factual, numerical, unit, source, and logic review.
-- `editorial_review.md`: taste, differentiation, SEO, CTA, and publishability review.
-- `finish.md`: final summary, reusable learnings, weak sources, and follow-up article ideas.
-
-## Skill Routing Guide
-
-Use the most specific skill that matches the user's intent:
-
-| User Intent | Use |
-|---|---|
-| Vague idea, topic selection, content strategy, Trellis-like workspace | `blog-brainstorm` |
-| Full article from topic/files to final draft | `blog-writing-workflow` |
-| "Grill me", pressure-test, challenge, interrogate, deeply question | `grill-me` |
-| Source-backed technical or B2B research | `tech-research` |
-| Audience pain, social listening, real search intent | `audience-pain-point-research` |
-| Convert topic and/or files into a context pack | `tech-blog-orchestrator` |
-| Extract data from PDF, Word, Excel, or tables | `tech-file-parser` |
-| Validate context pack completeness and quality | `data-validator` |
-| Turn context pack into an outline | `tech-article-architect` |
-| Plan charts from structured data | `tech-visualization-generator` |
-| Draft from outline plus context pack | `tech-blog-writer` |
-| Check facts, numbers, units, sources, and logic | `fact-checker` |
-| Judge whether content is compelling or publishable | `content-taste-advisor` |
-
-When the request is unclear, ask one clarifying question instead of guessing.
-
-## How `blog-brainstorm` Works
-
-`blog-brainstorm` is designed to feel closer to Trellis than a simple ideation prompt.
-
-It should:
-
-1. Create the full article workspace up front.
-2. Recommend a direction before asking the user to decide.
-3. Ask exactly one question at a time.
-4. Update `brief.md` and `article.json` after each answer.
-5. Converge on a confirmed brief.
-6. End with exactly two options:
-   - Continue to research / workflow
-   - Stop at confirmed brief
-
-Default decision sequence:
-
-```text
-business goal -> target audience -> reader pain -> article angle -> evidence available -> CTA -> scope boundary -> success criteria
-```
-
-## How `grill-me` Works
-
-`grill-me` pressure-tests a plan one branch at a time. It is mandatory before drafting when the user explicitly asks to be grilled, challenged, pressure-tested, or relentlessly questioned.
-
-It should:
-
-1. Inspect available files, workspace state, context pack, outline, and prior discussion first.
-2. Ask exactly one pressure-testing question at a time.
-3. Include the assistant's recommended answer and rationale with each question.
-4. Walk the decision tree in this order:
-
-```text
-goal -> audience -> pain -> angle -> evidence -> structure -> claims -> visuals -> CTA -> quality gate
-```
-
-5. Finish with resolved decisions, unresolved risks, and the next sub-skill recommendation.
-
-## Tavily Research Behavior
-
-Research work maps to Tavily skills as follows:
-
-- `tavily-search`: targeted source discovery.
-- `tavily-extract`: clean extraction from known URLs.
-- `tavily-research`: deeper multi-source reports.
-- `tavily-map`: URL discovery on a known site.
-- `tavily-crawl`: bulk collection from a docs or site section.
-- `tavily-best-practices`: implementation and usage reference.
-
-For technical claims, prefer authoritative sources such as standards bodies, peer-reviewed papers, government or university research, manufacturer technical white papers, credible analyst reports, and technical conference proceedings.
-
-Avoid unsupported blog posts, marketing-only brochures, unsourced social media claims, or superlatives without evidence.
-
-Every key claim should carry:
-
-- the claim text,
-- source reference,
-- source type,
-- confidence level,
-- relevant units and test conditions if numerical,
-- uncertainty or limitations when applicable.
-
-## Context Pack Expectations
-
-`context_pack.json` is the evidence object passed downstream to the architect, writer, chart planner, and fact checker. The current contract is Context Pack v2.1.0.
-
-At minimum, it should include:
-
-- `version`
-- `generated_at`
-- `topic`
-- `audience`
-- `key_claims`
-- `extracted_tables`
-- `glossary`
-- `risk_notes`
-- metadata about files and research sources when available
-
-Validate against `schemas/context_pack_schema.json` and run `data-validator` before drafting.
-
-If using the bundled validator directly:
+Each key claim carries: claim text · source reference · source type · confidence level · units & test conditions (if numerical) · stated limitations.
 
 ```bash
+# Validate before drafting
 python skills/tech-blog-orchestrator/scripts/validate_context_pack.py <context_pack.json>
 ```
 
-## Example Prompts
-
-Brainstorm:
-
-```text
-帮我头脑风暴一篇关于 B2B SaaS 数据治理的文章，先推荐方向，再问我问题，创建完整文章工作区。
-```
-
-Full workflow:
-
-```text
-写一篇 1800 字中文技术博客，主题是预测性维护软件如何降低停机成本。请用 Tavily 做研究，输出事实检查结果。
-```
-
-Topic plus files:
-
-```text
-根据我提供的测试报告和 Excel 数据，写一篇关于新材料耐温性能的技术文章。需要图表建议和事实检查。
-```
-
-Research only:
-
-```text
-Research credible sources for an article about cold-chain logistics software ROI. Return structured notes, source tiers, and research gaps.
-```
-
-Pressure test:
-
-```text
-Grill me on this outline. Keep asking one question at a time until the angle, evidence, CTA, and quality gate are solid.
-```
-
-Fact check:
-
-```text
-Check this draft against the context_pack. Flag unsupported claims, unit issues, logic gaps, and source mismatches.
-```
-
-Editorial review:
-
-```text
-This article feels generic. Review it with content-taste-advisor and tell me whether it is worth publishing.
-```
+Schema: `schemas/context_pack_schema.json`. Always run `data-validator` before drafting.
 
 ## Troubleshooting
 
-### Tavily is missing
+<details open>
+<summary><b>Tavily is missing or unauthenticated</b></summary>
 
-Symptom: the agent stops before research and asks for Tavily setup.
-
-Fix:
+The agent stops before research and asks for setup. Fix:
 
 ```bash
 npx skills add https://github.com/tavily-ai/skills
 curl -fsSL https://cli.tavily.com/install.sh | bash
-tvly login --api-key tvly-YOUR_KEY
+tvly login            # or: export TAVILY_API_KEY=tvly-YOUR_KEY
 tvly --status
 ```
+</details>
 
-### `tvly` is installed but not authenticated
+<details>
+<summary><b>The agent wants to use generic web search</b></summary>
 
-Fix:
+Stop it and remind: *"This bundle requires Tavily for online research. Do not use generic web search. Run Tavily preflight first."*
+</details>
 
-```bash
-tvly login
-# or
-export TAVILY_API_KEY=tvly-YOUR_KEY
-```
+<details>
+<summary><b>The article feels unsupported / has facts not in the context pack</b></summary>
 
-Then re-run:
+Run `data-validator` on the context pack, then `grill-me` before outlining; if evidence is missing, return to `tech-research` or `audience-pain-point-research`. For a finished draft, run `fact-checker` against the draft + context pack and source or remove every unsupported claim.
+</details>
 
-```bash
-tvly --status
-```
+<details>
+<summary><b>A workspace already exists</b></summary>
 
-### The agent wants to use generic web search
+Don't regenerate from scratch. Have the agent inspect `content/articles/<slug>/article.json`, `brief.md`, and `context_pack.json`, then continue from `article.json.currentPhase`.
+</details>
 
-Stop the workflow and remind it:
+<details>
+<summary><b>A handoff between sub-skills does not resolve</b></summary>
 
-```text
-This Blog-Writing-Skill requires Tavily for online research. Do not use generic web search. Run Tavily preflight first.
-```
+When installed as a **plugin**, skills are namespaced as `blog-writing-skills:<skill-name>`; the routing docs use bare names for readability. As a **standalone** install, bare names work directly. If a bare name does not resolve, use the namespaced form, e.g. `blog-writing-skills:tech-blog-writer`.
+</details>
 
-### The article feels unsupported
+## Maintaining this repo
 
-Run:
-
-```text
-Use data-validator on the context_pack, then run grill-me before outlining.
-```
-
-If evidence is missing, return to `tech-research` or `audience-pain-point-research`.
-
-### The draft has facts that are not in the context pack
-
-Run:
-
-```text
-Use fact-checker against the draft and context_pack. Remove or source every unsupported claim.
-```
-
-### A workspace already exists
-
-Do not regenerate from scratch. Ask the agent to inspect:
-
-```text
-content/articles/<slug>/article.json
-content/articles/<slug>/brief.md
-content/articles/<slug>/context_pack.json
-```
-
-Then continue from `article.json.currentPhase`.
-
-### A handoff between sub-skills does not resolve
-
-Symptom: the workflow names a sub-skill (for example `tech-blog-writer`) but the
-agent cannot find or invoke it.
-
-Cause: when installed as a **plugin**, skills are namespaced as
-`blog-writing-skills:<skill-name>`; the routing docs use the bare name for
-readability. As a **standalone** skill install, the bare name is used directly.
-
-Fix: invoke the skill with the form your install exposes. If bare names do not
-resolve, use the namespaced form, for example:
-
-```text
-blog-writing-skills:tech-blog-writer
-```
-
-## Maintenance Notes
-
-Versioning is governed by `VERSIONING.md` (one release version across the three
-manifests; the Context Pack schema versions independently). Run the checks
-before tagging a release:
+Versioning is governed by [`VERSIONING.md`](VERSIONING.md): one release version across the three manifests; the Context Pack schema versions independently; no per-skill version lines. Run the checks before tagging a release:
 
 ```bash
-python scripts/check_versions.py
-python scripts/check_router_sync.py
+python scripts/check_versions.py      # the 3 release manifests must agree
+python scripts/check_router_sync.py   # both routers must cover every sub-skill
 ```
 
-When adding a new sub-skill:
+**Adding a sub-skill:** create `skills/<name>/SKILL.md`; add a routing entry to **both** routers — root `SKILL.md` (Claude Code) and `skills/blog-writing-skills/SKILL.md` (Codex), which are worded differently but must both cover every skill (enforced by `check_router_sync.py`); document direct usage here if needed; update standards/schemas if shared artifacts change.
 
-1. Add its directory under `skills/<skill-name>/SKILL.md`.
-2. Add a routing rule / reference entry in **both** routers: root `SKILL.md`
-   (Claude Code) and `skills/blog-writing-skills/SKILL.md` (Codex). The two are
-   intentionally worded differently but must both cover every sub-skill —
-   `scripts/check_router_sync.py` enforces this.
-3. Add usage guidance to this README if users need to invoke it directly.
-4. Update standards or schemas if the new skill changes shared artifacts.
-5. Do **not** add a per-skill `Version:` line; the skill's version is the
-   release version (see `VERSIONING.md`).
-
-When changing research behavior:
-
-1. Update `standards/tavily_research_engine.md`.
-2. Update affected skills such as `tech-research`, `tech-blog-orchestrator`, and `blog-writing-workflow`.
-3. Keep the hard dependency rule explicit: no silent fallback from Tavily to generic web search.
+**Changing research behavior:** update `standards/tavily_research_engine.md` and the affected skills, and keep the no-silent-fallback rule explicit.
 
 ## License
 
-MIT. See `LICENSE`.
+MIT — see [`LICENSE`](LICENSE).
