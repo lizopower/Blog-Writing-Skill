@@ -1,21 +1,20 @@
 {
   "name": "blog-writing-marketplace",
-  "description": "Marketplace for blog writing skills",
+  "description": "Marketplace for source-backed technical and B2B writing skills.",
   "owner": {
     "name": "Blog Writing Skills",
-    "email": ""
+    "url": "https://github.com/lizopower"
   },
   "plugins": [
     {
       "name": "blog-writing-skills",
-      "description": "Technical blog writing skills for content creation, research, and optimization",
-      "version": "1.0.0",
+      "description": "Technical and B2B article skills for Claude Code: brainstorm, research, pressure-test, draft, fact-check, and review.",
+      "version": "1.1.0",
       "source": "./",
       "author": {
         "name": "Blog Writing Skills",
-        "email": ""
+        "url": "https://github.com/lizopower"
       }
     }
   ]
 }
-

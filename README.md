@@ -128,9 +128,9 @@ That manifest lets Codex plugin workflows identify this repository as the `blog-
 
 Codex plugin installs load skills from `./skills/`. For that path, this repository includes `skills/blog-writing-skills/SKILL.md` as a Codex-facing router. Direct skill installs into `$CODEX_HOME/skills/blog-writing-skills` use the root `SKILL.md` router.
 
-### Install for Claude
+### Install for Claude Code as a Standalone Skill
 
-For Claude-style local skills, the final folder should look like:
+Use this path when you want Claude Code to load the root `SKILL.md` as the top-level `blog-writing-skills` router.
 
 ```text
 ~/.claude/skills/blog-writing-skills/
@@ -148,6 +148,22 @@ On Windows, that is commonly:
 C:\Users\<you>\.claude\skills\blog-writing-skills\
 ```
 
+Manual install:
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R Blog-Writing-Skill ~/.claude/skills/blog-writing-skills
+```
+
+On Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.claude\skills"
+Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.claude\skills\blog-writing-skills"
+```
+
+If you only want normal standalone skill behavior, install the repository as a skill folder and use the root `SKILL.md`. Do not rely on plugin namespace routing.
+
 If your environment supports installing skills directly from a GitHub repository, install from:
 
 ```text
@@ -155,6 +171,51 @@ https://github.com/lizopower/Blog-Writing-Skill
 ```
 
 After installation, restart or reload your agent session so it can discover the new skills.
+
+### Install for Claude Code as a Plugin
+
+This repository includes Claude Code plugin metadata:
+
+```text
+.claude-plugin/plugin.json
+.claude-plugin/marketplace.json
+```
+
+Validate the plugin:
+
+```bash
+claude plugin validate <path-to-Blog-Writing-Skill>
+```
+
+When installing through Claude Code plugin marketplaces, point the marketplace/plugin source at this repository root. Plugin skills may be exposed with plugin namespacing rather than the same standalone skill name. If a prompt does not trigger the expected router, invoke the plugin skill explicitly or install as a standalone skill.
+
+### Claude Code Setup Checklist
+
+After installing for Claude Code, verify:
+
+```text
+Ask Claude Code: "Do you see the blog-writing-skills skill? Summarize its routing rules."
+```
+
+For plugin installs, also verify:
+
+```bash
+claude plugin validate <path-to-Blog-Writing-Skill>
+```
+
+Then confirm Tavily in the same Claude Code environment:
+
+```bash
+tvly --status
+```
+
+Claude Code must have access to:
+
+- this skill bundle in `~/.claude/skills/blog-writing-skills` for standalone skill installs, or this repository root through the plugin marketplace flow;
+- Tavily skills from `https://github.com/tavily-ai/skills`;
+- Tavily CLI authentication through `tvly login` or `TAVILY_API_KEY`.
+
+If Claude Code can see this skill but research stops, install/authenticate Tavily in the Claude Code environment. If Claude Code cannot see the skill after installation, restart Claude Code or start a new session.
 
 ## Codex Setup Checklist
 
