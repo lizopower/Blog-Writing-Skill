@@ -531,6 +531,5 @@ For questions or issues:
 
 **Tech-Blog-Writer: Transform technical outlines into publication-ready content that engineers trust.**
 
-*Version 1.0.0*  
 *Industry: Generic - applicable to any technical/B2B domain (replace bracketed placeholders with your own)*  
 *Governance: Strict Numerical Validation + Source Attribution*

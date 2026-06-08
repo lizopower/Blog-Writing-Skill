@@ -428,7 +428,6 @@ Output is successful when:
 
 ---
 
-*Version: 1.0.0*  
 *Industry: Domain-agnostic — supply your own industry context*  
 *Role: File Parser / Data Extractor*  
 *Output: Structured JSON (no content generation)*

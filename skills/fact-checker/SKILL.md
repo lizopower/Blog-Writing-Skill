@@ -166,6 +166,5 @@ Context Pack: 未找到
 
 ---
 
-*Version: 1.0.0*
 *Role: Fact Checker*
 *Output: Fact Check Report*

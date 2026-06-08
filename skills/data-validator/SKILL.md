@@ -391,6 +391,5 @@ quality_score = (
 
 ---
 
-*Version: 1.1.0*
 *Role: Data Quality Validator*
 *Output: Validation Report (不修改输入数据)*

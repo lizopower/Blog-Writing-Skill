@@ -669,7 +669,6 @@ Output is successful when:
 
 ---
 
-*Version: 1.0.0*  
 *Industry: Domain-agnostic — supply your own industry context*  
 *Role: Data Visualization Generator*  
 *Output: Chart Manifests + Mermaid/Drawing Instructions (no content generation)*

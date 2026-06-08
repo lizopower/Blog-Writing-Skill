@@ -970,7 +970,6 @@ Output is successful when:
 
 ---
 
-*Version: 1.0.0*  
 *Industry: Domain-agnostic — supply your own industry context*  
 *Role: Technical Article Architect*  
 *Output: outline.md + section_plan.json (no article body)*

@@ -127,8 +127,8 @@ Downstream writing and fact-checking must use only source-backed claims from the
 - Fact check is completed and issues are documented.
 - Final output includes article, quality reports, and next step.
 
-## Version
+## Metadata
 
-- Version: 2.2.0
 - Updated: 2026-06-08
 - Industry: Domain-agnostic
+- Version: governed by the release version in the manifests (see `VERSIONING.md`).

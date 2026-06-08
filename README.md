@@ -574,14 +574,44 @@ content/articles/<slug>/context_pack.json
 
 Then continue from `article.json.currentPhase`.
 
+### A handoff between sub-skills does not resolve
+
+Symptom: the workflow names a sub-skill (for example `tech-blog-writer`) but the
+agent cannot find or invoke it.
+
+Cause: when installed as a **plugin**, skills are namespaced as
+`blog-writing-skills:<skill-name>`; the routing docs use the bare name for
+readability. As a **standalone** skill install, the bare name is used directly.
+
+Fix: invoke the skill with the form your install exposes. If bare names do not
+resolve, use the namespaced form, for example:
+
+```text
+blog-writing-skills:tech-blog-writer
+```
+
 ## Maintenance Notes
+
+Versioning is governed by `VERSIONING.md` (one release version across the three
+manifests; the Context Pack schema versions independently). Run the checks
+before tagging a release:
+
+```bash
+python scripts/check_versions.py
+python scripts/check_router_sync.py
+```
 
 When adding a new sub-skill:
 
 1. Add its directory under `skills/<skill-name>/SKILL.md`.
-2. Add a routing rule and quick reference entry in root `SKILL.md`.
+2. Add a routing rule / reference entry in **both** routers: root `SKILL.md`
+   (Claude Code) and `skills/blog-writing-skills/SKILL.md` (Codex). The two are
+   intentionally worded differently but must both cover every sub-skill —
+   `scripts/check_router_sync.py` enforces this.
 3. Add usage guidance to this README if users need to invoke it directly.
 4. Update standards or schemas if the new skill changes shared artifacts.
+5. Do **not** add a per-skill `Version:` line; the skill's version is the
+   release version (see `VERSIONING.md`).
 
 When changing research behavior:
 
