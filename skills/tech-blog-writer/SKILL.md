@@ -34,11 +34,25 @@ Transform structured outlines and context packs into **publication-ready technic
 - ✅ Self-audit: flag high-risk statements and data gaps
 
 ### What You DON'T DO:
+- ❌ Run for a topic-only request with no validated `context_pack` and no `outline` (see Preconditions — hand back to `blog-writing-workflow` instead)
 - ❌ Add new quantitative claims not in `context_pack`
 - ❌ Fabricate page numbers, table references, or sources
 - ❌ Write marketing language or promotional content
 - ❌ Generate charts (only reference existing `chart_id` from `charts_manifest`)
 - ❌ Create new major sections beyond `outline.md`
+
+---
+
+## Preconditions (Guard)
+
+This skill is the **final drafting stage**, not an entry point. Before writing, confirm you have BOTH:
+
+1. an `outline` (from `tech-article-architect`), and
+2. a **validated** `context_pack` (from `tech-blog-orchestrator` + `data-validator`).
+
+If either is missing — for example you were handed only a topic, or a bare "write an article about X" — **STOP and hand back to `blog-writing-workflow`** so the full pipeline (research → validation → outline) runs first. Do not improvise an outline or fabricate evidence to proceed.
+
+Proceed to draft directly **only** when the user explicitly supplied both artifacts, or explicitly asked to skip the upstream research/validation/outline steps. If they explicitly opted out, note that the draft is unvalidated and recommend a `fact-checker` pass.
 
 ---
 

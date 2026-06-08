@@ -8,6 +8,15 @@ description: Use when a user asks to brainstorm, plan, write, draft, outline, re
 ## Overview
 This is an entry skill that routes requests to the right blog-writing sub-skill in this bundle. The bundle is domain-agnostic: it works for technical or B2B subject matter such as industrial equipment, software, materials science, manufacturing, logistics, finance, or energy. Always ground the workflow in the user's source material, audience context, and stated business goal.
 
+## Default Discipline: Full Pipeline (mandatory)
+
+When the user asks to write, create, or draft a full article, blog post, or white paper from a topic — with or without files — the **default is the complete `blog-writing-workflow` pipeline**: research/orchestration → validation → (pressure test) → outline → draft → fact-check. Running the whole pipeline is the norm, not the exception.
+
+- **Never** shortcut a topic-level article request straight to `tech-blog-writer`. That skill is the final drafting stage only; it requires an upstream validated context_pack and outline.
+- **Never** skip research, validation, outline, or fact-check on your own initiative to "save time." A request that merely names a topic, audience, word count, or keyword density is **not** permission to skip steps.
+- Skip a step **only** when the user explicitly asks for it — e.g. "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft it" / "no fact-check". When you do skip on explicit request, say which steps you skipped and why.
+- When a conditional step (audience research, visualization) is genuinely inapplicable (no data for charts, etc.), announce that you are skipping it and why — do not skip silently.
+
 ## Required Dependency
 
 Online research in this bundle requires Tavily.
@@ -68,7 +77,7 @@ Evaluate these rules top-down. Prefer the most specific matching sub-skill over 
 
 1. If the user asks to brainstorm, ideate, choose a topic, define content strategy, create an article workspace, or says "头脑风暴", invoke `blog-brainstorm`.
 2. If the user asks to "grill me", "追问我", "拷问我", pressure-test, stress-test, challenge, interrogate, or relentlessly question a content idea, outline, strategy, or plan, invoke `grill-me`. This route is mandatory and takes priority over drafting, research, or review routes unless the user is still asking for open-ended brainstorm.
-3. If the user asks for "the whole article," "from research to draft," or an end-to-end workflow, invoke `blog-writing-workflow`.
+3. If the user asks to write, create, or draft a full article, blog post, or white paper from a topic (with or without files) — including a bare "write an article about X" / "写一篇关于 X 的文章" — invoke `blog-writing-workflow` and run the COMPLETE pipeline. Do not skip steps unless the user explicitly asks to (see Default Discipline). This is the default route for article-creation requests.
 4. If the user's primary ask is to pull tables, values, or structured information out of PDF, Word, or Excel files, invoke `tech-file-parser`.
 5. If the user provides files, research notes, or raw material and wants them turned into article-ready context, invoke `tech-blog-orchestrator`.
 6. If the user asks for technical/B2B source research, market context, competitor examples, or source-backed notes for a topic, invoke `tech-research`.
@@ -77,7 +86,7 @@ Evaluate these rules top-down. Prefer the most specific matching sub-skill over 
 9. If the user provides structured data and asks for charts, visual treatment, chart specs, or a visualization manifest, invoke `tech-visualization-generator`.
 10. If the user provides a context_pack but no outline, invoke `tech-article-architect`.
 11. If the user provides an outline but no context_pack, invoke `tech-blog-orchestrator` or `tech-research` first to build evidence before drafting.
-12. If the user provides both an outline and a context_pack, invoke `tech-blog-writer`.
+12. Invoke `tech-blog-writer` **only** when the user explicitly supplies BOTH a ready outline AND a validated context_pack and asks only to draft, OR explicitly asks to skip upstream research/validation. A topic-only or "write an article" request must go to `blog-writing-workflow` (rule 3), never directly to `tech-blog-writer`.
 13. If the user asks whether facts, numbers, units, or reasoning are correct in a draft, invoke `fact-checker`.
 14. If the user asks whether the content is compelling, differentiated, or worth publishing, invoke `content-taste-advisor`.
 15. If the request remains under-specified after these rules, ask one clarifying question instead of guessing.
@@ -94,10 +103,10 @@ User: "帮我头脑风暴一篇关于工业视觉检测软件的文章方向，�
 Action: Invoke `blog-brainstorm`.
 Acceptance: The assistant creates `content/articles/<slug>/`, writes the full skeleton, recommends direction, asks one question at a time, and converges to a confirmed brief.
 
-### Example 3: Final Draft
-User: "I have an outline and context_pack. Write the final article."
+### Example 3: Final Draft (artifacts already provided)
+User: "I have an outline and a validated context_pack. Write only the final article."
 Action: Invoke `tech-blog-writer`.
-Acceptance: The article uses only the provided context_pack for factual claims and does not add new data.
+Acceptance: The article uses only the provided context_pack for factual claims and does not add new data. (If the user had only given a topic, this would route to `blog-writing-workflow` instead.)
 
 ### Example 4: Full Workflow
 User: "Create a technical blog post about warehouse automation ROI from these reports, including research and a final draft."
@@ -140,6 +149,7 @@ Action: Invoke `content-taste-advisor`.
 Acceptance: The output identifies weak angles, stronger positioning, and concrete editorial changes.
 
 ## Common Mistakes
+- **Jumping straight to `tech-blog-writer`, or skipping research / validation / outline / fact-check, for a topic-only article request. The full `blog-writing-workflow` pipeline is the default; only the user can waive a step (see Default Discipline).**
 - Invoking `blog-writing-skills` directly instead of the specific sub-skill.
 - Sending vague ideation or Trellis-like article workspace creation directly to `blog-writing-workflow` instead of `blog-brainstorm`.
 - Missing mandatory `grill-me` routing when the user asks to be grilled, challenged, pressure-tested, or relentlessly questioned.

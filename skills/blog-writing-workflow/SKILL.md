@@ -7,6 +7,18 @@ description: Use when the user requests a full technical/B2B blog or article end
 
 Run the complete technical/B2B article pipeline. This skill is an orchestrator: it coordinates sub-skills and quality gates, but does not manually write article body content.
 
+## Default: Full Pipeline — No Skipping
+
+Run **every step by default.** The core evidence chain is mandatory and must NEVER be collapsed or jumped over on your own initiative:
+
+> **2 orchestrate/research → 3 validate → 5 outline → 7 draft → 8 fact-check**
+
+Rules:
+- **Do not jump straight to drafting (step 7 / `tech-blog-writer`).** A draft produced without an upstream validated context_pack and an outline is a failure, even if the user only said "write an article about X."
+- The user only naming a topic, audience, word count, or keyword density is **not** a request to skip steps. Run the whole pipeline.
+- Skip a step **only** on an explicit user request — "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft" / "no fact-check". When you skip on request, state which steps you skipped.
+- Conditional steps (1 audience research, 4 grill-me, 6 visualization) may be skipped when genuinely inapplicable, but **announce each skip and why** — never skip silently. `grill-me` is mandatory when the user asks to be grilled/pressure-tested.
+
 ## When to Use This Skill
 
 Use immediately when the user asks for:

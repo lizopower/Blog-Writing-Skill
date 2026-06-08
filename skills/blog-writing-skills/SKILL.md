@@ -7,6 +7,10 @@ description: Use when a Codex user asks to brainstorm, plan, write, draft, outli
 
 This is the Codex plugin-facing router for the Blog-Writing-Skill bundle. It mirrors the root `SKILL.md` entry so Codex plugin installs that load skills from `./skills/` still expose the top-level routing behavior.
 
+## Default Discipline: Full Pipeline (mandatory)
+
+A request to write/create/draft a full article from a topic (with or without files) defaults to the **complete `blog-writing-workflow` pipeline**: research → validation → (pressure test) → outline → draft → fact-check. Do not shortcut a topic-level request to `tech-blog-writer`, and do not skip research, validation, outline, or fact-check on your own. Skip a step only on an explicit user request ("直接写" / "跳过研究" / "skip research" / "just draft"), and say which steps you skipped.
+
 ## Required Dependency
 
 Online research requires Tavily in the same Codex environment.
@@ -25,7 +29,7 @@ Evaluate top-down and invoke the most specific sub-skill:
 
 1. Brainstorm, ideation, topic selection, content strategy, or Trellis-like article workspace: `blog-brainstorm`.
 2. "grill me", "追问我", "拷问我", challenge, pressure-test, stress-test, or interrogate a content plan: `grill-me`.
-3. Full article from topic/files through draft and fact-check: `blog-writing-workflow`.
+3. Any request to write/create/draft a full article from a topic (with or without files), including a bare "write an article about X": `blog-writing-workflow`, run the COMPLETE pipeline (default route — do not skip steps without explicit user opt-out).
 4. PDF, Word, Excel, table, or structured data extraction: `tech-file-parser`.
 5. Topic/files/raw material into article-ready Context Pack: `tech-blog-orchestrator`.
 6. Source-backed technical/B2B research: `tech-research`.
@@ -33,7 +37,7 @@ Evaluate top-down and invoke the most specific sub-skill:
 8. Context Pack validation: `data-validator`.
 9. Chart specs or visualization manifest: `tech-visualization-generator`.
 10. Context Pack to outline: `tech-article-architect`.
-11. Outline plus Context Pack to final draft: `tech-blog-writer`.
+11. Final draft **only when** the user explicitly supplies both a ready outline and a validated Context Pack (or explicitly asks to skip upstream steps): `tech-blog-writer`. Topic-only article requests go to rule 3, never here.
 12. Draft factual verification: `fact-checker`.
 13. Editorial quality, differentiation, or publishability review: `content-taste-advisor`.
 
@@ -41,6 +45,7 @@ If the request is still under-specified, ask one clarifying question.
 
 ## Common Mistakes
 
+- Do not jump straight to `tech-blog-writer`, or skip research/validation/outline/fact-check, for a topic-only article request. The full pipeline is the default; only the user can waive a step.
 - Do not skip `blog-brainstorm` for vague article ideas.
 - Do not miss mandatory `grill-me` routing when the user asks to be challenged or pressure-tested.
 - Do not draft factual articles before building or validating a Context Pack.
