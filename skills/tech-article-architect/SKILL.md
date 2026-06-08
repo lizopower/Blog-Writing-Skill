@@ -77,6 +77,28 @@ This skill is domain-agnostic — fill in the actual context before designing an
 - ❌ Make up chart data
 - ❌ Write marketing copy
 
+## Retrieval & Citation Constraints (AEO/GEO)
+
+These shape where ideas sit so the outline is easy for both readers and AI assistants to extract. The underlying research is correlational and time-sensitive — apply it as structural hygiene, never as a reason to fabricate or pad. Full context: `standards/aeo_geo_signals.md`.
+
+1. **Intent-to-Format gate** — Before designing sections, classify the query intent and pick the matching shape:
+   - *Informational* ("what is / how does X work") → explanatory article (definition, mechanism, evidence).
+   - *Commercial* ("best / X vs Y") → comparison table + selection criteria + trade-offs, not an essay.
+   - *Transactional / navigational* → short, direct; do not inflate into a long article.
+   Record the chosen intent at the top of the section plan.
+
+2. **Outcome title** — The H1 names the decision or result the reader leaves with, not just the topic. Prefer `[problem/scenario]: [verifiable result or selection decision]`. Avoid "Ultimate/Complete Guide to …" containers.
+
+3. **Answer-first placement** — Lead the piece (and each section) with the conclusion, constraint, and evidence path. Do not save the real finding for the end. (Already required by TL;DR + answer blocks; enforce it as a check.)
+
+4. **Section atomicity** — One H2/H3 answers one question or supports one core claim. If a section's `purpose` contains two parallel claims, split it into two sections.
+
+5. **Selective question headers** — Use real user-question H2/H3 for FAQ, definition, selection, and comparison sections. Keep functional titles ("Failure Modes", "Data & Evidence", "Non-negotiables") where they are clearer than a forced question. Do not turn every header into a question.
+
+6. **Evidence adjacency** — Each key claim's source, conditions, and limits sit in the same section (or table) as the claim, not in a distant "Sources" block.
+
+7. **Freshness / update gate** — If the topic already has a prior article or historical context_pack, first assess whether updating the existing piece (new data, new standard, changed price/performance, stale conclusions) beats writing a new one. Without new evidence, do not commission a duplicate.
+
 ## Outline Style (Structural Fingerprint)
 
 ### Engineering Decision-Making Framework

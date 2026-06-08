@@ -375,7 +375,23 @@ The last sentence of every section should push the reader forward — pose a que
 
 **Rule 13**: Vary openers and connectives. Don't start consecutive sentences with the same word or with "This/These/It". Avoid the stacked-hedge ("can help to potentially improve") — commit to the claim and cite it, or drop it.
 
-**Rule 14**: Prefer active voice; commit, don't hedge. Convert passive to active when a real actor exists ("the BMS cuts current", not "current is cut"). Contractions are fine in moderation (it's, don't). But do **not** manufacture a casual/"coffee-chat" voice, personal anecdotes, slang, or hedging ("honestly", "in my experience", "perhaps in most cases") — those belong to lifestyle blogging, not source-backed B2B technical writing.
+**Rule 14**: Prefer active voice; cut empty hedges, keep evidence qualifiers. Convert passive to active when a real actor exists ("the BMS cuts current", not "current is cut"). Contractions are fine in moderation (it's, don't). Do **not** manufacture a casual/"coffee-chat" voice, anecdotes, or slang.
+
+Distinguish two kinds of qualifier — this is critical for B2B credibility:
+- ❌ Cut **empty hedges** that dodge responsibility: arguably, perhaps, it could be said, many believe, it is often thought, in my experience.
+- ✅ Keep **evidence qualifiers** that state real scope: "under [test condition]", "in [sample of N]", "according to [source]", "validated only to [range]", "at [temperature]". These are precision, not hedging. Never strip a condition that bounds a claim's validity.
+
+### Citation-Earning Constraints (AEO/GEO)
+
+Rules 15–18 come from AEO/GEO research on what makes content quotable by AI assistants (ChatGPT, Perplexity, Google AI). That research is **correlational, not causal**, and time-sensitive — treat it as writing-quality guidance, not a ranking hack. **Never let citation optimization induce fabrication or keyword stuffing.** Full context: `standards/aeo_geo_signals.md`.
+
+**Rule 15** — Definition sentences go straight to the bridge verb. Open a definition with `[Term] is / are / means / refers to [definition] under [scope]` (中文：`[术语] 是指……`). Do not open a definition with "can be considered", "may be regarded as", or "is a kind of … that emerged from …" unless the context_pack marks the claim low-confidence. A direct "X is Y" is the strongest semantic path to a citable answer.
+
+**Rule 16** — Entity echo. When an H2/H3 is phrased as a question, the first sentence of the answer repeats the question's subject entity as its own subject. Never open with "It", "This", "该技术". (H2 "What is programmatic SEO?" → "Programmatic SEO is…", not "It is…".)
+
+**Rule 17** — Named-entity governance. Use specific products, standards, competitors, studies, dates, and institutions — they ground a claim and reduce model uncertainty. But every named entity must come from the context_pack or a traceable source. Do **not** invent brands/competitors, and do **not** stuff entities to hit a density target; unnatural entity density is itself an AI tell. If an entity is needed but unsourced, write `[Entity TBD]` and list it under To-Verify.
+
+**Rule 18** — Primary-source attribution. State a statistic as: source name + year + sample size + subject ("Semrush's 2026 analysis of 337,785 URLs", not "recent research"). Prefer the primary study over a blog that cites it. If name, year, or sample size is missing, mark the claim medium/low confidence and hand it to `fact-checker`.
 
 ### Chinese (中文) AI tells
 

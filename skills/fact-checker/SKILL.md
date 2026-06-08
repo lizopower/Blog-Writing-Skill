@@ -34,6 +34,15 @@ description: Use when validating a drafted article against a context_pack for nu
    - 百分比是否在 0-100%
    - 温度是否符合物理规律
 
+6. **来源归因质量检查**（AEO/GEO，见 `standards/aeo_geo_signals.md`）
+   - 研究/统计类声明应含：来源名 + 年份 + 样本量；缺失则标记并降级 confidence
+   - 若声明只追溯到"转述研究的博客"而非主源 → Warning：需回到一手来源
+   - 模糊归因（"recent research"、"有研究表明"）→ 标记为弱归因
+
+7. **相关性 vs 因果检查**
+   - 若文章用强因果词（causes / proves / leads to / guarantees / 导致 / 证明）但 context_pack 仅有相关性证据 → 标记逻辑风险
+   - 若自家产品出现在"best/对比/榜单"且排名第一 → 要求披露评估标准与利益关系
+
 ### ❌ 你不做的
 
 - ❌ 不修改文章内容

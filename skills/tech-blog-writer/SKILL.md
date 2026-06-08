@@ -336,9 +336,17 @@ These rules override default writing habits. Violation = rewrite.
 - Break the rule of three: vary list lengths (2, 4, 5); group three only when there are truly three.
 - Don't start consecutive sentences with "This/These/It"; drop stacked hedges ("can help to potentially…").
 
-**Humanize via specificity, not mess**: never add fake typos, slang, hedging, invented anecdotes, or a casual "over-coffee" tone to dodge AI detectors — that kills B2B credibility and can fabricate unsourced claims. Authenticity = real data + real reasoning. Prefer active voice (Rule 14).
+**Humanize via specificity, not mess**: never add fake typos, slang, hedging, invented anecdotes, or a casual "over-coffee" tone to dodge AI detectors — that kills B2B credibility and can fabricate unsourced claims. Authenticity = real data + real reasoning.
 
-**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–14 + Chinese tells) for examples and self-check method.
+**Hedge nuance (Rule 14)**: cut empty hedges (arguably/perhaps/many believe) but KEEP evidence qualifiers (under [test condition], in [sample], according to [source]) — those bound a claim, never strip them.
+
+**Citation-earning (AEO, Rules 15–18)** — correlational guidance, never a reason to fabricate:
+- Definitions open with `[Term] is/means/refers to … under [scope]`; no "can be considered".
+- Entity echo: under a question-H2, first sentence repeats the subject ("Programmatic SEO is…", not "It is…").
+- Named entities only from the context_pack — no invented brands, no stuffing for density.
+- Stats carry source name + year + sample size; prefer primary over secondary, else downgrade confidence.
+
+**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–18 + Chinese tells) and `standards/aeo_geo_signals.md`.
 
 ### Formatting
 - ✅ Use bulleted/numbered lists for complex information
@@ -650,14 +658,18 @@ Before finalizing `final_article.md`, verify:
 - [ ] Lists and tables for complex info
 - [ ] **Bold** used for key conclusions
 
-### Anti-AI Tone (Rules 1–14)
+### Anti-AI Tone (Rules 1–18)
 - [ ] No banned filler words (very/really/just/actually/basically/essentially)
 - [ ] No corporate-AI buzzwords (leverage/robust/seamless/delve/harness/realm/transformative…) except genuine technical terms
 - [ ] No filler signposts or academic connectives ("It's worth noting", "When it comes to", furthermore/moreover/consequently/thus/hence) and no empty antithesis ("not just X, it's Y")
 - [ ] Em-dashes ≤ ~1 per 200 words; no double em-dash asides in one paragraph
 - [ ] List lengths varied (not everything in threes); sentence openers varied; active voice preferred
 - [ ] (中文稿) 无 值得注意的是/综上所述/首先…其次/在当今…的时代/赋能·抓手·闭环
-- [ ] Specificity over mess: no fake typos, slang, hedging, invented anecdotes, or casual tone to dodge detectors
+- [ ] Empty hedges cut (arguably/perhaps), but evidence qualifiers kept (under [condition]/in [sample])
+- [ ] Definitions use "is/means/refers to"; question-H2 answers echo the subject (no "It is…")
+- [ ] Named entities all trace to context_pack (no invented brands, no density stuffing)
+- [ ] Stats carry source + year + sample size; primary preferred over secondary
+- [ ] Specificity over mess: no fake typos, slang, invented anecdotes, or casual tone to dodge detectors
 
 ### Brand Alignment
 - [ ] No exaggeration of capabilities
