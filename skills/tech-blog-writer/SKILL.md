@@ -327,17 +327,18 @@ These rules override default writing habits. Violation = rewrite.
 
 **Buzzwords & phrases** (strongest AI tells — curb/replace):
 - Curb corporate-AI words: leverage→use, robust→reliable, seamless, delve, harness, navigate (figurative), unlock/elevate, transformative, cutting-edge, realm/landscape, testament, foster/bolster, nuanced. Keep only as genuine technical terms.
-- Cut filler/signposts: "It's worth noting", "In today's fast-paced world", "When it comes to", "At the end of the day", "Let's dive in".
+- Cut filler/signposts & academic connectives: "It's worth noting", "In today's fast-paced world", "When it comes to", "Let's dive in", furthermore, moreover, consequently, thus, hence, "in terms of".
 - No empty antithesis: "It's not just X, it's Y" / "Not only… but also".
+- 中文 AI 腔同样要去：值得注意的是 / 综上所述 / 首先…其次 / 在当今…的时代 / 赋能·抓手·闭环·无缝。
 
 **Punctuation & patterns**:
 - Em-dash discipline: max ~1 per 200 words, never two asides in one paragraph. Prefer commas/periods/parentheses.
 - Break the rule of three: vary list lengths (2, 4, 5); group three only when there are truly three.
 - Don't start consecutive sentences with "This/These/It"; drop stacked hedges ("can help to potentially…").
 
-**Humanize via specificity, not mess**: never add fake typos, slang, or filler to dodge AI detectors — that kills B2B credibility. Authenticity = real data + real reasoning.
+**Humanize via specificity, not mess**: never add fake typos, slang, hedging, invented anecdotes, or a casual "over-coffee" tone to dodge AI detectors — that kills B2B credibility and can fabricate unsourced claims. Authenticity = real data + real reasoning. Prefer active voice (Rule 14).
 
-**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–13) for examples and self-check method.
+**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–14 + Chinese tells) for examples and self-check method.
 
 ### Formatting
 - ✅ Use bulleted/numbered lists for complex information
@@ -649,13 +650,14 @@ Before finalizing `final_article.md`, verify:
 - [ ] Lists and tables for complex info
 - [ ] **Bold** used for key conclusions
 
-### Anti-AI Tone (Rules 1–13)
+### Anti-AI Tone (Rules 1–14)
 - [ ] No banned filler words (very/really/just/actually/basically/essentially)
 - [ ] No corporate-AI buzzwords (leverage/robust/seamless/delve/harness/realm/transformative…) except genuine technical terms
-- [ ] No filler signposts ("It's worth noting", "In today's fast-paced world", "When it comes to") or empty antithesis ("not just X, it's Y")
+- [ ] No filler signposts or academic connectives ("It's worth noting", "When it comes to", furthermore/moreover/consequently/thus/hence) and no empty antithesis ("not just X, it's Y")
 - [ ] Em-dashes ≤ ~1 per 200 words; no double em-dash asides in one paragraph
-- [ ] List lengths varied (not everything in threes); sentence openers varied
-- [ ] Specificity over mess: no fake typos/slang/filler to dodge detectors
+- [ ] List lengths varied (not everything in threes); sentence openers varied; active voice preferred
+- [ ] (中文稿) 无 值得注意的是/综上所述/首先…其次/在当今…的时代/赋能·抓手·闭环
+- [ ] Specificity over mess: no fake typos, slang, hedging, invented anecdotes, or casual tone to dodge detectors
 
 ### Brand Alignment
 - [ ] No exaggeration of capabilities

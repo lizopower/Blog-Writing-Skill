@@ -365,6 +365,7 @@ The last sentence of every section should push the reader forward — pose a que
 - "It's not just X, it's Y" / "X isn't only about Y" → state X and Y plainly, no antithesis.
 - "Not only… but also…" → split into two sentences or use "and".
 - "Let's dive in", "Let's explore", "Buckle up" → start with the content.
+- Academic/AI connectives — furthermore, moreover, consequently, thus, hence, "in terms of", "it is evident that", "one may argue", "that being said", "additionally" (when overused) → use plain links (and, but, so, then) or start a new sentence.
 
 ### Punctuation & Pattern Constraints
 
@@ -374,12 +375,25 @@ The last sentence of every section should push the reader forward — pose a que
 
 **Rule 13**: Vary openers and connectives. Don't start consecutive sentences with the same word or with "This/These/It". Avoid the stacked-hedge ("can help to potentially improve") — commit to the claim and cite it, or drop it.
 
+**Rule 14**: Prefer active voice; commit, don't hedge. Convert passive to active when a real actor exists ("the BMS cuts current", not "current is cut"). Contractions are fine in moderation (it's, don't). But do **not** manufacture a casual/"coffee-chat" voice, personal anecdotes, slang, or hedging ("honestly", "in my experience", "perhaps in most cases") — those belong to lifestyle blogging, not source-backed B2B technical writing.
+
+### Chinese (中文) AI tells
+
+When the article is in Chinese, cut the machine-typical phrasing the same way:
+
+- 套话开场/收尾：值得注意的是 / 综上所述 / 总而言之 / 总的来说 / 不难看出 → 直接说要点。
+- 时代套话：在当今……的时代 / 随着……的快速发展 / 在数字化浪潮下 → 删。
+- 列表腔：首先……其次……最后 / 一方面……另一方面（机械套用时）→ 自然过渡或直接陈述。
+- 空对仗：不仅……而且 / 不但……还（堆砌时）→ 拆成短句。
+- 万能黑话：赋能 / 抓手 / 闭环 / 打法 / 一站式 / 无缝 / 强大 → 换成具体动作或数字。
+- 虚词冗余：众所周知 / 毋庸置疑 / 不言而喻 → 删，并给出证据。
+
 ### What "human" does NOT mean
 
-This is engineer-to-engineer B2B writing. "Removing AI flavor" means **more specificity, not artificial messiness**:
+This is engineer-to-engineer B2B writing. "Removing AI flavor" means **more specificity, not artificial messiness**. Some popular "humanize to beat AI detectors" advice is wrong for this skill — explicitly reject it:
 
-- ✅ Do: concrete numbers, named mechanisms, real test conditions, one clear idea per sentence, a stated point of view.
-- ❌ Do NOT: insert fake typos, filler interjections, slang, or "imperfections" to dodge AI detectors. That destroys B2B credibility and is not the goal. Authenticity comes from real data and real reasoning, not from sounding sloppy.
+- ✅ Do: concrete numbers, named mechanisms, real test conditions, one clear idea per sentence, a stated point of view backed by the context_pack.
+- ❌ Do NOT: insert fake typos, deliberate grammar errors, run-ons, filler interjections, slang, or hedging to dodge AI detectors. Do NOT add invented anecdotes or a chatty "over coffee" tone. That destroys B2B credibility, can fabricate unsourced claims, and is not the goal. Authenticity comes from real data and real reasoning, not from sounding sloppy or casual.
 
 ### Rhythm Examples
 
