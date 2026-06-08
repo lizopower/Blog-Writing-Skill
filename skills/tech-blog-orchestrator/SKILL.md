@@ -9,6 +9,17 @@ description: Use when preparing a context_pack from a topic and/or files for the
 
 Orchestrate technical blog content preparation by coordinating research and file parsing workflows, then outputting a structured Context Pack. This skill serves as a router/orchestrator and does NOT generate article body text.
 
+## Tavily Requirement
+
+Online topic research must go through `tech-research`, which requires Tavily skills and Tavily CLI authentication.
+
+Before triggering topic research, confirm Tavily is available:
+- Tavily skills from `https://github.com/tavily-ai/skills`
+- Tavily CLI `tvly`
+- `tvly login` or `TAVILY_API_KEY`
+
+If Tavily is unavailable and topic research is needed, stop and ask the user to install/authenticate Tavily. Do not silently fall back to generic web search.
+
 ## Industry Context
 
 This skill is domain-agnostic. Before running it, fill in the context for the subject at hand:
@@ -35,7 +46,7 @@ Identify which inputs are present:
 Based on input type, trigger tasks **in parallel**:
 
 #### If Topic is Present:
-- **Trigger**: Research Skill (or equivalent research workflow)
+- **Trigger**: `tech-research` with Tavily-backed research
 - **Purpose**: Conduct online research about the topic
 - **Expected Output**: 
   - Industry trends and insights
@@ -117,7 +128,7 @@ Output the following JSON structure:
 1. **No Article Writing**: Do NOT generate article body text, introductions, conclusions, or narrative content
 2. **No Chart Generation**: Do NOT create visualizations, graphs, or diagrams
 3. **No SEO Work**: Do NOT perform keyword optimization, meta descriptions, or SEO analysis
-4. **Parallel Execution**: Always trigger research and file parsing concurrently when both inputs exist
+4. **Parallel Execution**: Always trigger Tavily-backed research and file parsing concurrently when both inputs exist
 5. **Source Attribution**: Every key_claim MUST include a traceable source
 6. **Risk Flagging**: Flag any uncertain, contradictory, or unverified information in risk_notes
 7. **Structured Output Only**: Always output the Context Pack as valid JSON

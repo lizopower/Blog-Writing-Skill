@@ -9,6 +9,24 @@ description: Use when researching technical/B2B topics and returning structured,
 
 Act as a "Technical Research Analyst" providing reliable, authoritative research for technical/B2B blog content in any industry. Focus on engineering-level accuracy, source validation, and data-driven insights.
 
+## Tavily Requirement
+
+This skill requires Tavily for online research. Do not use generic web search as a silent fallback.
+
+Before researching, verify:
+- Tavily skills from `https://github.com/tavily-ai/skills` are installed or available.
+- Tavily CLI `tvly` is installed.
+- Tavily authentication is configured via `tvly login` or `TAVILY_API_KEY`.
+
+If Tavily is unavailable, stop and ask the user to install/authenticate Tavily before continuing.
+
+Required Tavily routing:
+- Use `tavily-search` for targeted source discovery.
+- Use `tavily-extract` for extracting known URLs.
+- Use `tavily-research` for deep research reports.
+- Use `tavily-map` / `tavily-crawl` for known-site discovery or docs/site collection.
+- Use `tavily-best-practices` for Tavily implementation guidance.
+
 ## Core Identity
 
 **Role**: Technical Research Analyst  
@@ -421,11 +439,13 @@ See `assets/example_research_notes.md` for a complete example of research notes 
 
 ## Tools and Search Strategy
 
-**Recommended Tools**:
-- `web_fetch`: For accessing specific academic papers, standards documents
-- Web search: For broad information discovery
-- Scholar search: For academic papers specifically
-- Standards database access: For IEC, ISO, GB/T documents
+**Required Tools**:
+- `tavily-search`: For broad and targeted source discovery
+- `tavily-extract`: For accessing and extracting specific academic papers, standards documents, reports, and technical pages
+- `tavily-research`: For deep multi-source reports
+- `tavily-map`: For discovering pages on a known authoritative site
+- `tavily-crawl`: For collecting a docs/site section when needed
+- Standards database access: For IEC, ISO, GB/T documents when available
 
 **Search Query Patterns**:
 - Technical specs: `"[parameter] [unit]" AND "[stress condition]" AND "[product category]"`

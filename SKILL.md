@@ -8,6 +8,25 @@ description: Use when a user asks to brainstorm, plan, write, draft, outline, re
 ## Overview
 This is an entry skill that routes requests to the right blog-writing sub-skill in this bundle. The bundle is domain-agnostic: it works for technical or B2B subject matter such as industrial equipment, software, materials science, manufacturing, logistics, finance, or energy. Always ground the workflow in the user's source material, audience context, and stated business goal.
 
+## Required Dependency
+
+Online research in this bundle requires Tavily.
+
+Before using research-dependent workflows, install:
+
+```bash
+npx skills add https://github.com/tavily-ai/skills
+```
+
+Then install and authenticate Tavily CLI:
+
+```bash
+curl -fsSL https://cli.tavily.com/install.sh | bash
+tvly login --api-key tvly-YOUR_KEY
+```
+
+If Tavily is unavailable, research-dependent skills must stop and ask the user to install/authenticate Tavily instead of falling back to generic web search.
+
 ## When to Use This Skill
 
 Use when the user asks for a technical or B2B content task and the correct sub-skill is unclear, including:

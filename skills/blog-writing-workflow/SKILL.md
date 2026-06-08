@@ -20,6 +20,19 @@ description: Use when the user requests a full technical blog or article end-to-
 
 This skill executes the complete blog writing pipeline automatically, coordinating all sub-skills in the correct order to produce a publication-ready technical article with quality assurance.
 
+## Tavily Preflight
+
+Blog-Writing-Skill requires Tavily for online research.
+
+Before executing any workflow path that needs topic research, audience research, source discovery, source extraction, or claim verification beyond local files, confirm:
+- Tavily skills from `https://github.com/tavily-ai/skills` are installed or available.
+- Tavily CLI `tvly` is installed.
+- Tavily authentication is configured via `tvly login` or `TAVILY_API_KEY`.
+
+If Tavily is unavailable, stop and ask the user to install/authenticate Tavily. Do not silently fall back to generic web search.
+
+If the user only asks to parse provided local files, Tavily preflight is not required until online research or claim verification is requested.
+
 ## Article Workspace Awareness
 
 Before executing the workflow, check whether the user has an existing article workspace:
