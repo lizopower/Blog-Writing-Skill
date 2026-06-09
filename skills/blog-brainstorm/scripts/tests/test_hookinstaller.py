@@ -137,6 +137,23 @@ class HookInstallerTests(unittest.TestCase):
         self.assertEqual(cleaned["hooks"]["SessionStart"], [])
 
 
+    def test_installer_cli_reports_invalid_host_json_cleanly(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            settings = root / ".claude" / "settings.json"
+            settings.parent.mkdir()
+            settings.write_text("{bad json", encoding="utf-8")
+
+            result = run_installer("--harness", "claude", "--install", "--root", str(root), "--yes")
+            unchanged = settings.read_text(encoding="utf-8")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("invalid JSON", result.stderr)
+        self.assertNotIn("NameError", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertEqual(unchanged, "{bad json")
+
+
 def run_installer(*args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         [sys.executable, str(INSTALLER), *args],
