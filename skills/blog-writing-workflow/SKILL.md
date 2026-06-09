@@ -137,6 +137,11 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 - When the workflow is blocked before completion, produce a partial workflow receipt showing completed stages and the blocking stage.
 - Draft section by section through `tech-blog-writer`; for interactive work, pause after each major H2/H3 for user feedback.
 - Treat user edits as project-level guardrails for the current workspace or article. Do not claim the model has permanently learned; persist reusable feedback only when the user wants a local style guide or guardrails update.
+- At finish, review `finish.md` section `Standards Update Candidates`. For each reusable project-level rule the user accepts, persist it with:
+  ```bash
+  python skills/blog-brainstorm/scripts/spec.py add --title "<rule title>" --root <project-root>
+  ```
+  Provide the rule body on stdin or with `--from-file`. This writes only to `content/specs/`; never write project learnings back to the bundle `standards/` directory.
 
 ## References
 

@@ -57,7 +57,7 @@ If `content/articles/<slug>/` already exists, inspect it and continue from `arti
 When local scripts are available, create the workspace with:
 
 ```bash
-python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py create "<Working Title>" --slug <slug> --root <project-root>
 ```
 
 Then validate it with:
@@ -71,6 +71,7 @@ Rules:
 - If the script is unavailable, create the same skeleton manually and then inspect every required artifact.
 - Never overwrite existing files; continue from the existing workspace state.
 - Treat validation failure as a blocker before continuing the brainstorm.
+- Do not edit `article.json.currentPhase` directly. Phase changes must use `article.py advance`; if it exits non-zero, stop and report the reason.
 
 ## article.json
 
@@ -81,7 +82,7 @@ Create or update `article.json` as the state file:
   "id": "article-slug",
   "title": "Working title",
   "status": "brainstorming",
-  "currentPhase": "briefing",
+  "currentPhase": "brainstorming",
   "nextAction": "clarify audience and angle",
   "articleType": "blog",
   "businessGoal": "",
@@ -172,23 +173,18 @@ When the brainstorm converges, present exactly two button-style options and no e
 
 If the user continues, update `article.json`:
 
-```json
-{
-  "currentPhase": "research_planning",
-  "nextAction": "prepare research plan and context sources"
-}
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to brief_confirmed --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py advance --to research_planning --slug <slug> --root <project-root>
 ```
 
 If the user stops, update `article.json`:
 
-```json
-{
-  "currentPhase": "brief_confirmed",
-  "nextAction": "await user approval to continue research"
-}
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to brief_confirmed --slug <slug> --root <project-root>
 ```
 
-After updating `article.json`, run workspace validation again when the validator script is available.
+After advancing the phase, run workspace validation again when the validator script is available. If `article.py advance` fails, do not rewrite `article.json` by hand; fix the missing gate artifact or ask the user whether to use `--waive "<reason>"`.
 
 ## Handoff
 

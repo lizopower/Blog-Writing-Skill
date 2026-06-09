@@ -166,6 +166,16 @@ Context Pack: 未找到
 }
 ```
 
+## Lifecycle Gate
+
+When working inside `content/articles/<slug>/`, write the report to `fact_check.md`, then advance lifecycle state with:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to editorial_review --slug <slug> --root <project-root>
+```
+
+If the command exits non-zero, stop and report the gate reason. Do not edit `article.json.currentPhase` manually. Only use `--waive "<reason>"` when the user explicitly accepts the audit trail.
+
 ## When to Use
 
 **调用时机:**

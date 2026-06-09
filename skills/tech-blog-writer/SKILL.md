@@ -611,6 +611,16 @@ date: [YYYY-MM-DD]
 *Sources: [List primary sources]*
 ```
 
+## Lifecycle Gate
+
+When working inside `content/articles/<slug>/`, write the finished draft to `draft.md`, then advance lifecycle state with:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to fact_checking --slug <slug> --root <project-root>
+```
+
+If the command exits non-zero, stop and report the gate reason. Do not edit `article.json.currentPhase` manually.
+
 ---
 
 ## Chart Integration Examples

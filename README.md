@@ -21,6 +21,7 @@ Works for any technical or B2B domain — industrial equipment, software, manufa
 - [Quick start](#quick-start)
 - [Skill routing](#skill-routing)
 - [The article workspace](#the-article-workspace)
+- [Project writing specs](#project-writing-specs)
 - [Evidence model](#evidence-model)
 - [Troubleshooting](#troubleshooting)
 - [Maintaining this repo](#maintaining-this-repo)
@@ -192,7 +193,7 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.2.0`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.4.0`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## Quick start
 
@@ -252,11 +253,11 @@ goal → audience → pain → angle → evidence → structure → claims → v
 
 ## The article workspace
 
-`blog-brainstorm` creates a Trellis-like workspace in your current project. `article.json` is the workflow-state file; never overwrite an existing workspace — read it and continue from its current phase.
+`blog-brainstorm` creates a Trellis-like workspace in your current project. `article.json` is the workflow-state file; never overwrite an existing workspace — read it and continue from its current phase. Use `article.py` for lifecycle changes instead of editing `article.json.currentPhase` by hand.
 
 ```text
 content/articles/<slug>/        # slug = lowercase kebab-case
-├── article.json   # workflow state: id, title, status, phase, next action, goal, audience…
+├── article.json   # workflow state: id, title, status, phase, track, waivers, next action…
 ├── brief.md       # strategy: audience, pain, angle, CTA, success criteria
 ├── research/      # durable notes by topic/source cluster
 ├── sources.jsonl  # one source-inventory record per line
@@ -273,9 +274,53 @@ Lifecycle: `brainstorming → brief_confirmed → research_planning → context_
 
 ```bash
 # When the bundled scripts are available
-python skills/blog-brainstorm/scripts/create_article_workspace.py "<Working Title>" --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py create "<Working Title>" --slug <slug> --root <project-root>
 python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-root>/content/articles/<slug>
 ```
+
+Lifecycle commands:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py status --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py advance --to outlining --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py finish --slug <slug> --root <project-root>
+python skills/blog-brainstorm/scripts/article.py archive --slug <slug> --root <project-root>
+```
+
+Tracks:
+
+- `full` is the default track and enforces the complete phase chain.
+- `lightweight` may skip the outlining gate by advancing from `strategy_pressure_test` to `drafting`.
+- Both tracks still require fact-check evidence before completion.
+
+If a gate blocks a legitimate migration or emergency handoff, use an explicit audited waiver:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to <phase> --slug <slug> --root <project-root> --waive "<reason>"
+```
+
+Waivers are written to `article.json.waivers[]`; use them sparingly and never as a silent shortcut.
+
+## Project writing specs
+
+Reusable learnings from finished articles live in the user's project, not in this bundle:
+
+```text
+content/specs/
+├── index.md
+└── <slug>.md
+```
+
+Use `spec.py` to manage this project-local spec store:
+
+```bash
+python skills/blog-brainstorm/scripts/spec.py init --root <project-root>
+python skills/blog-brainstorm/scripts/spec.py add --title "Numeric formatting" --root <project-root>
+python skills/blog-brainstorm/scripts/spec.py list --root <project-root>
+python skills/blog-brainstorm/scripts/spec.py show numeric-formatting --root <project-root>
+```
+
+At finish, review `finish.md` → `Standards Update Candidates`; accepted project rules should be added with `spec.py add`. The bundle `standards/` directory remains read-only reference material.
 
 ## Evidence model
 

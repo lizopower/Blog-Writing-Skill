@@ -238,6 +238,12 @@ Output the following JSON structure:
 - Validate JSON syntax
 - Run `python scripts/validate_context_pack.py <context_pack.json>` when a local file is available
 - Present to user with brief summary of what was processed
+- When working inside `content/articles/<slug>/`, save the context pack to `context_pack.json`, then advance lifecycle state with:
+  ```bash
+  python skills/blog-brainstorm/scripts/article.py advance --to context_building --slug <slug> --root <project-root>
+  python skills/blog-brainstorm/scripts/article.py advance --to strategy_pressure_test --slug <slug> --root <project-root>
+  ```
+  If the command exits non-zero, stop and report the gate reason instead of editing `article.json.currentPhase` manually.
 
 ### Step 5: Validate Context Pack (NEW - v2.0)
 - **Trigger**: data-validator skill
