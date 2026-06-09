@@ -377,7 +377,7 @@ The bundle has three layers:
 
 - Portable context: `resume_context.py` prints the current article target, phase, track, next allowed phases, blocked gate reasons, and project specs. You can run it manually in any project.
 - Project runtime: `init.py` installs `.trellis-writing/runtime/scripts/` into each writing project, so hooks do not depend on a global bundle path.
-- Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically.
+- Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically. Both hosts receive the context as a structured SessionStart envelope (`hookSpecificOutput.additionalContext`); `--harness` only selects the install location and timeout. Re-run the installer after updating the bundle so existing hooks pick up the current format.
 
 Manual context check:
 
