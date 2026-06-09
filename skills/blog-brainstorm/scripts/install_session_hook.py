@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import shlex
+import subprocess
 import sys
 from pathlib import Path
 from typing import Any
@@ -43,7 +44,14 @@ def config_path(root: Path, harness: str) -> Path:
 
 def command_for(root: Path) -> str:
     script = Path(__file__).resolve().with_name("resume_context.py")
-    return f"python {shlex.quote(str(script))} --root {shlex.quote(str(root))}"
+    return shell_command(["python", script, "--root", root])
+
+
+def shell_command(args: list[object]) -> str:
+    parts = [str(arg) for arg in args]
+    if sys.platform == "win32":
+        return subprocess.list2cmdline(parts)
+    return shlex.join(parts)
 
 
 def prompt_confirm() -> bool:
@@ -81,8 +89,7 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
     print(f"Installed {harness} session hook at {path}")
     print(
         "Uninstall with: "
-        f"python {shlex.quote(str(Path(__file__).resolve()))} "
-        f"--harness {harness} --uninstall --root {shlex.quote(str(root))}"
+        f"{shell_command(['python', Path(__file__).resolve(), '--harness', harness, '--uninstall', '--root', root])}"
     )
     print("First run may ask you to trust this hook. Review and approve it in your host; do not bypass hook trust.")
     return 0

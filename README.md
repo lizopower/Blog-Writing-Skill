@@ -195,7 +195,7 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.1.0`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.1.1`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## One-command project init
 
@@ -225,6 +225,7 @@ python skills/blog-brainstorm/scripts/init.py --root <project-root> --no-session
 ```
 
 Hook installation prints a diff and asks for confirmation before writing host config. Add `--yes` only for trusted automation/tests.
+Rerun the same init command after updating the bundle to refresh the managed hook block; existing host config outside the managed block is preserved.
 
 ## Quick start
 
@@ -387,6 +388,8 @@ The installer prints a diff with the reason for the change and asks for confirma
 
 - Claude Code: `<project-root>/.claude/settings.json`
 - Codex: `<project-root>/.codex/hooks.json`
+
+Rerunning the installer is idempotent and refreshes only the managed entries, which is useful after updating the bundle.
 
 Uninstall:
 

@@ -19,6 +19,7 @@ from _hookinstaller import (  # noqa: E402
     remove_block,
     render_diff,
 )
+from install_session_hook import command_for  # noqa: E402
 
 
 class HookInstallerTests(unittest.TestCase):
@@ -135,6 +136,35 @@ class HookInstallerTests(unittest.TestCase):
         self.assertEqual(len(data["hooks"]["SessionStart"]), 3)
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"], [])
+
+
+    @unittest.skipUnless(sys.platform == "win32", "Windows command-shell quoting regression")
+    def test_generated_command_runs_under_windows_command_shell(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "project with spaces"
+            article_dir = root / "content" / "articles" / "demo"
+            article_dir.mkdir(parents=True)
+            (article_dir / "article.json").write_text(
+                json.dumps(
+                    {
+                        "currentPhase": "drafting",
+                        "track": "full",
+                        "updatedAt": "2026-06-09T12:00:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                command_for(root),
+                shell=True,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Current Target: demo", result.stdout)
 
 
     def test_installer_cli_reports_invalid_host_json_cleanly(self) -> None:
