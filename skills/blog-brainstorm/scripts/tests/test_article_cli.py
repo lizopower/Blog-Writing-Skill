@@ -78,15 +78,18 @@ class ArticleCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("illegal transition", result.stderr)
 
-    def test_advance_with_waive_updates_article(self) -> None:
+    def test_advance_with_waive_excuses_missing_artifact(self) -> None:
+        # brainstorming -> brief_confirmed is a legal edge; an empty brief.md
+        # fails its gate, and a waiver excuses that artifact gap.
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             run_article("create", "Demo Title", "--slug", "demo", "--root", str(root))
+            (root / "content" / "articles" / "demo" / "brief.md").write_text("# Demo\n", encoding="utf-8")
 
             result = run_article(
                 "advance",
                 "--to",
-                "drafting",
+                "brief_confirmed",
                 "--slug",
                 "demo",
                 "--root",
@@ -97,8 +100,30 @@ class ArticleCliTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0, result.stderr)
             article = load_article(root, "demo")
-            self.assertEqual(article["currentPhase"], "drafting")
+            self.assertEqual(article["currentPhase"], "brief_confirmed")
             self.assertEqual(article["waivers"][0]["reason"], "legacy import")
+
+    def test_advance_waive_cannot_bypass_illegal_transition(self) -> None:
+        # A waiver must not skip phases to fabricate a terminal state.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_article("create", "Demo Title", "--slug", "demo", "--root", str(root))
+
+            result = run_article(
+                "advance",
+                "--to",
+                "completed",
+                "--slug",
+                "demo",
+                "--root",
+                str(root),
+                "--waive",
+                "force illegal jump",
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("illegal transition", result.stderr)
+            self.assertEqual(load_article(root, "demo")["currentPhase"], "brainstorming")
 
     def test_status_migrates_legacy_article_without_writing(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

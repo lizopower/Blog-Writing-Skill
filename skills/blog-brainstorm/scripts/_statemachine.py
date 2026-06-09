@@ -61,7 +61,14 @@ def migrate(article: dict[str, Any]) -> dict[str, Any]:
     return migrated
 
 
-def can_transition(article: dict[str, Any], target_phase: str, workspace: Path) -> TransitionResult:
+def transition_legality(article: dict[str, Any], target_phase: str) -> TransitionResult:
+    """Graph-level legality of a phase transition.
+
+    This is the *hard* layer: valid phases, the transition graph, and the
+    full-track ordering rule. It is never waivable — a waiver may excuse a
+    missing artifact (a `_gate` failure), but must not let an article skip
+    phases (e.g. brainstorming -> completed) and fabricate a terminal state.
+    """
     migrated = migrate(article)
     current_phase = str(migrated.get("currentPhase", ""))
     track = str(migrated.get("track", "full"))
@@ -74,7 +81,17 @@ def can_transition(article: dict[str, Any], target_phase: str, workspace: Path) 
         return TransitionResult(False, f"illegal transition {current_phase}->{target_phase}")
     if current_phase == "strategy_pressure_test" and target_phase == "drafting" and track != "lightweight":
         return TransitionResult(False, "full track must pass through outlining before drafting")
+    return TransitionResult(True)
 
+
+def can_transition(article: dict[str, Any], target_phase: str, workspace: Path) -> TransitionResult:
+    legality = transition_legality(article, target_phase)
+    if not legality.ok:
+        return legality
+
+    migrated = migrate(article)
+    current_phase = str(migrated.get("currentPhase", ""))
+    track = str(migrated.get("track", "full"))
     return _gate(target_phase, current_phase, track, workspace)
 
 
@@ -88,11 +105,18 @@ def advance_article(
 ) -> tuple[dict[str, Any], TransitionResult]:
     migrated = migrate(article)
     current_phase = str(migrated.get("currentPhase", ""))
-    result = can_transition(migrated, target_phase, workspace)
+
+    # Legality is enforced unconditionally; only the artifact gate is waivable.
+    legality = transition_legality(migrated, target_phase)
+    if not legality.ok:
+        return migrated, legality
+
+    track = str(migrated.get("track", "full"))
+    gate = _gate(target_phase, current_phase, track, workspace)
     reason = (waive_reason or "").strip()
 
-    if not result.ok and not reason:
-        return migrated, result
+    if not gate.ok and not reason:
+        return migrated, gate
 
     updated = copy.deepcopy(migrated)
     updated["currentPhase"] = target_phase
@@ -104,14 +128,14 @@ def advance_article(
         {"from": current_phase, "to": target_phase, "at": now},
     ]
 
-    if not result.ok:
+    if not gate.ok:
         updated["waivers"] = [
             *list(updated.get("waivers", [])),
             {"from": current_phase, "to": target_phase, "reason": reason, "at": now},
         ]
-        return updated, TransitionResult(True, f"waived: {result.reason}")
+        return updated, TransitionResult(True, f"waived: {gate.reason}")
 
-    return updated, result
+    return updated, gate
 
 
 def _gate(target_phase: str, current_phase: str, track: str, workspace: Path) -> TransitionResult:

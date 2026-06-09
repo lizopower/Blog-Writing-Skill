@@ -118,28 +118,32 @@ class StateMachineTests(unittest.TestCase):
         self.assertFalse(result.ok)
         self.assertIn("fact_check.md must record PASS", result.reason)
 
-    def test_waive_records_reason_and_history(self) -> None:
+    def test_waive_excuses_missing_artifact_on_a_legal_transition(self) -> None:
+        # brainstorming -> brief_confirmed is a legal edge whose gate requires a
+        # populated brief.md. An empty brief.md fails the gate; a waiver excuses
+        # that artifact gap and advances, recording the waiver.
         with tempfile.TemporaryDirectory() as directory:
             workspace = Path(directory)
             write_workspace(workspace)
+            (workspace / "brief.md").write_text("# Demo\n", encoding="utf-8")
             article = base_article("brainstorming")
 
             updated, result = advance_article(
                 article,
-                "drafting",
+                "brief_confirmed",
                 workspace,
                 waive_reason="manual migration",
                 now="2026-06-09T01:00:00Z",
             )
 
         self.assertTrue(result.ok)
-        self.assertEqual(updated["currentPhase"], "drafting")
+        self.assertEqual(updated["currentPhase"], "brief_confirmed")
         self.assertEqual(
             updated["waivers"],
             [
                 {
                     "from": "brainstorming",
-                    "to": "drafting",
+                    "to": "brief_confirmed",
                     "reason": "manual migration",
                     "at": "2026-06-09T01:00:00Z",
                 }
@@ -147,8 +151,31 @@ class StateMachineTests(unittest.TestCase):
         )
         self.assertEqual(
             updated["history"],
-            [{"from": "brainstorming", "to": "drafting", "at": "2026-06-09T01:00:00Z"}],
+            [{"from": "brainstorming", "to": "brief_confirmed", "at": "2026-06-09T01:00:00Z"}],
         )
+
+    def test_waive_cannot_bypass_illegal_transition(self) -> None:
+        # A waiver must not let an article skip phases and fabricate a terminal
+        # state. brainstorming -> completed is an illegal edge; even with a
+        # waive reason it must be rejected and leave the article untouched.
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_workspace(workspace)
+            article = base_article("brainstorming")
+
+            updated, result = advance_article(
+                article,
+                "completed",
+                workspace,
+                waive_reason="force illegal jump",
+                now="2026-06-09T01:00:00Z",
+            )
+
+        self.assertFalse(result.ok)
+        self.assertIn("illegal transition", result.reason)
+        self.assertEqual(updated["currentPhase"], "brainstorming")
+        self.assertEqual(updated.get("waivers", []), [])
+        self.assertEqual(updated.get("history", []), [])
 
 
 if __name__ == "__main__":
