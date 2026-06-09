@@ -22,6 +22,7 @@ Works for any technical or B2B domain — industrial equipment, software, manufa
 - [Skill routing](#skill-routing)
 - [The article workspace](#the-article-workspace)
 - [Project writing specs](#project-writing-specs)
+- [Optional session injection](#optional-session-injection)
 - [Evidence model](#evidence-model)
 - [Troubleshooting](#troubleshooting)
 - [Maintaining this repo](#maintaining-this-repo)
@@ -193,7 +194,7 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.4.0`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.4.1`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## Quick start
 
@@ -321,6 +322,43 @@ python skills/blog-brainstorm/scripts/spec.py show numeric-formatting --root <pr
 ```
 
 At finish, review `finish.md` → `Standards Update Candidates`; accepted project rules should be added with `spec.py add`. The bundle `standards/` directory remains read-only reference material.
+
+## Optional session injection
+
+The bundle has two layers:
+
+- Portable context: `resume_context.py` prints the current article target, phase, track, next allowed phases, blocked gate reasons, and project specs. You can run it manually in any project.
+- Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically.
+
+Manual context check:
+
+```bash
+python skills/blog-brainstorm/scripts/resume_context.py --root <project-root>
+python skills/blog-brainstorm/scripts/resume_context.py --root <project-root> --slug <article-slug>
+```
+
+When several articles are in progress, the output begins with `Current Target: <slug>` and lists the other active articles plus the switch command. This is intentional: it keeps the agent from writing into the wrong article workspace.
+
+Install the optional hook:
+
+```bash
+python skills/blog-brainstorm/scripts/install_session_hook.py --harness claude --install --root <project-root>
+python skills/blog-brainstorm/scripts/install_session_hook.py --harness codex --install --root <project-root>
+```
+
+The installer prints a diff with the reason for the change and asks for confirmation before writing. It only adds managed SessionStart entries to the host config:
+
+- Claude Code: `<project-root>/.claude/settings.json`
+- Codex: `<project-root>/.codex/hooks.json`
+
+Uninstall:
+
+```bash
+python skills/blog-brainstorm/scripts/install_session_hook.py --harness claude --uninstall --root <project-root>
+python skills/blog-brainstorm/scripts/install_session_hook.py --harness codex --uninstall --root <project-root>
+```
+
+Both hosts may ask you to trust the hook the first time it runs. Review the command and approve it through the host's normal trust flow. Do not bypass hook trust.
 
 ## Evidence model
 
