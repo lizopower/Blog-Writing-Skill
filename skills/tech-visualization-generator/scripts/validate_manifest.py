@@ -241,6 +241,11 @@ class ManifestValidator:
 
 
 def main():
+    # Status glyphs (✅/❌/⚠) in the report crash with UnicodeEncodeError on a
+    # non-UTF-8 stdout, e.g. a Windows GBK console. Force UTF-8 before printing.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
     if len(sys.argv) < 2:
         print("Usage: python validate_manifest.py <manifest.json>")
         sys.exit(1)
