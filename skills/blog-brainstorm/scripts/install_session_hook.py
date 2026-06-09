@@ -43,9 +43,9 @@ def config_path(root: Path, harness: str) -> Path:
     return root / directory / filename
 
 
-def command_for(root: Path) -> str:
+def command_for(root: Path, harness: str) -> str:
     script = f"{RUNTIME_ROOT}/runtime/scripts/session_start.py"
-    return shell_command(["python", script])
+    return shell_command(["python", script, "--harness", harness])
 
 
 def shell_command(args: list[object]) -> str:
@@ -75,7 +75,7 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
         return 1
 
     _directory, _filename, timeout = HARNESS_CONFIG[harness]
-    block = build_session_start_entries(command_for(root), timeout=timeout)
+    block = build_session_start_entries(command_for(root, harness), timeout=timeout)
     new = merge_block(old, block)
     why = (
         "Install Blog-Writing-Skill session context injection so new sessions receive the current "

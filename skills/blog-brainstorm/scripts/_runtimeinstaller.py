@@ -89,8 +89,16 @@ def render_session_start() -> str:
 
 from __future__ import annotations
 
+import argparse
+import json
 import sys
 from pathlib import Path
+
+
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+except AttributeError:
+    pass
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -102,10 +110,33 @@ def project_root() -> Path:
     return Path(__file__).resolve().parents[3]
 
 
-def main() -> int:
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Emit project-local writing context for SessionStart hooks.")
+    parser.add_argument("--harness", choices=["claude", "codex"], default="codex")
+    return parser
+
+
+def session_start_envelope(context: str) -> dict[str, object]:
+    # Claude and Codex SessionStart hooks share an identical wire format:
+    # hookSpecificOutput.{hookEventName, additionalContext}. A single envelope
+    # satisfies both schemas, so output no longer branches on --harness.
+    return {
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": context,
+        }
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
+    # Parse for validation/forward-compat only; the installed hook command still
+    # passes --harness, but output format is now uniform across harnesses.
+    _ = build_parser().parse_args(argv)
+
     from resume_context import render_context
 
-    print(render_context(project_root()), end="")
+    context = render_context(project_root())
+    print(json.dumps(session_start_envelope(context), ensure_ascii=False), end="")
     return 0
 
 

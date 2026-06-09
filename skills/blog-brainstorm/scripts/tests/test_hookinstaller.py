@@ -128,6 +128,7 @@ class HookInstallerTests(unittest.TestCase):
             data = json.loads(hooks_json.read_text(encoding="utf-8"))
             uninstalled = run_installer("--harness", "codex", "--uninstall", "--root", str(root), "--yes")
             cleaned = json.loads(hooks_json.read_text(encoding="utf-8"))
+            command = data["hooks"]["SessionStart"][0]["hooks"][0]["command"]
 
         self.assertEqual(installed.returncode, 0, installed.stderr)
         self.assertIn("hook trust", installed.stdout)
@@ -135,6 +136,7 @@ class HookInstallerTests(unittest.TestCase):
         self.assertIn("SessionStart", data["hooks"])
         self.assertNotIn("session_start", data)
         self.assertEqual(len(data["hooks"]["SessionStart"]), 3)
+        self.assertIn("--harness codex", command)
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"], [])
 
@@ -158,7 +160,7 @@ class HookInstallerTests(unittest.TestCase):
             install_runtime(root)
 
             result = subprocess.run(
-                command_for(root),
+                command_for(root, "codex"),
                 cwd=str(root),
                 shell=True,
                 text=True,

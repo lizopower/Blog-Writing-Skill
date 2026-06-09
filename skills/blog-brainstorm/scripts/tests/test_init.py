@@ -62,12 +62,13 @@ class UnifiedInitTests(unittest.TestCase):
             command = data["hooks"]["SessionStart"][0]["hooks"][0]["command"]
             self.assertIn(".trellis-writing", command)
             self.assertIn("session_start.py", command)
+            self.assertIn("--harness claude", command)
             self.assertNotIn("skills", command)
             self.assertNotIn("resume_context.py --root", command)
             self.assertIn("Installed hooks: claude", result.stdout)
             self.assertIn("First session may ask you to trust", result.stdout)
 
-    def test_project_local_session_start_prints_context(self) -> None:
+    def test_project_local_session_start_prints_default_json_envelope(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             article_dir = root / "content" / "articles" / "demo"
@@ -96,11 +97,90 @@ class UnifiedInitTests(unittest.TestCase):
                 capture_output=True,
                 check=False,
             )
+            payload = json.loads(result.stdout)
 
         self.assertEqual(init_result.returncode, 0, init_result.stderr)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn("Current Target: demo", result.stdout)
-        self.assertIn("Phase: drafting", result.stdout)
+        envelope = payload["hookSpecificOutput"]
+        self.assertEqual(envelope["hookEventName"], "SessionStart")
+        self.assertIn("Current Target: demo", envelope["additionalContext"])
+        self.assertIn("Phase: drafting", envelope["additionalContext"])
+
+    def test_project_local_session_start_prints_claude_json_envelope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            article_dir = root / "content" / "articles" / "demo"
+            article_dir.mkdir(parents=True)
+            (article_dir / "article.json").write_text(
+                json.dumps(
+                    {
+                        "id": "demo",
+                        "title": "Demo",
+                        "status": "drafting",
+                        "currentPhase": "drafting",
+                        "track": "full",
+                        "updatedAt": "2026-06-09T12:00:00Z",
+                        "createdAt": "2026-06-09T00:00:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            init_result = run_init("--root", str(root), "--no-session-hook")
+            session_start = root / ".trellis-writing" / "runtime" / "scripts" / "session_start.py"
+            result = subprocess.run(
+                [sys.executable, str(session_start), "--harness", "claude"],
+                cwd=str(root),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            payload = json.loads(result.stdout)
+
+        self.assertEqual(init_result.returncode, 0, init_result.stderr)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        envelope = payload["hookSpecificOutput"]
+        self.assertEqual(envelope["hookEventName"], "SessionStart")
+        self.assertIn("Current Target: demo", envelope["additionalContext"])
+        self.assertIn("Phase: drafting", envelope["additionalContext"])
+
+    def test_project_local_session_start_prints_codex_json_envelope(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            article_dir = root / "content" / "articles" / "demo"
+            article_dir.mkdir(parents=True)
+            (article_dir / "article.json").write_text(
+                json.dumps(
+                    {
+                        "id": "demo",
+                        "title": "Demo",
+                        "status": "drafting",
+                        "currentPhase": "drafting",
+                        "track": "full",
+                        "updatedAt": "2026-06-09T12:00:00Z",
+                        "createdAt": "2026-06-09T00:00:00Z",
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            init_result = run_init("--root", str(root), "--no-session-hook")
+            session_start = root / ".trellis-writing" / "runtime" / "scripts" / "session_start.py"
+            result = subprocess.run(
+                [sys.executable, str(session_start), "--harness", "codex"],
+                cwd=str(root),
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            payload = json.loads(result.stdout)
+
+        self.assertEqual(init_result.returncode, 0, init_result.stderr)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        envelope = payload["hookSpecificOutput"]
+        self.assertEqual(envelope["hookEventName"], "SessionStart")
+        self.assertIn("Current Target: demo", envelope["additionalContext"])
+        self.assertIn("Phase: drafting", envelope["additionalContext"])
 
     def test_init_installs_all_harnesses(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -172,6 +252,7 @@ class UnifiedInitTests(unittest.TestCase):
             self.assertTrue((root / ".codex" / "hooks.json").exists())
             self.assertTrue((root / ".trellis-writing" / "runtime" / "scripts" / "session_start.py").exists())
             self.assertIn(".trellis-writing", command)
+            self.assertIn("--harness codex", command)
             self.assertIn("Uninstall with:", result.stdout)
 
     def test_update_refreshes_managed_hook_to_local_runtime(self) -> None:
@@ -208,6 +289,7 @@ class UnifiedInitTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn(".trellis-writing", command)
+        self.assertIn("--harness claude", command)
         self.assertNotIn("resume_context.py --root", command)
         self.assertIn("Updated runtime", result.stdout)
 
