@@ -1,14 +1,14 @@
 {
   "name": "blog-writing-skills",
   "description": "Technical and B2B article skills for Claude Code: brainstorm Trellis-like workspaces, research with Tavily, pressure-test strategy, draft, fact-check, and review.",
-  "version": "2.4.2",
+  "version": "3.0.0",
   "author": {
     "name": "lizopower",
     "url": "https://github.com/lizopower"
   },
   "homepage": "https://github.com/lizopower/Blog-Writing-Skill",
   "repository": "https://github.com/lizopower/Blog-Writing-Skill",
-  "license": "MIT",
+  "license": "AGPL-3.0-only",
   "keywords": [
     "blog",
     "writing",

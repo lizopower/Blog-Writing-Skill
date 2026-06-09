@@ -2,7 +2,7 @@
 
 > A source-backed **Agent Skills** bundle for technical and B2B article production — brainstorm, research, pressure-test, draft, fact-check, and review, all grounded in real evidence.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-ready-8A2BE2.svg)](#install)
 [![Codex](https://img.shields.io/badge/Codex-ready-10A37F.svg)](#install)
 [![Research: Tavily](https://img.shields.io/badge/Research-Tavily%20required-FF6F00.svg)](#requirement-tavily)
@@ -427,4 +427,30 @@ python scripts/check_router_sync.py   # both routers must cover every sub-skill
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE).
+GNU Affero General Public License v3.0 (**AGPL-3.0-only**) — see [`LICENSE`](LICENSE).
+
+```
+Blog-Writing-Skill
+Copyright (C) 2026 lizopower
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License, version 3, as published by
+the Free Software Foundation.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY
+WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+PARTICULAR PURPOSE. See the GNU Affero General Public License for more details.
+```
+
+This bundle's article workflow builds on concepts from
+[Trellis](https://github.com/mindfold-ai/Trellis) (AGPL-3.0). To stay aligned
+with that project's copyleft terms, the bundle is distributed under AGPL-3.0 as
+well. Note the AGPL network clause: if you run a modified version of this
+software as a network service, you must offer its users the corresponding source.
+
+## Acknowledgements
+
+The brainstorm-to-workspace lifecycle, the phase gates, and the project-local
+writing-spec store are inspired by [Trellis](https://github.com/mindfold-ai/Trellis),
+an AGPL-3.0 AI development workflow framework. With thanks to the Trellis authors
+for the workflow ideas that shaped this design.
