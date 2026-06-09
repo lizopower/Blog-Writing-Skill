@@ -6,7 +6,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from install_session_hook import install_hook
+from install_session_hook import install_hook, uninstall_hook
+from _runtimeinstaller import ensure_runtime, runtime_root, uninstall_runtime, update_runtime
 from spec import ensure_store, index_path
 
 
@@ -24,9 +25,42 @@ def selected_harnesses(value: str) -> list[str]:
 
 def cmd_init(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
+    if args.update and args.uninstall:
+        print("--update and --uninstall cannot be used together")
+        return 1
+
+    if args.uninstall:
+        removed: list[str] = []
+        if not args.no_session_hook:
+            for harness in selected_harnesses(args.harness):
+                result = uninstall_hook(root, harness, assume_yes=args.yes, print_diff=True)
+                if result != 0:
+                    return result
+                removed.append(harness)
+        runtime_result = uninstall_runtime(root)
+        print("\nBlog-Writing-Skill project uninstall complete.")
+        if removed:
+            print(f"- Removed hooks: {', '.join(removed)}")
+        else:
+            print("- Session hook: skipped")
+        print(f"- Uninstalled runtime: {len(runtime_result.removed)} files")
+        if runtime_result.preserved:
+            print("- Preserved modified runtime files:")
+            for rel in runtime_result.preserved:
+                print(f"  - {rel}")
+        print("- Preserved project content: content/articles, content/specs")
+        return 0
+
     articles = ensure_articles_dir(root)
     ensure_store(root)
     specs_index = index_path(root)
+    update_result = None
+    if args.update:
+        update_result = update_runtime(root)
+        runtime_messages = [f"updated {item}" for item in update_result.written]
+    else:
+        update_result = ensure_runtime(root)
+        runtime_messages = [f"installed/updated {item}" for item in update_result.written]
 
     installed: list[str] = []
     if not args.no_session_hook:
@@ -36,9 +70,19 @@ def cmd_init(args: argparse.Namespace) -> int:
                 return result
             installed.append(harness)
 
-    print("\nBlog-Writing-Skill project init complete.")
+    action = "update" if args.update else "init"
+    print(f"\nBlog-Writing-Skill project {action} complete.")
     print(f"- Articles directory: {articles}")
     print(f"- Project specs index: {specs_index}")
+    print(f"- Project runtime: {runtime_root(root)}")
+    for message in runtime_messages:
+        print(f"  - {message}")
+    if update_result is not None:
+        print(f"- Updated runtime: {len(update_result.written)} files")
+        if update_result.conflicts:
+            print("- Runtime conflicts:")
+            for conflict in update_result.conflicts:
+                print(f"  - {conflict} (kept original, wrote .new)")
     if installed:
         print(f"- Installed hooks: {', '.join(installed)}")
         for harness in installed:
@@ -58,6 +102,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--root", default=".", help="Project root to initialize.")
     parser.add_argument("--harness", choices=["claude", "codex", "all"], default="claude")
     parser.add_argument("--no-session-hook", action="store_true", help="Only create project directories/spec store.")
+    parser.add_argument("--update", action="store_true", help="Refresh project-local runtime templates.")
+    parser.add_argument("--uninstall", action="store_true", help="Remove managed hooks and project-local runtime.")
     parser.add_argument("--yes", action="store_true", help="Skip hook confirmation prompt.")
     return parser
 

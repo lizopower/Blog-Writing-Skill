@@ -20,6 +20,7 @@ from _hookinstaller import (  # noqa: E402
     render_diff,
 )
 from install_session_hook import command_for  # noqa: E402
+from _runtimeinstaller import install_runtime  # noqa: E402
 
 
 class HookInstallerTests(unittest.TestCase):
@@ -154,9 +155,11 @@ class HookInstallerTests(unittest.TestCase):
                 ),
                 encoding="utf-8",
             )
+            install_runtime(root)
 
             result = subprocess.run(
                 command_for(root),
+                cwd=str(root),
                 shell=True,
                 text=True,
                 capture_output=True,

@@ -195,11 +195,11 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.1.1`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.2.0`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## One-command project init
 
-After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: it creates the project-local article/spec directories and installs optional session context injection.
+After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: the bundle is the global scaffold, while each project gets its own `.trellis-writing/` runtime plus project-local article/spec directories and optional session context injection.
 
 ```bash
 python skills/blog-brainstorm/scripts/init.py --root <project-root>
@@ -209,6 +209,9 @@ By default, init creates:
 
 - `content/articles/`
 - `content/specs/index.md`
+- `.trellis-writing/runtime/scripts/`
+- `.trellis-writing/.version`
+- `.trellis-writing/.template-hashes.json`
 - Claude Code SessionStart context injection in `.claude/settings.json`
 
 Use Codex or both hosts:
@@ -226,6 +229,20 @@ python skills/blog-brainstorm/scripts/init.py --root <project-root> --no-session
 
 Hook installation prints a diff and asks for confirmation before writing host config. Add `--yes` only for trusted automation/tests.
 Rerun the same init command after updating the bundle to refresh the managed hook block; existing host config outside the managed block is preserved.
+
+Refresh the project-local runtime after updating the bundle:
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --update
+```
+
+If update sees a user-modified managed runtime file, it keeps the original, writes a same-path `.new` file, and reports the conflict. It never updates `content/articles/` or `content/specs/`.
+
+Uninstall managed hooks and runtime files without deleting writing content:
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --uninstall
+```
 
 ## Quick start
 
@@ -356,9 +373,10 @@ At finish, review `finish.md` → `Standards Update Candidates`; accepted projec
 
 ## Optional session injection
 
-The bundle has two layers:
+The bundle has three layers:
 
 - Portable context: `resume_context.py` prints the current article target, phase, track, next allowed phases, blocked gate reasons, and project specs. You can run it manually in any project.
+- Project runtime: `init.py` installs `.trellis-writing/runtime/scripts/` into each writing project, so hooks do not depend on a global bundle path.
 - Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically.
 
 Manual context check:
@@ -390,6 +408,7 @@ The installer prints a diff with the reason for the change and asks for confirma
 - Codex: `<project-root>/.codex/hooks.json`
 
 Rerunning the installer is idempotent and refreshes only the managed entries, which is useful after updating the bundle.
+For full runtime refresh or uninstall, prefer `init.py --update` / `init.py --uninstall`; direct installer uninstall only removes hook entries.
 
 Uninstall:
 

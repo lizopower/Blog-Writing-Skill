@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from _hookinstaller import build_session_start_entries, merge_block, remove_block, render_diff
+from _runtimeinstaller import RUNTIME_ROOT, ensure_runtime
 
 
 HARNESS_CONFIG = {
@@ -43,8 +44,8 @@ def config_path(root: Path, harness: str) -> Path:
 
 
 def command_for(root: Path) -> str:
-    script = Path(__file__).resolve().with_name("resume_context.py")
-    return shell_command(["python", script, "--root", root])
+    script = f"{RUNTIME_ROOT}/runtime/scripts/session_start.py"
+    return shell_command(["python", script])
 
 
 def shell_command(args: list[object]) -> str:
@@ -65,6 +66,7 @@ def cmd_install(args: argparse.Namespace) -> int:
 
 def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool = True) -> int:
     root = root.resolve()
+    ensure_runtime(root)
     path = config_path(root, harness)
     try:
         old = load_json(path)
