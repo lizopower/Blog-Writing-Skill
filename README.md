@@ -18,6 +18,7 @@ Works for any technical or B2B domain — industrial equipment, software, manufa
 - [Requirement: Tavily](#requirement-tavily)
 - [Install](#install)
 - [Updating](#updating)
+- [One-command project init](#one-command-project-init)
 - [Quick start](#quick-start)
 - [Skill routing](#skill-routing)
 - [The article workspace](#the-article-workspace)
@@ -194,7 +195,36 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v2.4.1`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.1.0`) following [`VERSIONING.md`](VERSIONING.md).
+
+## One-command project init
+
+After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: it creates the project-local article/spec directories and installs optional session context injection.
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root>
+```
+
+By default, init creates:
+
+- `content/articles/`
+- `content/specs/index.md`
+- Claude Code SessionStart context injection in `.claude/settings.json`
+
+Use Codex or both hosts:
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness codex
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness all
+```
+
+Skip hook installation and only create project directories/spec store:
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --no-session-hook
+```
+
+Hook installation prints a diff and asks for confirmation before writing host config. Add `--yes` only for trusted automation/tests.
 
 ## Quick start
 
@@ -339,7 +369,14 @@ python skills/blog-brainstorm/scripts/resume_context.py --root <project-root> --
 
 When several articles are in progress, the output begins with `Current Target: <slug>` and lists the other active articles plus the switch command. This is intentional: it keeps the agent from writing into the wrong article workspace.
 
-Install the optional hook:
+For normal setup, prefer the unified init command:
+
+```bash
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness claude
+python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness codex
+```
+
+Install only the optional hook:
 
 ```bash
 python skills/blog-brainstorm/scripts/install_session_hook.py --harness claude --install --root <project-root>

@@ -52,40 +52,49 @@ def prompt_confirm() -> bool:
 
 
 def cmd_install(args: argparse.Namespace) -> int:
-    root = Path(args.root).resolve()
-    path = config_path(root, args.harness)
+    return install_hook(Path(args.root).resolve(), args.harness, assume_yes=args.yes, print_diff=True)
+
+
+def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool = True) -> int:
+    root = root.resolve()
+    path = config_path(root, harness)
     try:
         old = load_json(path)
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 1
 
-    _directory, _filename, timeout = HARNESS_CONFIG[args.harness]
+    _directory, _filename, timeout = HARNESS_CONFIG[harness]
     block = build_session_start_entries(command_for(root), timeout=timeout)
     new = merge_block(old, block)
     why = (
         "Install Blog-Writing-Skill session context injection so new sessions receive the current "
         "article target, lifecycle gates, and project writing specs."
     )
-    print(render_diff(old, new, why), end="")
-    if not args.yes and not prompt_confirm():
+    if print_diff:
+        print(render_diff(old, new, why), end="")
+    if not assume_yes and not prompt_confirm():
         print("Cancelled.")
         return 1
 
     save_json(path, new)
-    print(f"Installed {args.harness} session hook at {path}")
+    print(f"Installed {harness} session hook at {path}")
     print(
         "Uninstall with: "
         f"python {shlex.quote(str(Path(__file__).resolve()))} "
-        f"--harness {args.harness} --uninstall --root {shlex.quote(str(root))}"
+        f"--harness {harness} --uninstall --root {shlex.quote(str(root))}"
     )
     print("First run may ask you to trust this hook. Review and approve it in your host; do not bypass hook trust.")
     return 0
 
 
 def cmd_uninstall(args: argparse.Namespace) -> int:
-    root = Path(args.root).resolve()
-    path = config_path(root, args.harness)
+    return uninstall_hook(Path(args.root).resolve(), args.harness, assume_yes=args.yes, print_diff=True)
+
+
+def uninstall_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool = True) -> int:
+    root = root.resolve()
+    path = config_path(root, harness)
     try:
         old = load_json(path)
     except ValueError as exc:
@@ -93,12 +102,13 @@ def cmd_uninstall(args: argparse.Namespace) -> int:
         return 1
     new = remove_block(old)
     why = "Remove only Blog-Writing-Skill managed session context hooks and preserve all host hooks."
-    print(render_diff(old, new, why), end="")
-    if not args.yes and not prompt_confirm():
+    if print_diff:
+        print(render_diff(old, new, why), end="")
+    if not assume_yes and not prompt_confirm():
         print("Cancelled.")
         return 1
     save_json(path, new)
-    print(f"Uninstalled {args.harness} session hook from {path}")
+    print(f"Uninstalled {harness} session hook from {path}")
     return 0
 
 
