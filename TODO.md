@@ -86,6 +86,35 @@ live Claude Code session to introspect what actually got injected. Codex should
 execute Part A and report state; Part B is run in Claude Code (by the Claude
 agent or the user).
 
+### Observed evidence (2026-06-10, Part B, dev/local load — NOT a clean profile)
+
+Part B was run inside a Claude Code session whose skills were loaded from this
+local dev repo (not via `claude plugin install`). Result:
+
+- **Step 6 (namespace visible): PASS.** The skill registry lists
+  `blog-writing-skills:<sub-skill>` for all 15 sub-skills, including the root
+  router.
+- **Step 7 (real content injection): FAIL — reproduced the documented failure
+  mode.** Invoking `blog-writing-skills:tech-blog-orchestrator` returned only
+  `Launching skill: blog-writing-skills:tech-blog-orchestrator` plus a generic
+  "invoke the skill and follow it exactly as presented to you" reminder. **None
+  of the actual `skills/tech-blog-orchestrator/SKILL.md` body** (Tavily gate,
+  Industry Context, Workflow Decision Tree, Context Pack v2.3.0 contract) was
+  injected — it had to be read manually to confirm what was missing. This
+  matches the risk in *Context* above and corroborates commit `84236b9`
+  ("clarify plugin skill resolution") not having fully closed it.
+- **Step 8 (topic-only routing): not run** — contingent on Step 7 and needs a
+  real session; deferred to the clean-profile pass.
+
+**Do NOT act on this alone.** This is a dev/local-load observation, not a clean
+`claude plugin install`. The decisive test is to re-run Step 7 in Part A's
+clean profile:
+- If Step 7 still FAILS on a clean plugin install → confirmed bug; execute the
+  FAIL branch (demote plugin path below the standalone installer in README,
+  document the exact failure mode, bump, commit).
+- If Step 7 PASSES on a clean install → the issue is specific to local/dev
+  loading; README's plugin-first ordering stands; record evidence and close.
+
 ---
 
 ## 2. Real-host validation of the Codex SessionStart envelope
