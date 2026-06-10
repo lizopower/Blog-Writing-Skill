@@ -2,3 +2,4 @@ __pycache__/
 *.py[cod]
 .ccg/
 .pytest_cache/
+.clean-profile/

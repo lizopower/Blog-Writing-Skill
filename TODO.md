@@ -115,6 +115,45 @@ clean profile:
 - If Step 7 PASSES on a clean install → the issue is specific to local/dev
   loading; README's plugin-first ordering stands; record evidence and close.
 
+### Part A results (2026-06-10, Codex, isolated clean profile)
+
+Run by Codex against an isolated profile (`CLAUDE_CONFIG_DIR=.clean-profile`,
+gitignored), Claude Code CLI `2.1.170`. Marketplace added from the local repo
+path (no network).
+
+- **Install: PASS, with one caveat.** `claude plugin marketplace add` and
+  `claude plugin install blog-writing-skills` install version `3.7.0` cleanly.
+  Caveat: adding the marketplace directly from the repo root **failed** with
+  `EPERM: scandir '.pytest_cache'` — the CLI scans the whole source dir and
+  chokes on an unreadable untracked cache dir. Codex worked around it with a
+  tracked-file checkout as the local source. GitHub-sourced installs would not
+  hit a local `.pytest_cache`, but **a real clean-profile install from GitHub is
+  still unverified** (network path not exercised).
+- **On-disk packaging: PASS (good signal).** The installed plugin contains all
+  15 routable sub-skills + the root router; `check_router_sync.py` passes in
+  both the repo and the installed copy. So the SKILL.md files DO ship correctly
+  — if Part B Step 7 still fails on this clean install, it is a *runtime
+  resolution* problem, not missing files.
+- **Update: works only with the marketplace-qualified name.** `claude plugin
+  update blog-writing-skills` fails with `Plugin "blog-writing-skills" not
+  found`; `claude plugin update blog-writing-skills@blog-writing-marketplace`
+  succeeds ("already at latest 3.7.0"). README update instructions should use
+  the qualified form.
+- **Uninstall stale state: NOT fully clean.** `claude plugin uninstall` empties
+  `installed_plugins.json` but leaves the cached plugin tree under
+  `plugins/cache/blog-writing-marketplace/blog-writing-skills/3.7.0/` with an
+  `.orphaned_at` marker. Reinstall succeeds and clears the marker (no
+  interference), so impact is low, but uninstall is not a full cleanup.
+- **Could not verify (by scope):** Part B (runtime content injection) — needs a
+  live Claude session.
+
+**Plugin left installed for Part B.** A follow-up Claude Code session must set
+`CLAUDE_CONFIG_DIR=C:\tmp\Blog-Writing-Skill\.clean-profile`, ideally launched
+from a neutral directory (not the repo) so the repo's own `skills/` files don't
+confound the plugin-routing test. Then invoke
+`blog-writing-skills:tech-blog-orchestrator` and check whether the real SKILL.md
+body loads (Step 7) — the decisive test.
+
 ---
 
 ## 2. Real-host validation of the Codex SessionStart envelope
