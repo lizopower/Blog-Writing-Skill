@@ -11,14 +11,23 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from _hookinstaller import build_session_start_entries, merge_block, remove_block, render_diff
+from _hookinstaller import (
+    build_pre_tool_use_entries,
+    build_session_start_entries,
+    merge_block,
+    remove_block,
+    render_diff,
+)
 from _runtimeinstaller import RUNTIME_ROOT, ensure_runtime
 
 
+# directory, filename, timeout, supports PreToolUse phase gate
 HARNESS_CONFIG = {
-    "claude": (".claude", "settings.json", 30),
-    "codex": (".codex", "hooks.json", 10),
+    "claude": (".claude", "settings.json", 30, True),
+    "codex": (".codex", "hooks.json", 10, False),
 }
+
+PHASE_GATE_TIMEOUT = 10
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -39,13 +48,18 @@ def save_json(path: Path, data: dict[str, Any]) -> None:
 
 
 def config_path(root: Path, harness: str) -> Path:
-    directory, filename, _timeout = HARNESS_CONFIG[harness]
+    directory, filename, _timeout, _gate = HARNESS_CONFIG[harness]
     return root / directory / filename
 
 
 def command_for(root: Path, harness: str) -> str:
     script = f"{RUNTIME_ROOT}/runtime/scripts/session_start.py"
     return shell_command(["python", script, "--harness", harness])
+
+
+def gate_command_for(root: Path) -> str:
+    script = f"{RUNTIME_ROOT}/runtime/scripts/phase_gate.py"
+    return shell_command(["python", script])
 
 
 def shell_command(args: list[object]) -> str:
@@ -74,12 +88,16 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
         print(str(exc), file=sys.stderr)
         return 1
 
-    _directory, _filename, timeout = HARNESS_CONFIG[harness]
+    _directory, _filename, timeout, gate_supported = HARNESS_CONFIG[harness]
     block = build_session_start_entries(command_for(root, harness), timeout=timeout)
-    new = merge_block(old, block)
+    new = merge_block(old, block, "SessionStart")
+    if gate_supported:
+        gate_block = build_pre_tool_use_entries(gate_command_for(root), timeout=PHASE_GATE_TIMEOUT)
+        new = merge_block(new, gate_block, "PreToolUse")
     why = (
         "Install Blog-Writing-Skill session context injection so new sessions receive the current "
-        "article target, lifecycle gates, and project writing specs."
+        "article target, lifecycle gates, and project writing specs. On Claude, also install the "
+        "PreToolUse phase gate that blocks writes to lifecycle artifacts before their phase."
     )
     if print_diff:
         print(render_diff(old, new, why), end="")

@@ -52,8 +52,10 @@ Use execution statuses (`completed`, `skipped`, `blocked`) for work stages. Use 
 Use this compact row after each stage:
 
 ```markdown
-Workflow receipt: `<stage>` — <status> — artifact: `<path or inline artifact id>` — next allowed: `<skill or blocked reason>`
+Workflow receipt: `<stage>` — <status> — artifact: `<path or inline artifact id>` — advance: `<article.py advance output, or "no workspace">` — next allowed: `<skill or blocked reason>`
 ```
+
+When an article workspace exists, the `advance` field must quote the actual `article.py advance` result line (e.g. `demo: outlining -> drafting`). A failed or missing `advance` makes the stage `blocked`, not `completed`.
 
 ## Issues Requiring Attention
 

@@ -14,6 +14,7 @@ INSTALLER = SCRIPTS_DIR / "install_session_hook.py"
 
 from _hookinstaller import (  # noqa: E402
     MANAGED_BY,
+    build_pre_tool_use_entries,
     build_session_start_entries,
     merge_block,
     remove_block,
@@ -73,6 +74,30 @@ class HookInstallerTests(unittest.TestCase):
         self.assertEqual(removed["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"], "python keep.py")
         self.assertEqual(removed["hooks"].get("SessionStart"), [])
 
+    def test_merge_block_handles_pre_tool_use_event_independently(self) -> None:
+        config = merge_block({}, build_session_start_entries("python session.py", timeout=10))
+        merged = merge_block(config, build_pre_tool_use_entries("python gate.py", timeout=10), "PreToolUse")
+        replaced = merge_block(merged, build_pre_tool_use_entries("python gate2.py", timeout=10), "PreToolUse")
+
+        self.assertEqual(len(merged["hooks"]["SessionStart"]), 3)
+        self.assertEqual(len(merged["hooks"]["PreToolUse"]), 1)
+        self.assertEqual(merged["hooks"]["PreToolUse"][0]["matcher"], "Write|Edit")
+        self.assertEqual(len(replaced["hooks"]["PreToolUse"]), 1)
+        self.assertEqual(replaced["hooks"]["PreToolUse"][0]["hooks"][0]["command"], "python gate2.py")
+        self.assertEqual(len(replaced["hooks"]["SessionStart"]), 3)
+
+    def test_remove_block_strips_managed_pre_tool_use_entries(self) -> None:
+        config = merge_block(
+            {"hooks": {"PreToolUse": [{"matcher": "Task", "hooks": [{"type": "command", "command": "keep.py"}]}]}},
+            build_pre_tool_use_entries("python gate.py", timeout=10),
+            "PreToolUse",
+        )
+
+        removed = remove_block(config)
+
+        self.assertEqual(len(removed["hooks"]["PreToolUse"]), 1)
+        self.assertEqual(removed["hooks"]["PreToolUse"][0]["matcher"], "Task")
+
     def test_render_diff_includes_why_and_unified_diff(self) -> None:
         old = {"hooks": {"SessionStart": []}}
         new = merge_block(old, build_session_start_entries("python resume_context.py", timeout=10))
@@ -116,9 +141,13 @@ class HookInstallerTests(unittest.TestCase):
         self.assertIn("Uninstall with:", installed.stdout)
         self.assertEqual(len(data["hooks"]["SessionStart"]), 4)
         self.assertEqual(data["hooks"]["SessionStart"][0]["hooks"][0]["command"], "python existing.py")
+        self.assertEqual(len(data["hooks"]["PreToolUse"]), 1)
+        self.assertIn("phase_gate.py", data["hooks"]["PreToolUse"][0]["hooks"][0]["command"])
+        self.assertEqual(data["hooks"]["PreToolUse"][0]["matcher"], "Write|Edit")
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"][0]["hooks"][0]["command"], "python existing.py")
         self.assertEqual(len(cleaned["hooks"]["SessionStart"]), 1)
+        self.assertEqual(cleaned["hooks"].get("PreToolUse"), [])
 
     def test_installer_cli_uses_codex_hooks_json_schema_from_sample(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -136,6 +165,7 @@ class HookInstallerTests(unittest.TestCase):
         self.assertIn("SessionStart", data["hooks"])
         self.assertNotIn("session_start", data)
         self.assertEqual(len(data["hooks"]["SessionStart"]), 3)
+        self.assertNotIn("PreToolUse", data["hooks"])
         self.assertIn("--harness codex", command)
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"], [])

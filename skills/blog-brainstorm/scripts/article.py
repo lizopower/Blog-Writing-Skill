@@ -43,6 +43,21 @@ def save_article(workspace: Path, article: dict[str, Any]) -> None:
     )
 
 
+def ensure_hooks(root: Path, harness: str) -> None:
+    """Best-effort hook install so gates are active without a manual init step."""
+    from install_session_hook import HARNESS_CONFIG, install_hook
+
+    harnesses = sorted(HARNESS_CONFIG) if harness == "all" else [harness]
+    for name in harnesses:
+        try:
+            code = install_hook(root, name, assume_yes=True, print_diff=False)
+        except Exception as exc:  # noqa: BLE001 - workspace creation must not fail on hook setup
+            print(f"warning: {name} hook install failed ({exc}); run init.py manually", file=sys.stderr)
+            continue
+        if code != 0:
+            print(f"warning: {name} hook install failed; run init.py manually", file=sys.stderr)
+
+
 def cmd_create(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     slug = args.slug or slugify(args.title)
@@ -53,6 +68,8 @@ def cmd_create(args: argparse.Namespace) -> int:
     article.setdefault("waivers", [])
     article.setdefault("series", None)
     save_article(workspace, article)
+    if not args.no_hooks:
+        ensure_hooks(root, args.harness)
     print(workspace)
     return 0
 
@@ -176,6 +193,8 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--root", default=".", help="Project root where content/articles lives.")
     create.add_argument("--type", default="blog", help="Article type, e.g. blog, white-paper, guide.")
     create.add_argument("--track", choices=["full", "lightweight"], default="full")
+    create.add_argument("--harness", choices=["claude", "codex", "all"], default="claude")
+    create.add_argument("--no-hooks", action="store_true", help="Skip session/gate hook installation.")
     create.set_defaults(func=cmd_create)
 
     advance = subparsers.add_parser("advance", help="Advance to a lifecycle phase.")

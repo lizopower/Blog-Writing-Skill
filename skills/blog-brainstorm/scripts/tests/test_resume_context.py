@@ -96,6 +96,9 @@ class ResumeContextTests(unittest.TestCase):
         self.assertIn("outlining: ok", result.stdout)
         self.assertIn("drafting: blocked: full track must pass through outlining before drafting", result.stdout)
         self.assertIn("Numeric Formatting [project]", result.stdout)
+        self.assertIn("Phase context (read these, skip the rest):", result.stdout)
+        self.assertIn("context_pack.json", result.stdout)
+        self.assertIn("strategy.md", result.stdout)
 
     def test_latest_updated_article_is_current_and_others_are_listed(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

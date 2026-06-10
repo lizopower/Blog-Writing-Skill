@@ -23,7 +23,7 @@ Rules:
   2. `data-validator` has passed or returned warnings explicitly accepted by the user,
   3. an outline from `tech-article-architect` exists,
   4. any skipped upstream stage has an explicit user waiver.
-  If any item is missing, stop and produce a blocked workflow receipt instead of drafting.
+  If any item is missing, stop and produce a blocked workflow receipt instead of drafting. When an article workspace exists, this gate is enforced mechanically: `article.py advance --to drafting` must succeed first (see Lifecycle State Binding).
 - **Workflow receipt after every stage**: after each completed, skipped, or blocked stage, record the stage name, status, artifact path/name, and next allowed skill. Never keep stage outputs only in working memory.
 - The user only naming a topic, audience, word count, or keyword density is **not** a request to skip steps. Run the whole pipeline.
 - Skip a step **only** on an explicit user request — "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft" / "no fact-check". When you skip on request, state which steps you skipped.
@@ -78,7 +78,37 @@ If present:
 - Continue from `article.json.currentPhase` when possible.
 - Do not overwrite artifacts without user confirmation.
 
+If absent for a full-pipeline request, create one so lifecycle gates are active:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py create "<working title>" --root <project-root>
+```
+
 If absent and the user wants ideation or strategy discovery, invoke `blog-brainstorm`.
+
+## Lifecycle State Binding (hard gates)
+
+When an article workspace exists, `article.json` — enforced by the lifecycle state machine, not by this document — is the single source of truth for pipeline position. Bind every stage to it. The `article.py` CLI lives at `skills/blog-brainstorm/scripts/article.py` in the bundle and is mirrored to `<project-root>/.trellis-writing/runtime/scripts/article.py`.
+
+- **Stage start**: run `python article.py status --slug <slug> --root <project-root>`. Only do work for the current phase or a `next:` phase marked `ok`.
+- **Stage end**: run `python article.py advance --to <phase> --slug <slug> --root <project-root>`. The artifact gate verifies the stage output file; a non-zero exit means the stage is NOT done — fix the artifact or stop with a blocked receipt. Never hand-edit `article.json` phase fields.
+- **Receipts are script output**: each workflow receipt row must quote the `advance` result line (e.g. `demo: context_building -> strategy_pressure_test`). A receipt for a workspace-backed stage without a successful `advance` is invalid.
+- **Waivers**: pass `--waive "<reason>"` only after explicit user approval, quoting the user's words.
+
+Step-to-phase mapping:
+
+| After completing | Advance to |
+|---|---|
+| research plan agreed | `research_planning` |
+| sources gathered (`sources.jsonl` non-empty) | `context_building` |
+| steps 2–3: Context Pack built and validated | `strategy_pressure_test` |
+| step 4 (or default strategy): `strategy.md` Resolved Decisions filled | `outlining` |
+| step 5: outline approved | `drafting` |
+| step 7: draft complete | `fact_checking` |
+| step 8: fact-check report written | `editorial_review` |
+| editorial review done + fact-check PASS | `completed` |
+
+A PreToolUse hook (installed by `init.py` and `article.py create`) independently denies writes to `outline.md`, `draft.md`, `fact_check.md`, and `editorial_review.md` before their phase. If a write is denied, do not work around it (no renamed files, no shell redirection, no inline article text in chat); run the missing upstream stages and advance the phase instead.
 
 ## Pipeline (core 8 steps + optional SEO layers)
 
@@ -183,6 +213,6 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 
 ## Metadata
 
-- Updated: 2026-06-08
+- Updated: 2026-06-10
 - Industry: Domain-agnostic
 - Version: governed by the release version in the manifests (see `VERSIONING.md`).

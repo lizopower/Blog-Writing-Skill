@@ -11,6 +11,8 @@ from typing import Any
 
 MANAGED_BY = "blog-writing-skill"
 SESSION_MATCHERS = ("startup", "clear", "compact")
+PRE_TOOL_USE_MATCHER = "Write|Edit"
+MANAGED_EVENTS = ("SessionStart", "PreToolUse")
 
 
 def build_session_start_entries(command: str, *, timeout: int) -> list[dict[str, Any]]:
@@ -30,29 +32,45 @@ def build_session_start_entries(command: str, *, timeout: int) -> list[dict[str,
     ]
 
 
-def merge_block(config: dict[str, Any], block: list[dict[str, Any]]) -> dict[str, Any]:
-    merged = remove_block(config)
+def build_pre_tool_use_entries(command: str, *, timeout: int) -> list[dict[str, Any]]:
+    return [
+        {
+            "_managed_by": MANAGED_BY,
+            "matcher": PRE_TOOL_USE_MATCHER,
+            "hooks": [
+                {
+                    "type": "command",
+                    "command": command,
+                    "timeout": timeout,
+                }
+            ],
+        }
+    ]
+
+
+def merge_block(config: dict[str, Any], block: list[dict[str, Any]], event: str = "SessionStart") -> dict[str, Any]:
+    merged = remove_block(config, (event,))
     hooks = merged.setdefault("hooks", {})
     if not isinstance(hooks, dict):
         hooks = {}
         merged["hooks"] = hooks
-    session_start = hooks.setdefault("SessionStart", [])
-    if not isinstance(session_start, list):
-        session_start = []
-        hooks["SessionStart"] = session_start
-    session_start.extend(copy.deepcopy(block))
+    entries = hooks.setdefault(event, [])
+    if not isinstance(entries, list):
+        entries = []
+        hooks[event] = entries
+    entries.extend(copy.deepcopy(block))
     return merged
 
 
-def remove_block(config: dict[str, Any]) -> dict[str, Any]:
+def remove_block(config: dict[str, Any], events: tuple[str, ...] = MANAGED_EVENTS) -> dict[str, Any]:
     cleaned = copy.deepcopy(config)
     hooks = cleaned.get("hooks")
     if not isinstance(hooks, dict):
         return cleaned
-    session_start = hooks.get("SessionStart")
-    if not isinstance(session_start, list):
-        return cleaned
-    hooks["SessionStart"] = [entry for entry in session_start if not _is_managed(entry)]
+    for event in events:
+        entries = hooks.get(event)
+        if isinstance(entries, list):
+            hooks[event] = [entry for entry in entries if not _is_managed(entry)]
     return cleaned
 
 

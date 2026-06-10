@@ -56,6 +56,8 @@ Research momentum is not a waiver. Even if the research appears complete and the
 
 Proceed to draft directly **only** when the user explicitly supplied both artifacts, or explicitly asked to skip the upstream research/validation/outline steps. If they explicitly opted out, note that the draft is unvalidated and recommend a `fact-checker` pass.
 
+When an article workspace (`content/articles/<slug>/`) exists, this guard is mechanical, not judgment-based: `article.json.currentPhase` must already be `drafting` (advance with `python skills/blog-brainstorm/scripts/article.py advance --to drafting --slug <slug> --root <project-root>`; the gate fails unless `outline.md` has body content). A PreToolUse hook denies writes to `draft.md` in earlier phases — if denied, hand back to `blog-writing-workflow` instead of working around the gate.
+
 ---
 
 ## Input Structure

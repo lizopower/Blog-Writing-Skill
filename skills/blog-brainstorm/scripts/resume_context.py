@@ -15,6 +15,22 @@ if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 
 
+# Trellis-style per-task context: each phase loads exactly the artifacts it
+# needs, instead of asking the agent to rediscover the workspace every session.
+PHASE_CONTEXT: dict[str, tuple[str, ...]] = {
+    "brainstorming": ("brief.md",),
+    "brief_confirmed": ("brief.md",),
+    "research_planning": ("brief.md", "sources.jsonl"),
+    "context_building": ("brief.md", "sources.jsonl", "context_pack.json"),
+    "strategy_pressure_test": ("context_pack.json", "strategy.md"),
+    "outlining": ("brief.md", "context_pack.json", "strategy.md", "outline.md"),
+    "drafting": ("outline.md", "context_pack.json", "strategy.md", "draft.md"),
+    "fact_checking": ("draft.md", "context_pack.json", "fact_check.md"),
+    "editorial_review": ("draft.md", "fact_check.md", "editorial_review.md"),
+    "completed": ("finish.md",),
+}
+
+
 def load_statemachine() -> tuple[Any | None, str | None]:
     try:
         import _statemachine
@@ -86,6 +102,14 @@ def render_context(root: Path, slug: str | None = None) -> str:
         f"Track: {track}",
         f"Workspace: {current['workspace']}",
     ]
+
+    required = PHASE_CONTEXT.get(current_phase)
+    if required:
+        lines.extend(["", "Phase context (read these, skip the rest):"])
+        for name in required:
+            artifact = current["workspace"] / name
+            suffix = "" if artifact.exists() else " (missing)"
+            lines.append(f"- {artifact}{suffix}")
 
     other_active = [
         item
