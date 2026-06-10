@@ -1,19 +1,33 @@
 # Blog Writing Skill
 
-> A source-backed **Agent Skills** bundle for technical and B2B article production — brainstorm, research, pressure-test, draft, fact-check, and review, all grounded in real evidence.
+> A source-backed **Agent Skills** bundle for technical and B2B article production: brainstorm article directions, build evidence packs, pressure-test strategy, draft from sources, fact-check claims, and finish on-page SEO.
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/lizopower/Blog-Writing-Skill?label=release)](https://github.com/lizopower/Blog-Writing-Skill/releases)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-ready-8A2BE2.svg)](#install)
 [![Codex](https://img.shields.io/badge/Codex-ready-10A37F.svg)](#install)
 [![Research: Tavily](https://img.shields.io/badge/Research-Tavily%20required-FF6F00.svg)](#requirement-tavily)
 
-Works for any technical or B2B domain — industrial equipment, software, manufacturing, materials science, logistics, finance, energy — as long as **you** supply the real industry context, audience, business goal, and source material. The skills never invent statistics, quotes, or citations.
+Works for any technical or B2B domain — industrial equipment, software, manufacturing, materials science, logistics, finance, energy — as long as **you** supply the real industry context, audience, business goal, and source material. The skills are designed to flag missing evidence instead of inventing statistics, quotes, or citations.
+
+## At a Glance
+
+| Need | Use |
+|---|---|
+| You have a vague article idea | `blog-brainstorm` creates a Trellis-like workspace and narrows the angle |
+| You want a full article workflow | `blog-writing-workflow` runs research, validation, outline, draft, and fact-check gates |
+| You need SEO strategy before writing | `seo-serp-strategist` adds SERP intent, keyword, and gap analysis |
+| You have files or tables | `tech-file-parser` and `tech-blog-orchestrator` turn them into a context pack |
+| You need final publish QA | `fact-checker` and `on-page-seo-finalizer` verify claims and page metadata |
+
+Best fit: long-form technical content where source traceability matters. Not a fit: generic lifestyle posts, unsupported thought pieces, or requests where the agent is allowed to make up evidence.
 
 ---
 
 ## Table of Contents
 
 - [Why this bundle](#why-this-bundle)
+- [What you get](#what-you-get)
 - [The pipeline](#the-pipeline)
 - [Requirement: Tavily](#requirement-tavily)
 - [Install](#install)
@@ -40,6 +54,14 @@ Most "write me a blog" prompts hallucinate numbers and produce generic copy. Thi
 - **Strategy before prose.** A Trellis-like workspace, a one-question-at-a-time pressure test, and a fact-check gate sit between the idea and the published article.
 
 It ships **15 composable sub-skills** plus a single router that picks the right one from natural language.
+
+## What you get
+
+- A root router (`SKILL.md`) for Claude Code and a Codex-facing router (`skills/blog-writing-skills/SKILL.md`).
+- A durable article workspace under `content/articles/<slug>/`, with phase state, brief, sources, context pack, outline, draft, reviews, and finish notes.
+- Context Pack validation for claims, source metadata, extracted tables, glossary, risks, and optional SEO fields.
+- Optional SessionStart context injection for Claude Code and Codex projects, so an agent can resume the current article without guessing.
+- Maintenance checks for release-version alignment and router coverage.
 
 ## The pipeline
 
@@ -109,7 +131,29 @@ Prefer authoritative sources (standards bodies, peer-reviewed papers, government
 
 ## Install
 
-Agent Skills follow an open standard, but installs **do not sync across products** — install separately for each agent you use.
+Agent Skills follow an open standard, but installs **do not sync across products** — install this bundle separately for each agent you use.
+
+For most users, clone directly into the target skills folder. That keeps updates as simple as `git pull`:
+
+```bash
+# Codex
+git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills
+
+# Claude Code
+git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.claude/skills/blog-writing-skills
+```
+
+On Windows PowerShell:
+
+```powershell
+# Codex
+git clone https://github.com/lizopower/Blog-Writing-Skill.git "$HOME\.codex\skills\blog-writing-skills"
+
+# Claude Code
+git clone https://github.com/lizopower/Blog-Writing-Skill.git "$HOME\.claude\skills\blog-writing-skills"
+```
+
+Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
 
 | Agent | Method | Skill folder |
 |---|---|---|
@@ -118,14 +162,13 @@ Agent Skills follow an open standard, but installs **do not sync across products
 | Codex | standalone skill | `~/.codex/skills/blog-writing-skills/` |
 | Codex | plugin bundle | repo root via `.codex-plugin/` |
 
-```bash
-git clone https://github.com/lizopower/Blog-Writing-Skill.git
-```
-
 <details>
 <summary><b>Claude Code — standalone skill</b></summary>
 
+Use this copy-based path only if you do not want the installed skill folder to be a git checkout:
+
 ```bash
+git clone https://github.com/lizopower/Blog-Writing-Skill.git
 mkdir -p ~/.claude/skills
 cp -R Blog-Writing-Skill ~/.claude/skills/blog-writing-skills
 ```
@@ -154,7 +197,10 @@ Plugin skills are exposed with **namespacing** (`blog-writing-skills:<skill>`) r
 <details>
 <summary><b>Codex — standalone skill</b></summary>
 
+Use this copy-based path only if you do not want the installed skill folder to be a git checkout:
+
 ```bash
+git clone https://github.com/lizopower/Blog-Writing-Skill.git
 mkdir -p ~/.codex/skills
 cp -R Blog-Writing-Skill ~/.codex/skills/blog-writing-skills
 ```
@@ -199,7 +245,7 @@ git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/bl
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.2.0`) following [`VERSIONING.md`](VERSIONING.md).
+After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.4.0`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## One-command project init
 
