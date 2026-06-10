@@ -1,7 +1,7 @@
 {
   "name": "blog-writing-skills",
   "description": "Technical and B2B article skills for Claude Code: brainstorm Trellis-like workspaces, research with Tavily, pressure-test strategy, draft, fact-check, and review.",
-  "version": "3.6.0",
+  "version": "3.7.0",
   "author": {
     "name": "lizopower",
     "url": "https://github.com/lizopower"

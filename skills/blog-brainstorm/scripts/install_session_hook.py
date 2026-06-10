@@ -11,6 +11,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from _agentsmd import (
+    PRELUDE_FILENAME,
+    MARKER_BEGIN,
+    remove_prelude,
+    render_prelude,
+    upsert_prelude,
+)
 from _hookinstaller import (
     build_pre_tool_use_entries,
     build_session_start_entries,
@@ -62,6 +69,34 @@ def gate_command_for(root: Path) -> str:
     return shell_command(["python", script])
 
 
+def write_prelude(root: Path) -> Path:
+    """Insert/refresh the managed Codex lifecycle prelude in AGENTS.md."""
+    path = root / PRELUDE_FILENAME
+    existing = path.read_text(encoding="utf-8") if path.exists() else ""
+    path.write_text(upsert_prelude(existing, render_prelude()), encoding="utf-8")
+    return path
+
+
+def clear_prelude(root: Path) -> Path | None:
+    """Strip the managed prelude block, preserving any user content.
+
+    Returns the path when a managed block was present, else ``None``. Removes
+    the file only when stripping the block leaves it empty.
+    """
+    path = root / PRELUDE_FILENAME
+    if not path.exists():
+        return None
+    existing = path.read_text(encoding="utf-8")
+    if MARKER_BEGIN not in existing:
+        return None
+    remaining = remove_prelude(existing)
+    if remaining.strip():
+        path.write_text(remaining, encoding="utf-8")
+    else:
+        path.unlink()
+    return path
+
+
 def shell_command(args: list[object]) -> str:
     parts = [str(arg) for arg in args]
     if sys.platform == "win32":
@@ -107,6 +142,12 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
 
     save_json(path, new)
     print(f"Installed {harness} session hook at {path}")
+    if not gate_supported:
+        prelude_path = write_prelude(root)
+        print(
+            f"Wrote lifecycle prelude to {prelude_path} - {harness} has no PreToolUse gate, "
+            "so this managed AGENTS.md block enforces the workflow by convention."
+        )
     print(
         "Uninstall with: "
         f"{shell_command(['python', Path(__file__).resolve(), '--harness', harness, '--uninstall', '--root', root])}"
@@ -136,6 +177,11 @@ def uninstall_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bo
         return 1
     save_json(path, new)
     print(f"Uninstalled {harness} session hook from {path}")
+    _directory, _filename, _timeout, gate_supported = HARNESS_CONFIG[harness]
+    if not gate_supported:
+        cleared = clear_prelude(root)
+        if cleared is not None:
+            print(f"Removed managed lifecycle prelude block from {cleared} (user content preserved)")
     return 0
 
 

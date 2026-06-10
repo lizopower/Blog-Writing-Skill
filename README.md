@@ -329,6 +329,8 @@ python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness co
 python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness all
 ```
 
+On Claude, a `PreToolUse` phase gate mechanically blocks writes to lifecycle artifacts before their phase. Codex has no `PreToolUse` hook, so the Codex install instead writes a managed lifecycle prelude into the project-root `AGENTS.md` (delimited by `<!-- BEGIN/END blog-writing-skill (managed) -->`). The block tells Codex agents to run `resume_context.py` first and to honor the same gates by convention. It is appended non-destructively — any user-authored `AGENTS.md` content is preserved — and `--uninstall` strips only the managed block.
+
 Skip hook installation and only create project directories/spec store:
 
 ```bash
