@@ -38,7 +38,7 @@ def complete_workspace(root: Path, slug: str) -> Path:
     (workspace / "context_pack.json").write_text(
         json.dumps(
             {
-                "version": "2.2.0",
+                "version": "2.3.0",
                 "topic": "demo",
                 "audience": ["marketers"],
                 "key_claims": [{"claim": "demo"}],

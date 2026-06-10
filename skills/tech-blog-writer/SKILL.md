@@ -50,7 +50,9 @@ This skill is the **final drafting stage**, not an entry point. Before writing, 
 1. an `outline` (from `tech-article-architect`), and
 2. a **validated** `context_pack` (from `tech-blog-orchestrator` + `data-validator`).
 
-If either is missing — for example you were handed only a topic, or a bare "write an article about X" — **STOP and hand back to `blog-writing-workflow`** so the full pipeline (research → validation → outline) runs first. Do not improvise an outline or fabricate evidence to proceed.
+If either is missing — for example you were handed only a topic, raw Tavily results, deep-research notes, a source list, or a bare "write an article about X" — **STOP and hand back to `blog-writing-workflow`** so the full pipeline (research → validation → outline) runs first. Do not improvise an outline or fabricate evidence to proceed.
+
+Research momentum is not a waiver. Even if the research appears complete and the article structure seems obvious, do not draft until the Context Pack is validated and an outline exists. In your response, emit a blocked workflow receipt naming the missing artifact and the next allowed skill.
 
 Proceed to draft directly **only** when the user explicitly supplied both artifacts, or explicitly asked to skip the upstream research/validation/outline steps. If they explicitly opted out, note that the draft is unvalidated and recommend a `fact-checker` pass.
 

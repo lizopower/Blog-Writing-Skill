@@ -17,7 +17,10 @@ When the user asks to write, create, or draft a full article, blog post, or whit
 - Disabling or declining CCG, project management, task archival, or any other process framework, whether by user instruction or configuration, does **not** disable this skill's article workflow. Continue the Blog-Writing-Skill pipeline unless the user explicitly waives specific Blog-Writing-Skill stages.
 - If a required dependency blocks a stage (for example Tavily is unavailable for online research), stop and report that the complete workflow is blocked. Ask whether the user wants to install/authenticate the dependency, provide local sources, or explicitly accept a degraded non-workflow draft.
 - **Never** shortcut a topic-level article request straight to `tech-blog-writer`. That skill is the final drafting stage only; it requires an upstream validated context_pack and outline.
+- **Research momentum is not a waiver.** Successful Tavily search/extract results, deep-research notes, or a clear mental structure are not a Context Pack, not validation, not an outline, and not permission to draft.
 - **Never** skip research, validation, outline, or fact-check on your own initiative to "save time." A request that merely names a topic, audience, word count, or keyword density is **not** permission to skip steps.
+- **Pre-draft gate**: Before any article body text is written, verify that a validated `context_pack` and an `outline` exist or were explicitly waived by the user. If either is missing, stop and route back to `blog-writing-workflow`.
+- **Workflow receipts are mandatory** for full article work. After each stage, state the stage, artifact, status, and next allowed skill. Do not keep intermediate artifacts only in memory.
 - Skip a step **only** when the user explicitly asks for it — e.g. "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft it" / "no fact-check". When you do skip on explicit request, say which steps you skipped and why.
 - When a conditional step (audience research, visualization) is genuinely inapplicable (no data for charts, etc.), announce that you are skipping it and why — do not skip silently.
 
@@ -159,6 +162,7 @@ Acceptance: The output identifies weak angles, stronger positioning, and concret
 ## Common Mistakes
 - **Treating this bundle as a writing-style reference instead of executing the routed sub-skill workflow. If the user asks for a full article, produce workflow artifacts or clearly say the full workflow was blocked/waived.**
 - **Jumping straight to `tech-blog-writer`, or skipping research / validation / outline / fact-check, for a topic-only article request. The full `blog-writing-workflow` pipeline is the default; only the user can waive a step (see Default Discipline).**
+- **Treating successful Tavily/deep-research output as enough to draft. Research notes must be converted into a Context Pack, validated, outlined, drafted through `tech-blog-writer`, and fact-checked.**
 - Invoking `blog-writing-skills` directly instead of the specific sub-skill.
 - Sending vague ideation or Trellis-like article workspace creation directly to `blog-writing-workflow` instead of `blog-brainstorm`.
 - Missing mandatory `grill-me` routing when the user asks to be grilled, challenged, pressure-tested, or relentlessly questioned.

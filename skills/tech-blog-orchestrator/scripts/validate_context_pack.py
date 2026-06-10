@@ -84,7 +84,7 @@ def validate_context_pack(data: dict[str, Any]) -> tuple[bool, list[str], list[s
 
     version = data.get("version")
     if not isinstance(version, str) or not version.count(".") == 2:
-        _add(errors, "version", "must be a semantic version string such as 2.2.0")
+        _add(errors, "version", "must be a semantic version string such as 2.3.0")
 
     if not _is_iso_datetime(data.get("generated_at")):
         _add(errors, "generated_at", "must be an ISO 8601 timestamp")

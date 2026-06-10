@@ -17,6 +17,14 @@ Rules:
 - **Execution contract**: this workflow is not a style reference. It is a production pipeline with evidence-gathering, validation, outline, drafting, and fact-check gates; treating it as style guidance skips those gates and produces unsupported output.
 - If invoked, produce or continue the concrete workflow artifacts (context_pack, validation report, outline, draft, fact-check report, etc.) for each required stage, or stop and explain which dependency/user waiver prevents completion.
 - **Do not jump straight to drafting (step 7 / `tech-blog-writer`).** A draft produced without an upstream validated context_pack and an outline is a failure, even if the user only said "write an article about X."
+- **Research momentum is not a waiver.** Tavily search/extract results, deep-research notes, source lists, and "I already understand the structure" are raw material only. They are not a Context Pack, not validation, not an outline, and not permission to draft.
+- **Pre-draft gate**: before writing any article body text, verify that:
+  1. Context Pack v2.3.0 exists,
+  2. `data-validator` has passed or returned warnings explicitly accepted by the user,
+  3. an outline from `tech-article-architect` exists,
+  4. any skipped upstream stage has an explicit user waiver.
+  If any item is missing, stop and produce a blocked workflow receipt instead of drafting.
+- **Workflow receipt after every stage**: after each completed, skipped, or blocked stage, record the stage name, status, artifact path/name, and next allowed skill. Never keep stage outputs only in working memory.
 - The user only naming a topic, audience, word count, or keyword density is **not** a request to skip steps. Run the whole pipeline.
 - Skip a step **only** on an explicit user request — "直接写" / "跳过研究" / "不用查资料" / "skip research" / "just draft" / "no fact-check". When you skip on request, state which steps you skipped.
 - Conditional steps (1 audience research, 4 grill-me, 6 visualization) may be skipped when genuinely inapplicable, but **announce each skip and why** — never skip silently. `grill-me` is mandatory when the user asks to be grilled/pressure-tested.
@@ -124,7 +132,7 @@ During `grill-me`, the assistant's recommended answer is not user approval. Wait
 
 ## Context Pack Contract
 
-Use Context Pack v2.2.0. Validate against:
+Use Context Pack v2.3.0. Validate against:
 
 ```text
 schemas/context_pack_schema.json
@@ -147,6 +155,7 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 - Skip visualization when data is insufficient; do not invent chart values.
 - Present validation and fact-check warnings clearly in the final report.
 - When the workflow is blocked before completion, produce a partial workflow receipt showing completed stages and the blocking stage.
+- Never convert research notes directly into article body text. The only allowed path from research to prose is: research notes → Context Pack → validation → outline → `tech-blog-writer` draft → fact-check.
 - Draft section by section through `tech-blog-writer`; for interactive work, pause after each major H2/H3 for user feedback.
 - Treat user edits as project-level guardrails for the current workspace or article. Do not claim the model has permanently learned; persist reusable feedback only when the user wants a local style guide or guardrails update.
 - At finish, review `finish.md` section `Standards Update Candidates`. For each reusable project-level rule the user accepts, persist it with:

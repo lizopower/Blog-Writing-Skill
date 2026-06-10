@@ -53,7 +53,7 @@ description: Use when validating a context_pack for schema compliance, completen
 - `strict_mode`: 严格模式 (default: false)
   - true: 任何错误都返回 failed
   - false: 只有严重错误才返回 failed
-- `schema_version`: Schema 版本 (default: "2.2.0")
+- `schema_version`: Schema 版本 (default: "2.3.0")
 
 ## Validation Rules
 
@@ -171,7 +171,7 @@ seo_finalization (顶层, 仅当存在时):
     "status": "passed" | "passed_with_warnings" | "failed",
     "quality_score": 85,
     "validated_at": "2026-06-08T10:30:00Z",
-    "schema_version": "2.2.0",
+    "schema_version": "2.3.0",
 
     "summary": {
       "total_checks": 25,
@@ -300,7 +300,7 @@ quality_score = (
 ```json
 {
   "context_pack": {
-    "version": "2.2.0",
+    "version": "2.3.0",
     "generated_at": "2026-06-08T10:30:00Z",
     "topic": "[产品/技术]在[应用场景]中的应用",
     "key_claims": [...],
@@ -331,7 +331,7 @@ quality_score = (
 ```json
 {
   "context_pack": {
-    "version": "2.2.0",
+    "version": "2.3.0",
     "topic": "[产品/技术主题]",
     "key_claims": [
       {

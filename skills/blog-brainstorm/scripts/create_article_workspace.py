@@ -13,7 +13,7 @@ from pathlib import Path
 REQUIRED_FILES = {
     "brief.md": "# {title}\n\n## Business Goal\n\n## Target Audience\n\n## Reader Pain\n\n## Recommended Angle\n\n## Evidence Available\n\n## Claims To Prove\n\n## Scope Boundary\n\n## CTA\n\n## Success Criteria\n\n## Open Questions\n\n## Next Step\n",
     "sources.jsonl": "",
-    "context_pack.json": "{\n  \"version\": \"2.2.0\",\n  \"generated_at\": \"\",\n  \"topic\": \"\",\n  \"audience\": [],\n  \"industry_context\": {\n    \"industry\": \"\",\n    \"market_segment\": \"\",\n    \"core_advantage\": \"\"\n  },\n  \"key_claims\": [],\n  \"extracted_tables\": [],\n  \"glossary\": [],\n  \"risk_notes\": [],\n  \"research_summary\": {\n    \"sources_count\": 0,\n    \"last_updated\": \"\",\n    \"key_findings\": []\n  },\n  \"file_summary\": {\n    \"files_processed\": [],\n    \"total_pages\": 0,\n    \"extraction_notes\": []\n  }\n}\n",
+    "context_pack.json": "{\n  \"version\": \"2.3.0\",\n  \"generated_at\": \"\",\n  \"topic\": \"\",\n  \"audience\": [],\n  \"industry_context\": {\n    \"industry\": \"\",\n    \"market_segment\": \"\",\n    \"core_advantage\": \"\"\n  },\n  \"key_claims\": [],\n  \"extracted_tables\": [],\n  \"glossary\": [],\n  \"risk_notes\": [],\n  \"research_summary\": {\n    \"sources_count\": 0,\n    \"last_updated\": \"\",\n    \"key_findings\": []\n  },\n  \"file_summary\": {\n    \"files_processed\": [],\n    \"total_pages\": 0,\n    \"extraction_notes\": []\n  }\n}\n",
     "strategy.md": "# Strategy Pressure Test\n\n## Resolved Decisions\n\n## Rejected Angles\n\n## Evidence Gaps\n\n## Next Step\n",
     "outline.md": "# Outline\n\n",
     "draft.md": "# Draft\n\n",

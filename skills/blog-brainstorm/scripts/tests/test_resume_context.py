@@ -48,7 +48,7 @@ def write_article(root: Path, slug: str, *, phase: str, track: str, updated_at: 
     )
     (workspace / "sources.jsonl").write_text('{"url":"https://example.com"}\n', encoding="utf-8")
     (workspace / "context_pack.json").write_text(
-        json.dumps({"version": "2.2.0", "topic": "demo", "audience": ["engineers"], "key_claims": [{"claim": "x"}]}),
+        json.dumps({"version": "2.3.0", "topic": "demo", "audience": ["engineers"], "key_claims": [{"claim": "x"}]}),
         encoding="utf-8",
     )
     (workspace / "strategy.md").write_text("# Strategy\n\n## Resolved Decisions\n\nUse this angle.\n", encoding="utf-8")

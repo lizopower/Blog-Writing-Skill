@@ -23,7 +23,7 @@ Output feeds into `tech-blog-orchestrator` as `pain_points`.
 
 Invoke `tech-blog-orchestrator` with topic, files, and optional pain points.
 
-Expected output: Context Pack v2.2.0.
+Expected output: Context Pack v2.3.0.
 
 If topic research is required, Tavily preflight must pass first.
 

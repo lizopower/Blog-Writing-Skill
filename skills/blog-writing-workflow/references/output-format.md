@@ -2,6 +2,8 @@
 
 Use this final report shape after workflow completion.
 
+Also use the Workflow Receipt rows incrementally during execution. After every stage, report the current row before moving on; this prevents research notes, validation, or outline decisions from staying only in memory.
+
 ```markdown
 # Blog Writing Workflow Complete
 
@@ -44,6 +46,14 @@ Use execution statuses (`completed`, `skipped`, `blocked`) for work stages. Use 
 | Visualization | <completed | skipped | blocked> | `<charts manifest path>` / N/A | <data insufficiency or waiver> |
 | Draft | <completed | skipped | blocked> | `<draft path>` | <word count / target> |
 | Fact-check | <passed | warnings | failed | skipped | blocked> | `<fact_check path>` | <claim count / issue summary> |
+
+### Stage Receipt Row
+
+Use this compact row after each stage:
+
+```markdown
+Workflow receipt: `<stage>` — <status> — artifact: `<path or inline artifact id>` — next allowed: `<skill or blocked reason>`
+```
 
 ## Issues Requiring Attention
 

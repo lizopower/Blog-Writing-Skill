@@ -9,6 +9,8 @@ description: Use when preparing a context_pack from a topic and/or files for the
 
 Orchestrate technical blog content preparation by coordinating research and file parsing workflows, then outputting a structured Context Pack. This skill serves as a router/orchestrator and does NOT generate article body text.
 
+Research notes are raw material. This skill's job is to convert them into a Context Pack v2.3.0 and then trigger validation. Do not summarize research into article prose, draft intros/conclusions, or create an outline here.
+
 ## Tavily Requirement
 
 Online topic research must go through `tech-research`, which requires Tavily skills and Tavily CLI authentication.
@@ -80,7 +82,7 @@ Aggregate results from all triggered tasks into a unified JSON structure called 
 
 ## Context Pack Output Format
 
-Use Context Pack v2.2.0. Keep this shape aligned with:
+Use Context Pack v2.3.0. Keep this shape aligned with:
 - `../../schemas/context_pack_schema.json`
 - `assets/context_pack_template.json`
 - `scripts/validate_context_pack.py`
@@ -89,7 +91,7 @@ Output the following JSON structure:
 
 ```json
 {
-  "version": "2.2.0",
+  "version": "2.3.0",
   "generated_at": "ISO-8601 timestamp",
   "workflow_id": "wf_YYYYMMDD_HHMMSS",
   "topic": "string - The main topic/theme of the blog article",
@@ -197,6 +199,7 @@ Output the following JSON structure:
 ## Key Rules
 
 1. **No Article Writing**: Do NOT generate article body text, introductions, conclusions, or narrative content
+   - Successful Tavily/deep-research output is not permission to draft. It must be represented as sourced `key_claims`, `research_summary`, `risk_notes`, and related Context Pack fields first.
 2. **No Chart Generation**: Do NOT create visualizations, graphs, or diagrams
 3. **No SEO Work**: Do NOT perform keyword optimization, meta descriptions, or SEO analysis. If a
    `seo_strategy` object is supplied by `seo-serp-strategist`, **carry it through unchanged** into the
@@ -240,6 +243,7 @@ Output the following JSON structure:
 - Validate JSON syntax
 - Run `python scripts/validate_context_pack.py <context_pack.json>` when a local file is available
 - Present to user with brief summary of what was processed
+- Emit a workflow receipt row: `Stage: Research / orchestration`, `Status: completed|blocked`, `Artifact: context_pack.json or inline JSON`, `Next allowed skill: data-validator`.
 - When working inside `content/articles/<slug>/`, save the context pack to `context_pack.json`, then advance lifecycle state with:
   ```bash
   python skills/blog-brainstorm/scripts/article.py advance --to context_building --slug <slug> --root <project-root>
@@ -312,7 +316,7 @@ Warnings:
 
 ## Resources
 
-- `assets/context_pack_template.json`: Context Pack v2.2.0 example.
+- `assets/context_pack_template.json`: Context Pack v2.3.0 example.
 - `scripts/validate_context_pack.py`: dependency-free Context Pack validator.
 - `references/research_strategy.md`: research planning guide.
 - `references/file_parsing_guide.md`: file parsing guide.
