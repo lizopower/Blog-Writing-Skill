@@ -10,6 +10,33 @@
 
 Works for any technical or B2B domain — industrial equipment, software, manufacturing, materials science, logistics, finance, energy — as long as **you** supply the real industry context, audience, business goal, and source material. The skills are designed to flag missing evidence instead of inventing statistics, quotes, or citations.
 
+## Agent Quick Install
+
+```bash
+# Claude Code preferred: native plugin install/update
+claude plugin marketplace add lizopower/Blog-Writing-Skill
+claude plugin install blog-writing-skills
+claude plugin update blog-writing-skills
+```
+
+```bash
+# Codex preferred: standalone skill install/update
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
+
+# Claude Code fallback: standalone skill install/update
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
+
+# Standalone install/update for both agents
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- all
+```
+
+```powershell
+# Windows PowerShell standalone installer
+iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
+.\install-blog-writing-skill.ps1 codex
+.\install-blog-writing-skill.ps1 claude
+```
+
 ## At a Glance
 
 | Need | Use |
@@ -26,6 +53,8 @@ Best fit: long-form technical content where source traceability matters. Not a f
 
 ## Table of Contents
 
+- [Agent Quick Install](#agent-quick-install)
+- [At a Glance](#at-a-glance)
 - [Why this bundle](#why-this-bundle)
 - [What you get](#what-you-get)
 - [The pipeline](#the-pipeline)
@@ -133,32 +162,42 @@ Prefer authoritative sources (standards bodies, peer-reviewed papers, government
 
 Agent Skills follow an open standard, but installs **do not sync across products** — install this bundle separately for each agent you use.
 
-For most users, clone directly into the target skills folder. That keeps updates as simple as `git pull`:
+For Claude Code, prefer the native plugin path. It lets Claude Code own plugin install/update state instead of making an agent inspect and edit skill directories:
+
+```bash
+claude plugin marketplace add lizopower/Blog-Writing-Skill
+claude plugin install blog-writing-skills
+claude plugin update blog-writing-skills
+```
+
+For Codex, or when you want a standalone skill folder for either agent, use the installer. It automatically chooses between:
+
+- fresh install,
+- `git pull --ff-only` update of an existing git install,
+- migration from an old copy-based install by moving it to `*.backup-<timestamp>` and cloning a fresh git checkout.
 
 ```bash
 # Codex
-git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
 
-# Claude Code
-git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.claude/skills/blog-writing-skills
+# Claude Code standalone fallback
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
 ```
 
 On Windows PowerShell:
 
 ```powershell
-# Codex
-git clone https://github.com/lizopower/Blog-Writing-Skill.git "$HOME\.codex\skills\blog-writing-skills"
-
-# Claude Code
-git clone https://github.com/lizopower/Blog-Writing-Skill.git "$HOME\.claude\skills\blog-writing-skills"
+iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
+.\install-blog-writing-skill.ps1 codex
+.\install-blog-writing-skill.ps1 claude
 ```
 
 Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
 
 | Agent | Method | Skill folder |
 |---|---|---|
-| Claude Code | standalone skill | `~/.claude/skills/blog-writing-skills/` |
-| Claude Code | plugin marketplace | repo root via `.claude-plugin/` |
+| Claude Code | plugin marketplace (preferred) | managed by Claude Code |
+| Claude Code | standalone skill (fallback) | `~/.claude/skills/blog-writing-skills/` |
 | Codex | standalone skill | `~/.codex/skills/blog-writing-skills/` |
 | Codex | plugin bundle | repo root via `.codex-plugin/` |
 
@@ -185,9 +224,12 @@ Claude Code loads the root `SKILL.md` as the `blog-writing-skills` router. Resta
 <details>
 <summary><b>Claude Code — plugin</b></summary>
 
-Plugin metadata lives in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Point your plugin marketplace at the repo root, then:
+Plugin metadata lives in `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Add this repository as a marketplace source, install the plugin, and update it through Claude Code:
 
 ```bash
+claude plugin marketplace add lizopower/Blog-Writing-Skill
+claude plugin install blog-writing-skills
+claude plugin update blog-writing-skills
 claude plugin validate <path-to-Blog-Writing-Skill>
 ```
 
@@ -222,30 +264,36 @@ Or ask Codex: *"Use skill-installer to install https://github.com/lizopower/Blog
 
 ## Updating
 
-Agent Skills are local copies — there is no auto-update. How you refresh depends on how you installed. **For the smoothest updates, install by cloning directly into your skills folder**, then a one-line `git pull` keeps you current:
+Agent Skills are local copies unless installed through a native plugin manager. For Claude Code plugin installs, use:
 
 ```bash
-# Recommended install that is trivial to update later
-git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills    # Codex
-git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.claude/skills/blog-writing-skills   # Claude Code
+claude plugin marketplace update
+claude plugin update blog-writing-skills
 ```
 
+For Codex and standalone installs, re-run the installer any time:
+
 ```bash
-# Update anytime (a git-clone install)
-git -C ~/.codex/skills/blog-writing-skills pull
-git -C ~/.claude/skills/blog-writing-skills pull
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
 ```
 
-If you installed by **copying** the folder (no `.git` inside), re-pull by deleting and re-cloning:
+```powershell
+iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
+.\install-blog-writing-skill.ps1 codex
+.\install-blog-writing-skill.ps1 claude
+```
+
+If you installed by cloning directly and prefer manual updates:
 
 ```bash
-rm -rf ~/.codex/skills/blog-writing-skills
-git clone https://github.com/lizopower/Blog-Writing-Skill.git ~/.codex/skills/blog-writing-skills
+git -C ~/.codex/skills/blog-writing-skills pull --ff-only
+git -C ~/.claude/skills/blog-writing-skills pull --ff-only
 ```
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.4.0`) following [`VERSIONING.md`](VERSIONING.md).
+Agents can read the current package version with `cat VERSION` / `Get-Content VERSION`. After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.5.0`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## One-command project init
 
@@ -525,10 +573,10 @@ When installed as a **plugin**, skills are namespaced as `blog-writing-skills:<s
 
 ## Maintaining this repo
 
-Versioning is governed by [`VERSIONING.md`](VERSIONING.md): one release version across the three manifests; the Context Pack schema versions independently; no per-skill version lines. Run the checks before tagging a release:
+Versioning is governed by [`VERSIONING.md`](VERSIONING.md): one release version across `VERSION` and the three manifests; the Context Pack schema versions independently; no per-skill version lines. Run the checks before tagging a release:
 
 ```bash
-python scripts/check_versions.py      # the 3 release manifests must agree
+python scripts/check_versions.py      # release version files must agree
 python scripts/check_router_sync.py   # both routers must cover every sub-skill
 ```
 

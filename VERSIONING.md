@@ -6,13 +6,13 @@ earlier releases.
 
 | Scope | Source of truth | Current | Bump when |
 |-------|-----------------|---------|-----------|
-| **Release version** | `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.claude-plugin/marketplace.json` (must always agree) | `3.4.0` | Any user-visible change to skills, routing, docs, or packaging. |
+| **Release version** | `VERSION`, `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`, `.claude-plugin/marketplace.json` (must always agree) | `3.5.0` | Any user-visible change to skills, routing, docs, or packaging. |
 | **Context Pack data contract** | `schemas/context_pack_schema.json` (`version` field) | `2.3.0` | The Context Pack JSON shape changes (fields added/removed/retyped). Downstream validators key off this. |
 | **Standards / templates** | Front-matter `version:` in `standards/*.md` and `templates/*.md` | per file | The individual standard or template changes. These are reusable documents with their own lifecycle. |
 
 ## Rules
 
-1. The three **release-version** files must always carry the same number. A CI
+1. The **release-version** files must always carry the same number. A CI
    check or reviewer should reject a PR where they diverge.
 2. The **data-contract** version is decoupled from the release version on
    purpose: the package can ship many releases without changing the Context Pack
@@ -26,6 +26,6 @@ earlier releases.
 ## Quick check
 
 ```bash
-python scripts/check_versions.py     # asserts the 3 release files agree
+python scripts/check_versions.py     # asserts release files agree
 python scripts/check_router_sync.py  # asserts BOTH routers reference every sub-skill
 ```

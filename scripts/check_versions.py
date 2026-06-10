@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Assert the three release-version files agree.
+"""Assert all release-version files agree.
 
-See VERSIONING.md. The release version lives in exactly three files and they
-must always carry the same value. Run in CI or before tagging a release.
+See VERSIONING.md. The release version lives in VERSION plus the release
+manifests; they must always carry the same value. Run in CI or before tagging a
+release.
 
 Exit 0 if consistent, 1 otherwise.
 """
@@ -15,6 +16,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 RELEASE_FILES = {
+    "VERSION": (),
     ".claude-plugin/plugin.json": ("version",),
     ".codex-plugin/plugin.json": ("version",),
     ".claude-plugin/marketplace.json": ("plugins", 0, "version"),
@@ -32,7 +34,10 @@ def main() -> int:
     for rel, path in RELEASE_FILES.items():
         f = ROOT / rel
         try:
-            versions[rel] = dig(json.loads(f.read_text(encoding="utf-8")), path)
+            if path:
+                versions[rel] = dig(json.loads(f.read_text(encoding="utf-8")), path)
+            else:
+                versions[rel] = f.read_text(encoding="utf-8").strip()
         except (OSError, KeyError, IndexError, json.JSONDecodeError) as exc:
             print(f"ERROR: cannot read version from {rel}: {exc}")
             return 1
