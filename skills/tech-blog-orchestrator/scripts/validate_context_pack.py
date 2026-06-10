@@ -8,8 +8,9 @@ agent environments before article drafting.
 from __future__ import annotations
 
 import json
+import re
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -37,6 +38,17 @@ STYLE_EXEMPLAR_FIELDS = {"reference", "scope", "what_to_emulate", "what_to_avoid
 CORE_OFFERING_FIELDS = {"name", "value_prop", "target_user", "when_to_mention", "source_ref"}
 AUTHOR_EXPERIENCE_FIELDS = {"note", "source_ref", "usable_as"}
 
+# SEO strategy layer (schema 2.3.0). Optional; validated only when present.
+VALID_SEARCH_INTENTS = {"informational", "commercial", "transactional", "navigational"}
+VALID_SERP_DEVICES = {"desktop", "mobile", "unknown"}
+VALID_ON_STALE = {"warn", "fail"}
+VALID_BUYER_STAGES = {"awareness", "consideration", "decision"}
+VALID_PAGE_TYPES = {"guide", "comparison", "category", "landing", "faq", "case_study"}
+SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+DEFAULT_SERP_MAX_AGE_DAYS = 90
+META_TITLE_MAX = 60
+META_DESCRIPTION_MAX = 155
+
 
 def _is_iso_datetime(value: Any) -> bool:
     if not isinstance(value, str) or not value:
@@ -46,6 +58,15 @@ def _is_iso_datetime(value: Any) -> bool:
         return True
     except ValueError:
         return False
+
+
+def _parse_iso_datetime(value: Any) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
 
 
 def _add(errors: list[str], location: str, message: str) -> None:
@@ -283,7 +304,188 @@ def validate_context_pack(data: dict[str, Any]) -> tuple[bool, list[str], list[s
                 if "usable_as" in note and note.get("usable_as") not in VALID_EXPERIENCE_USES:
                     _add(errors, f"{loc}.usable_as", f"must be one of {sorted(VALID_EXPERIENCE_USES)}")
 
+    if "seo_strategy" in data:
+        _validate_seo_strategy(data.get("seo_strategy"), errors, warnings)
+
+    if "seo_finalization" in data:
+        _validate_seo_finalization(data.get("seo_finalization"), errors)
+
     return not errors, errors, warnings
+
+
+def _validate_seo_strategy(seo: Any, errors: list[str], warnings: list[str]) -> None:
+    """Validate the optional SEO strategy layer (schema 2.3.0).
+
+    English-first: meta length caps and slug rules assume English markets.
+    Only invoked when ``seo_strategy`` is present, so packs without it stay
+    backward compatible.
+    """
+    if not isinstance(seo, dict):
+        _add(errors, "seo_strategy", "must be an object when present")
+        return
+
+    if not isinstance(seo.get("target_keyword"), str) or not seo.get("target_keyword", "").strip():
+        _add(errors, "seo_strategy.target_keyword", "must be a non-empty string")
+
+    if seo.get("search_intent") not in VALID_SEARCH_INTENTS:
+        _add(errors, "seo_strategy.search_intent", f"must be one of {sorted(VALID_SEARCH_INTENTS)}")
+
+    secondary_intents = seo.get("secondary_intents")
+    if secondary_intents is not None:
+        if not isinstance(secondary_intents, list):
+            _add(errors, "seo_strategy.secondary_intents", "must be an array when present")
+        else:
+            for idx, item in enumerate(secondary_intents):
+                if item not in VALID_SEARCH_INTENTS:
+                    _add(errors, f"seo_strategy.secondary_intents[{idx}]", f"must be one of {sorted(VALID_SEARCH_INTENTS)}")
+
+    confidence = seo.get("intent_confidence")
+    if confidence is not None and (
+        not isinstance(confidence, (int, float)) or isinstance(confidence, bool) or not 0 <= confidence <= 1
+    ):
+        _add(errors, "seo_strategy.intent_confidence", "must be a number between 0 and 1")
+
+    secondary_keywords = seo.get("secondary_keywords")
+    if secondary_keywords is not None and (
+        not isinstance(secondary_keywords, list)
+        or not all(isinstance(kw, str) and kw.strip() for kw in secondary_keywords)
+    ):
+        _add(errors, "seo_strategy.secondary_keywords", "must be an array of non-empty strings when present")
+
+    buyer_stage = seo.get("buyer_stage")
+    if buyer_stage is not None and buyer_stage not in VALID_BUYER_STAGES:
+        _add(errors, "seo_strategy.buyer_stage", f"must be one of {sorted(VALID_BUYER_STAGES)}")
+
+    page_type = seo.get("page_type")
+    if page_type is not None and page_type not in VALID_PAGE_TYPES:
+        _add(errors, "seo_strategy.page_type", f"must be one of {sorted(VALID_PAGE_TYPES)}")
+
+    market = seo.get("target_market")
+    if not isinstance(market, dict):
+        _add(errors, "seo_strategy.target_market", "must be an object")
+    elif not isinstance(market.get("locale"), str) or not market.get("locale", "").strip():
+        _add(errors, "seo_strategy.target_market.locale", "must be a non-empty string such as en-US")
+
+    _validate_serp_analysis(seo.get("serp_analysis"), seo.get("serp_freshness_policy"), errors, warnings)
+
+    recommendations = seo.get("on_page_recommendations")
+    if recommendations is not None:
+        _validate_on_page_block(recommendations, "seo_strategy.on_page_recommendations", errors)
+
+
+def _validate_serp_analysis(serp: Any, freshness_policy: Any, errors: list[str], warnings: list[str]) -> None:
+    if not isinstance(serp, dict):
+        _add(errors, "seo_strategy.serp_analysis", "must be an object")
+        return
+
+    _validate_freshness_policy(freshness_policy, errors)
+
+    checked_at = serp.get("checked_at")
+    if not _is_iso_datetime(checked_at):
+        _add(errors, "seo_strategy.serp_analysis.checked_at", "must be an ISO 8601 timestamp (SERP freshness is mandatory)")
+    else:
+        _check_serp_staleness(checked_at, freshness_policy, errors, warnings)
+
+    device = serp.get("device")
+    if device is not None and device not in VALID_SERP_DEVICES:
+        _add(errors, "seo_strategy.serp_analysis.device", f"must be one of {sorted(VALID_SERP_DEVICES)}")
+
+    competitors = serp.get("competitors")
+    if not isinstance(competitors, list):
+        _add(errors, "seo_strategy.serp_analysis.competitors", "must be an array")
+    elif not competitors:
+        _add(errors, "seo_strategy.serp_analysis.competitors", "must contain at least one competitor (SERP-grounded)")
+    else:
+        for idx, competitor in enumerate(competitors):
+            loc = f"seo_strategy.serp_analysis.competitors[{idx}]"
+            if not isinstance(competitor, dict):
+                _add(errors, loc, "must be an object")
+                continue
+            rank = competitor.get("rank")
+            if not isinstance(rank, int) or isinstance(rank, bool) or rank < 1:
+                _add(errors, f"{loc}.rank", "must be an integer >= 1")
+            if not isinstance(competitor.get("url"), str) or not competitor.get("url", "").strip():
+                _add(errors, f"{loc}.url", "must be a non-empty string")
+
+
+def _validate_freshness_policy(freshness_policy: Any, errors: list[str]) -> None:
+    """Validate the freshness policy object itself instead of silently defaulting.
+
+    A malformed policy (e.g. ``max_age_days: 0`` or ``on_stale: "bad"``) would
+    otherwise be ignored, weakening the SERP-freshness guarantee.
+    """
+    if freshness_policy is None:
+        return
+    if not isinstance(freshness_policy, dict):
+        _add(errors, "seo_strategy.serp_freshness_policy", "must be an object when present")
+        return
+    if "max_age_days" in freshness_policy:
+        max_age_days = freshness_policy["max_age_days"]
+        if not isinstance(max_age_days, int) or isinstance(max_age_days, bool) or max_age_days < 1:
+            _add(errors, "seo_strategy.serp_freshness_policy.max_age_days", "must be an integer >= 1")
+    if "on_stale" in freshness_policy and freshness_policy["on_stale"] not in VALID_ON_STALE:
+        _add(errors, "seo_strategy.serp_freshness_policy.on_stale", f"must be one of {sorted(VALID_ON_STALE)}")
+
+
+def _check_serp_staleness(checked_at: str, freshness_policy: Any, errors: list[str], warnings: list[str]) -> None:
+    checked = _parse_iso_datetime(checked_at)
+    if checked is None:
+        return
+    if checked.tzinfo is None:
+        checked = checked.replace(tzinfo=timezone.utc)
+
+    now = datetime.now(timezone.utc)
+
+    # A SERP that claims to have been checked in the future is invalid, not fresh.
+    if checked > now:
+        _add(errors, "seo_strategy.serp_analysis.checked_at", "must not be in the future")
+        return
+
+    max_age_days = DEFAULT_SERP_MAX_AGE_DAYS
+    on_stale = "warn"
+    if isinstance(freshness_policy, dict):
+        candidate_age = freshness_policy.get("max_age_days", DEFAULT_SERP_MAX_AGE_DAYS)
+        if isinstance(candidate_age, int) and not isinstance(candidate_age, bool) and candidate_age >= 1:
+            max_age_days = candidate_age
+        if freshness_policy.get("on_stale") in VALID_ON_STALE:
+            on_stale = freshness_policy["on_stale"]
+
+    # Use the full timedelta (not .days, which floors and would tolerate an
+    # extra ~24h). Exactly max_age_days old is still considered fresh.
+    age = now - checked
+    if age > timedelta(days=max_age_days):
+        message = f"SERP data is {age.days} days old (max_age_days={max_age_days})"
+        if on_stale == "fail":
+            _add(errors, "seo_strategy.serp_analysis.checked_at", message)
+        else:
+            _add(warnings, "seo_strategy.serp_analysis.checked_at", message)
+
+
+def _validate_on_page_block(block: Any, location: str, errors: list[str]) -> None:
+    if not isinstance(block, dict):
+        _add(errors, location, "must be an object when present")
+        return
+    title = block.get("meta_title")
+    if title is not None and (not isinstance(title, str) or len(title) > META_TITLE_MAX):
+        _add(errors, f"{location}.meta_title", f"must be a string no longer than {META_TITLE_MAX} characters")
+    description = block.get("meta_description")
+    if description is not None and (not isinstance(description, str) or len(description) > META_DESCRIPTION_MAX):
+        _add(errors, f"{location}.meta_description", f"must be a string no longer than {META_DESCRIPTION_MAX} characters")
+    slug = block.get("slug")
+    if slug is not None and (not isinstance(slug, str) or not SLUG_PATTERN.match(slug)):
+        _add(errors, f"{location}.slug", "must be a kebab-case slug (lowercase, digits, single hyphens)")
+
+
+def _validate_seo_finalization(final: Any, errors: list[str]) -> None:
+    if not isinstance(final, dict):
+        _add(errors, "seo_finalization", "must be an object when present")
+        return
+    for field in ["meta_title", "meta_description", "slug", "finalized_at"]:
+        if field not in final:
+            _add(errors, f"seo_finalization.{field}", "missing required field")
+    _validate_on_page_block(final, "seo_finalization", errors)
+    if "finalized_at" in final and not _is_iso_datetime(final.get("finalized_at")):
+        _add(errors, "seo_finalization.finalized_at", "must be an ISO 8601 timestamp")
 
 
 def validate_from_file(file_path: str | Path) -> tuple[bool, list[str], list[str]]:

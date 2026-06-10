@@ -68,11 +68,13 @@ Do not use this entry skill when the user already named a specific sub-skill. In
 - Prepare a context_pack only, from a topic and/or files: `tech-blog-orchestrator`
 - Research technical/B2B sources and return structured notes: `tech-research`
 - Research audience pain points from social platforms: `audience-pain-point-research`
+- Produce a SERP-grounded keyword + search-intent strategy (`seo_strategy`) before research/outline: `seo-serp-strategist`
 - Validate context_pack schema, completeness, and data quality: `data-validator`
 - Generate chart specs or a visualization manifest from structured data: `tech-visualization-generator`
 - Build an outline and section plan from a context_pack: `tech-article-architect`
 - Write the final article from an outline + context_pack: `tech-blog-writer`
 - Check a draft against context_pack facts, numbers, units, and logic: `fact-checker`
+- Final on-page SEO QA (meta, slug, alt, internal links, schema) after fact-check: `on-page-seo-finalizer`
 - Review editorial quality, taste, and whether content is worth making: `content-taste-advisor`
 
 ## Routing Rules
@@ -86,12 +88,14 @@ Evaluate these rules top-down. Prefer the most specific matching sub-skill over 
 5. If the user provides files, research notes, or raw material and wants them turned into article-ready context, invoke `tech-blog-orchestrator`.
 6. If the user asks for technical/B2B source research, market context, competitor examples, or source-backed notes for a topic, invoke `tech-research`.
 7. If the user asks what the target audience cares about, complains about, searches for, or discusses on social platforms, invoke `audience-pain-point-research`.
+7b. If the user asks for SERP analysis, keyword/search-intent strategy, competitor SERP structure, or an `seo_strategy` for an English keyword/topic, invoke `seo-serp-strategist`. This is the SEO strategy layer that runs before research and outline; it is independent from `audience-pain-point-research`.
 8. If the user asks whether a context_pack is complete, valid, clean, or ready for writing, invoke `data-validator`.
 9. If the user provides structured data and asks for charts, visual treatment, chart specs, or a visualization manifest, invoke `tech-visualization-generator`.
 10. If the user provides a context_pack but no outline, invoke `tech-article-architect`.
 11. If the user provides an outline but no context_pack, invoke `tech-blog-orchestrator` or `tech-research` first to build evidence before drafting.
 12. Invoke `tech-blog-writer` **only** when the user explicitly supplies BOTH a ready outline AND a validated context_pack and asks only to draft, OR explicitly asks to skip upstream research/validation. A topic-only or "write an article" request must go to `blog-writing-workflow` (rule 3), never directly to `tech-blog-writer`.
 13. If the user asks whether facts, numbers, units, or reasoning are correct in a draft, invoke `fact-checker`.
+13b. After fact-check, if the user asks for final on-page SEO QA — meta title/description, URL slug, image alt, internal links, table formatting, or FAQ schema — invoke `on-page-seo-finalizer`. It writes the sole final on-page values and protects glossary terms.
 14. If the user asks whether the content is compelling, differentiated, or worth publishing, invoke `content-taste-advisor`.
 15. If the request remains under-specified after these rules, ask one clarifying question instead of guessing.
 

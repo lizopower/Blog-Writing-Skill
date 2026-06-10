@@ -72,13 +72,18 @@ If present:
 
 If absent and the user wants ideation or strategy discovery, invoke `blog-brainstorm`.
 
-## 8-Step Pipeline
+## Pipeline (core 8 steps + optional SEO layers)
 
 1. `audience-pain-point-research` [optional]
-   Run for audience research, SEO/search-intent strategy, or unfamiliar topics.
+   Run for audience research or unfamiliar topics (social-platform user language).
+
+1b. `seo-serp-strategist` [optional · SEO front layer]
+   For English SEO articles, produce the `seo_strategy` (SERP-grounded keywords, search intent, competitor
+   gaps, PAA, advisory on-page seeds) before research/outline. Independent from step 1. Requires live Tavily SERP.
 
 2. `tech-blog-orchestrator` [required]
-   Prepare Context Pack v2.2.0 from topic research and/or local files.
+   Prepare Context Pack v2.3.0 from topic research and/or local files. If a `seo_strategy` exists, carry it
+   through unchanged (orchestrator performs no SEO analysis).
 
 3. `data-validator` [required]
    Validate Context Pack schema, completeness, sources, units, and consistency.
@@ -97,6 +102,13 @@ If absent and the user wants ideation or strategy discovery, invoke `blog-brains
 
 8. `fact-checker` [required]
    Verify factual claims, numbers, units, logic, and source traceability.
+
+9. `on-page-seo-finalizer` [conditional · SEO back layer]
+   After fact-check, run final on-page SEO QA (meta, slug, alt, internal links, tables, FAQ schema) and write
+   the sole final on-page values into top-level `seo_finalization`. Edits are limited to the metadata layer and
+   must not touch `glossary` terms. Metadata-only changes do **not** re-run `fact-checker`; a rare body-fact
+   change re-runs it at most once, else stop and ask the author. Run when `seo_strategy` is present or the user
+   asks for on-page SEO finishing.
 
 ## Mandatory `grill-me` Triggers
 

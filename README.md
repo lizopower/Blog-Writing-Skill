@@ -39,34 +39,38 @@ Most "write me a blog" prompts hallucinate numbers and produce generic copy. Thi
 - **Real research, not guesswork.** Online research goes through [Tavily](#requirement-tavily) — never a silent fallback to generic web search.
 - **Strategy before prose.** A Trellis-like workspace, a one-question-at-a-time pressure test, and a fact-check gate sit between the idea and the published article.
 
-It ships **13 composable sub-skills** plus a single router that picks the right one from natural language.
+It ships **15 composable sub-skills** plus a single router that picks the right one from natural language.
 
 ## The pipeline
 
-The `blog-writing-workflow` skill runs an 8-step pipeline. Required steps are solid; optional/conditional steps branch on the topic, the data, and what you ask for.
+The `blog-writing-workflow` skill runs a core 8-step pipeline, plus two optional **English-first SEO layers** — `seo-serp-strategist` at the front and `on-page-seo-finalizer` at the end. Required steps are solid; optional/conditional steps branch on the topic, the data, and what you ask for.
 
 ```mermaid
 flowchart LR
     A[1 · Audience research<br/><i>optional</i>] -.-> B
+    S[1b · SERP strategy<br/><i>optional SEO</i>] -.-> B
     B[2 · Orchestrate<br/>context pack] --> C[3 · Validate]
     C --> D[4 · Grill-me<br/><i>conditional</i>]
     D --> E[5 · Architect<br/>outline]
     E --> F[6 · Visualize<br/><i>conditional</i>]
     F --> G[7 · Write draft]
     G --> H[8 · Fact-check]
-    H --> Z([Publication-ready])
+    H --> I[9 · On-page SEO<br/><i>conditional SEO</i>]
+    I --> Z([Publication-ready])
 ```
 
 | Step | Skill | Status |
 |---|---|---|
-| 1 | `audience-pain-point-research` | optional — run for SEO / unfamiliar topics |
-| 2 | `tech-blog-orchestrator` | **required** — builds the context pack |
+| 1 | `audience-pain-point-research` | optional — social-platform user language |
+| 1b | `seo-serp-strategist` | optional SEO front layer — SERP-grounded `seo_strategy` (English-first) |
+| 2 | `tech-blog-orchestrator` | **required** — builds the context pack (carries `seo_strategy` through) |
 | 3 | `data-validator` | **required** — quality gate before writing |
 | 4 | `grill-me` | conditional — **mandatory when you ask to be grilled** |
-| 5 | `tech-article-architect` | **required** — outline + section plan |
+| 5 | `tech-article-architect` | **required** — outline + section plan (consumes `search_intent`/gaps/PAA) |
 | 6 | `tech-visualization-generator` | conditional — only when data supports charts |
 | 7 | `tech-blog-writer` | **required** — drafts from outline + context pack |
 | 8 | `fact-checker` | **required** — numbers, units, logic, traceability |
+| 9 | `on-page-seo-finalizer` | conditional SEO back layer — final meta/slug/alt; writes `seo_finalization` |
 
 > Prefer manual control? Invoke any sub-skill directly — see [Skill routing](#skill-routing).
 
@@ -275,6 +279,7 @@ The router in `SKILL.md` picks the **most specific** skill for the intent. When 
 | "Grill me", pressure-test, challenge, interrogate | `grill-me` |
 | Source-backed technical/B2B research | `tech-research` |
 | Audience pain, social listening, real search intent | `audience-pain-point-research` |
+| SERP analysis, keyword + search-intent strategy (`seo_strategy`) | `seo-serp-strategist` |
 | Convert topic and/or files into a context pack | `tech-blog-orchestrator` |
 | Extract data from PDF, Word, Excel, or tables | `tech-file-parser` |
 | Validate context-pack completeness and quality | `data-validator` |
@@ -282,6 +287,7 @@ The router in `SKILL.md` picks the **most specific** skill for the intent. When 
 | Plan charts from structured data | `tech-visualization-generator` |
 | Draft from outline + context pack | `tech-blog-writer` |
 | Check facts, numbers, units, sources, logic | `fact-checker` |
+| Final on-page SEO QA — meta, slug, alt, internal links, schema | `on-page-seo-finalizer` |
 | Judge whether content is compelling / publishable | `content-taste-advisor` |
 
 <details>
@@ -421,7 +427,7 @@ Both hosts may ask you to trust the hook the first time it runs. Review the comm
 
 ## Evidence model
 
-`context_pack.json` (contract **v2.2.0**) is the evidence object passed to the architect, writer, chart planner, and fact-checker. Minimum fields: `version`, `generated_at`, `topic`, `audience`, `key_claims`, `extracted_tables`, `glossary`, `risk_notes`, plus file/research source metadata.
+`context_pack.json` (contract **v2.3.0**) is the evidence object passed to the architect, writer, chart planner, and fact-checker. Minimum fields: `version`, `generated_at`, `topic`, `audience`, `key_claims`, `extracted_tables`, `glossary`, `risk_notes`, plus file/research source metadata. The optional `seo_strategy` object (SERP-grounded keywords, search intent, competitor gaps, advisory on-page seeds) and the optional top-level `seo_finalization` object (final meta/slug/alt) were added in v2.3.0; packs without them stay fully backward compatible.
 
 Each key claim carries: claim text · source reference · source type · confidence level · units & test conditions (if numerical) · stated limitations.
 

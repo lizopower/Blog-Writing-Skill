@@ -62,6 +62,9 @@ When invoked, expect the following inputs:
 ### Contextual
 - May receive industry context from orchestrator
 - May receive partial file data to cross-reference
+- If a `seo_strategy` is present (from `seo-serp-strategist`), prioritize gathering evidence that covers
+  `seo_strategy.serp_analysis.content_gaps`. This is guidance only — do not hard-depend on `seo_strategy`;
+  research must still stand on its own when no SEO layer exists.
 
 ## Output Format
 

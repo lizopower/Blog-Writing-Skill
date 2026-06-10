@@ -82,6 +82,34 @@ description: Use when validating a context_pack for schema compliance, completen
 - extracted_tables: array
 ```
 
+> 注：本文件是 prompt 层镜像。实际可执行校验在
+> `skills/tech-blog-orchestrator/scripts/validate_context_pack.py`，以代码为准；本节规则须与之保持一致。
+
+#### 1.1 seo_strategy 条件校验规则 (schema 2.3.0，仅当存在 seo_strategy 时)
+
+```markdown
+存在 seo_strategy 时的必填检查:
+- seo_strategy.target_keyword            非空字符串
+- seo_strategy.search_intent             枚举: informational|commercial|transactional|navigational
+- seo_strategy.target_market.locale      非空字符串 (默认英文市场 en-US)
+- seo_strategy.serp_analysis.checked_at  ISO 8601 (SERP 时效强制可追溯)
+- seo_strategy.serp_analysis.competitors 数组; 每项必含 rank(int≥1) 与 url(非空)
+
+其他检查:
+- secondary_intents[] / device           枚举合法 (device: desktop|mobile|unknown)
+- intent_confidence                       0–1 之间数字
+- on_page_recommendations.meta_title      ≤ 60 字符 (英文)
+- on_page_recommendations.meta_description ≤ 155 字符 (英文)
+- on_page_recommendations.slug            kebab-case 正则 ^[a-z0-9]+(?:-[a-z0-9]+)*$
+- serp_analysis.checked_at 超 serp_freshness_policy.max_age_days → 按 on_stale warn/fail
+
+seo_finalization (顶层, 仅当存在时):
+- 必填 meta_title/meta_description/slug/finalized_at; 阈值同上; finalized_at 为 ISO 8601
+- 由 on-page-seo-finalizer 唯一写入 (advisory 的 on_page_recommendations 不是终值)
+
+向后兼容: 无 seo_strategy 的旧 context_pack 一律照常通过 (非 SEO 流程)。
+```
+
 ### 2. 数据质量规则
 
 ```markdown

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Context Pack Schema",
   "description": "Standard Context Pack contract for Blog-Writing-Skill.",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "type": "object",
   "required": [
     "version",
@@ -374,6 +374,164 @@
             "type": "string"
           }
         }
+      },
+      "additionalProperties": true
+    },
+    "seo_strategy": {
+      "type": "object",
+      "description": "Optional SEO strategy layer produced by seo-serp-strategist. English-first: all length thresholds, slug rules, and default locale target English markets. Backward compatible: packs without this object follow the non-SEO flow.",
+      "required": ["target_keyword", "search_intent", "target_market", "serp_analysis"],
+      "properties": {
+        "target_keyword": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Primary English target keyword."
+        },
+        "secondary_keywords": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "search_intent": {
+          "type": "string",
+          "enum": ["informational", "commercial", "transactional", "navigational"],
+          "description": "Primary search intent. B2B queries are often mixed; capture the rest in secondary_intents."
+        },
+        "secondary_intents": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["informational", "commercial", "transactional", "navigational"]
+          }
+        },
+        "intent_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "buyer_stage": {
+          "type": "string",
+          "enum": ["awareness", "consideration", "decision"],
+          "description": "Funnel position. Distinct from search_intent (query type); do not conflate."
+        },
+        "conversion_goal": {
+          "type": "string",
+          "description": "Connects the SEO brief to a sales/marketing goal."
+        },
+        "page_type": {
+          "type": "string",
+          "enum": ["guide", "comparison", "category", "landing", "faq", "case_study"]
+        },
+        "target_market": {
+          "type": "object",
+          "required": ["locale"],
+          "description": "Structured target market. Required so cross-market (外贸) SEO never relies on a free-form string.",
+          "properties": {
+            "country": {"type": "string", "description": "ISO-3166 alpha-2, e.g. US."},
+            "language": {"type": "string", "default": "en"},
+            "locale": {"type": "string", "description": "Default English market such as en-US."}
+          },
+          "additionalProperties": true
+        },
+        "keyword_metrics": {
+          "type": "object",
+          "description": "Optional. Tavily does not guarantee these; allow manual fill.",
+          "properties": {
+            "search_volume": {"type": "integer", "minimum": 0},
+            "difficulty": {"type": "number"},
+            "cpc": {"type": "number"},
+            "source": {"type": "string", "description": "tavily | manual | ahrefs | semrush ..."},
+            "checked_at": {"type": "string", "format": "date-time"}
+          },
+          "additionalProperties": true
+        },
+        "serp_analysis": {
+          "type": "object",
+          "required": ["checked_at", "competitors"],
+          "properties": {
+            "checked_at": {"type": "string", "format": "date-time"},
+            "device": {
+              "type": "string",
+              "enum": ["desktop", "mobile", "unknown"],
+              "default": "desktop"
+            },
+            "serp_features": {
+              "type": "array",
+              "items": {"type": "string"}
+            },
+            "competitors": {
+              "type": "array",
+              "description": "Used only for intent/structure/gap analysis. NEVER a source of technical facts.",
+              "items": {
+                "type": "object",
+                "required": ["rank", "url"],
+                "properties": {
+                  "rank": {"type": "integer", "minimum": 1},
+                  "url": {"type": "string"},
+                  "title": {"type": "string"},
+                  "snippet": {"type": "string"},
+                  "content_type": {"type": "string"},
+                  "strengths": {"type": "array", "items": {"type": "string"}},
+                  "weaknesses": {"type": "array", "items": {"type": "string"}}
+                },
+                "additionalProperties": true
+              }
+            },
+            "paa_questions": {"type": "array", "items": {"type": "string"}},
+            "related_queries": {"type": "array", "items": {"type": "string"}},
+            "content_gaps": {"type": "array", "items": {"type": "string"}}
+          },
+          "additionalProperties": true
+        },
+        "serp_freshness_policy": {
+          "type": "object",
+          "description": "checked_at alone is not enough; define a staleness threshold.",
+          "properties": {
+            "max_age_days": {"type": "integer", "minimum": 1, "default": 90},
+            "on_stale": {"type": "string", "enum": ["warn", "fail"], "default": "warn"}
+          },
+          "additionalProperties": true
+        },
+        "outline_constraints": {
+          "type": "object",
+          "properties": {
+            "must_answer": {"type": "array", "items": {"type": "string"}},
+            "must_include_entities": {"type": "array", "items": {"type": "string"}},
+            "avoid_angles": {"type": "array", "items": {"type": "string"}},
+            "differentiation_angle": {"type": "string"}
+          },
+          "additionalProperties": true
+        },
+        "on_page_recommendations": {
+          "type": "object",
+          "description": "Advisory SEO seeds from the strategist. NOT final values. Finalized into top-level seo_finalization by on-page-seo-finalizer.",
+          "properties": {
+            "meta_title": {"type": "string", "maxLength": 60},
+            "meta_description": {"type": "string", "maxLength": 155},
+            "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+            "image_alt_requirements": {"type": "array", "items": {"type": "string"}},
+            "internal_link_targets": {"type": "array", "items": {"type": "object"}}
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "seo_finalization": {
+      "type": "object",
+      "description": "Optional. Sole source of FINAL on-page values, written only by on-page-seo-finalizer. Physically separated from seo_strategy.on_page_recommendations (advisory).",
+      "required": ["meta_title", "meta_description", "slug", "finalized_at"],
+      "properties": {
+        "meta_title": {"type": "string", "maxLength": 60},
+        "meta_description": {"type": "string", "maxLength": 155},
+        "slug": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+        "image_alt": {"type": "array", "items": {"type": "object"}},
+        "internal_links": {"type": "array", "items": {"type": "object"}},
+        "overrides": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Which advisory values were adopted/overridden and why."
+        },
+        "finalized_at": {"type": "string", "format": "date-time"}
       },
       "additionalProperties": true
     },

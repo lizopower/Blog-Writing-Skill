@@ -42,11 +42,13 @@ Evaluate top-down and invoke the most specific sub-skill:
 5. Topic/files/raw material into article-ready Context Pack: `tech-blog-orchestrator`.
 6. Source-backed technical/B2B research: `tech-research`.
 7. Audience pain points, complaints, search intent, or social-platform research: `audience-pain-point-research`.
+7b. SERP analysis, keyword/search-intent strategy, or an `seo_strategy` for an English keyword/topic (runs before research/outline; independent from audience-pain-point-research): `seo-serp-strategist`.
 8. Context Pack validation: `data-validator`.
 9. Chart specs or visualization manifest: `tech-visualization-generator`.
 10. Context Pack to outline: `tech-article-architect`.
 11. Final draft **only when** the user explicitly supplies both a ready outline and a validated Context Pack (or explicitly asks to skip upstream steps): `tech-blog-writer`. Topic-only article requests go to rule 3, never here.
 12. Draft factual verification: `fact-checker`.
+12b. After fact-check, final on-page SEO QA (meta, slug, alt, internal links, table formatting, FAQ schema); writes the sole final on-page values and protects glossary terms: `on-page-seo-finalizer`.
 13. Editorial quality, differentiation, or publishability review: `content-taste-advisor`.
 
 If the request is still under-specified, ask one clarifying question.

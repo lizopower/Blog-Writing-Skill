@@ -81,11 +81,29 @@ This skill is domain-agnostic — fill in the actual context before designing an
 
 These shape where ideas sit so the outline is easy for both readers and AI assistants to extract. The underlying research is correlational and time-sensitive — apply it as structural hygiene, never as a reason to fabricate or pad. Full context: `standards/aeo_geo_signals.md`.
 
-1. **Intent-to-Format gate** — Before designing sections, classify the query intent and pick the matching shape:
+1. **Intent-to-Format gate** — Before designing sections, determine the query intent and pick the matching shape:
    - *Informational* ("what is / how does X work") → explanatory article (definition, mechanism, evidence).
    - *Commercial* ("best / X vs Y") → comparison table + selection criteria + trade-offs, not an essay.
    - *Transactional / navigational* → short, direct; do not inflate into a long article.
-   Record the chosen intent at the top of the section plan.
+
+   **Intent source precedence (single source of truth).** If `context_pack.seo_strategy.search_intent` is
+   present, it is the authoritative intent — **consume it; do not re-derive or silently override it.** Also
+   honor `secondary_intents` (B2B queries are often mixed: e.g. add a comparison block for a commercial
+   secondary intent on an informational primary). Only when `seo_strategy` is absent do you classify the
+   intent yourself (the original fallback).
+
+   At the top of the section plan, record:
+   - `intent` — the chosen intent (and any secondary intents).
+   - `intent_source` — `seo_strategy` or `architect_fallback`.
+   - `intent_conflict` — `true` if your own reading of the SERP/topic disagrees with the upstream intent,
+     else `false`. **On conflict, never silently change the upstream intent.** In interactive mode, STOP and
+     request an author decision (`STOP_AND_REQUEST_DECISION`); in non-interactive mode, follow the upstream
+     `seo_strategy` intent and surface the conflict via this marker. (Note: `grill-me` runs before this stage,
+     so do not defer the decision to it.)
+
+   Also fold in, when `seo_strategy` is present: `serp_analysis.content_gaps` (sections that close real gaps),
+   `serp_analysis.paa_questions` (FAQ / question-H2 coverage), and `outline_constraints` (must-answer items,
+   must-include entities, avoid-angles).
 
 2. **Outcome title** — The H1 names the decision or result the reader leaves with, not just the topic. Prefer `[problem/scenario]: [verifiable result or selection decision]`. Avoid "Ultimate/Complete Guide to …" containers.
 
