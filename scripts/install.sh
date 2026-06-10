@@ -8,7 +8,7 @@ TARGET="${1:-all}"
 usage() {
   cat <<'USAGE'
 Usage:
-  scripts/install.sh [codex|claude|all]
+  scripts/install.sh [codex|claude|claude-plugin|claude-standalone|all]
 
 Environment:
   BLOG_WRITING_SKILL_REPO   Override git repository URL.
@@ -17,6 +17,7 @@ Environment:
 Examples:
   curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
   curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
+  curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude-standalone
 USAGE
 }
 
@@ -58,11 +59,26 @@ install_one() {
   git clone --depth 1 "$REPO_URL" "$dest"
 }
 
+install_claude_plugin() {
+  if ! command -v claude >/dev/null 2>&1; then
+    echo "ERROR: claude CLI not found. Use target 'claude-standalone' for a filesystem skill install." >&2
+    exit 1
+  fi
+
+  echo "Adding/updating Claude Code marketplace source"
+  claude plugin marketplace add lizopower/Blog-Writing-Skill || true
+
+  echo "Installing/updating Claude Code plugin: blog-writing-skills"
+  claude plugin install blog-writing-skills || claude plugin update blog-writing-skills
+}
+
 case "$TARGET" in
-  codex|claude) install_one "$TARGET" ;;
+  codex) install_one codex ;;
+  claude|claude-plugin) install_claude_plugin ;;
+  claude-standalone) install_one claude ;;
   all)
     install_one codex
-    install_one claude
+    install_claude_plugin
     ;;
   -h|--help|help) usage ;;
   *)

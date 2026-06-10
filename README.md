@@ -23,18 +23,22 @@ claude plugin update blog-writing-skills
 # Codex preferred: standalone skill install/update
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
 
-# Claude Code fallback: standalone skill install/update
+# Claude Code plugin install/update through the same installer
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
 
-# Standalone install/update for both agents
+# Codex standalone + Claude plugin
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- all
+
+# Claude Code standalone fallback only
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude-standalone
 ```
 
 ```powershell
-# Windows PowerShell standalone installer
+# Windows PowerShell installer
 iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
 .\install-blog-writing-skill.ps1 codex
 .\install-blog-writing-skill.ps1 claude
+.\install-blog-writing-skill.ps1 claude-standalone
 ```
 
 ## At a Glance
@@ -170,7 +174,7 @@ claude plugin install blog-writing-skills
 claude plugin update blog-writing-skills
 ```
 
-For Codex, or when you want a standalone skill folder for either agent, use the installer. It automatically chooses between:
+For Codex, or when you want a script to manage both hosts, use the installer. `claude` means Claude Code plugin install/update; `claude-standalone` is the filesystem fallback. For standalone folders, the installer automatically chooses between:
 
 - fresh install,
 - `git pull --ff-only` update of an existing git install,
@@ -180,8 +184,11 @@ For Codex, or when you want a standalone skill folder for either agent, use the 
 # Codex
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
 
-# Claude Code standalone fallback
+# Claude Code plugin install/update
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
+
+# Claude Code standalone fallback
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude-standalone
 ```
 
 On Windows PowerShell:
@@ -190,6 +197,7 @@ On Windows PowerShell:
 iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
 .\install-blog-writing-skill.ps1 codex
 .\install-blog-writing-skill.ps1 claude
+.\install-blog-writing-skill.ps1 claude-standalone
 ```
 
 Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
@@ -218,7 +226,7 @@ New-Item -ItemType Directory -Force "$HOME\.claude\skills"
 Copy-Item -Recurse -Force ".\Blog-Writing-Skill" "$HOME\.claude\skills\blog-writing-skills"
 ```
 
-Claude Code loads the root `SKILL.md` as the `blog-writing-skills` router. Restart or start a new session afterward. **Verify:** ask Claude Code *"Do you see the blog-writing-skills skill? Summarize its routing rules."*, then run `tvly --status`.
+Claude Code standalone installs load the root `SKILL.md` as the `blog-writing-skills` router. This is a fallback path: nested sub-skills under `skills/<name>/SKILL.md` are not guaranteed to be directly invokable through `blog-writing-skills:<sub-skill>` unless the bundle is installed as a Claude Code plugin. Restart or start a new session afterward. **Verify:** ask Claude Code *"Do you see the blog-writing-skills skill? Summarize its routing rules."*, then run `tvly --status`.
 </details>
 
 <details>
@@ -276,12 +284,14 @@ For Codex and standalone installs, re-run the installer any time:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
+curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude-standalone
 ```
 
 ```powershell
 iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.ps1 -OutFile install-blog-writing-skill.ps1
 .\install-blog-writing-skill.ps1 codex
 .\install-blog-writing-skill.ps1 claude
+.\install-blog-writing-skill.ps1 claude-standalone
 ```
 
 If you installed by cloning directly and prefer manual updates:
@@ -293,7 +303,7 @@ git -C ~/.claude/skills/blog-writing-skills pull --ff-only
 
 If you installed via **skill-installer**, just reinstall: *"Use skill-installer to reinstall https://github.com/lizopower/Blog-Writing-Skill."*
 
-Agents can read the current package version with `cat VERSION` / `Get-Content VERSION`. After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.5.0`) following [`VERSIONING.md`](VERSIONING.md).
+Agents can read the current package version with `cat VERSION` / `Get-Content VERSION`. After any update, **restart the agent / start a new session** so the skill index is re-scanned. To be notified of new versions, **Watch → Releases** on GitHub; releases are tagged (e.g. `v3.5.1`) following [`VERSIONING.md`](VERSIONING.md).
 
 ## One-command project init
 
@@ -554,6 +564,22 @@ Stop it and remind: *"This bundle requires Tavily for online research. Do not us
 </details>
 
 <details>
+<summary><b>Tavily works, but Windows terminal output crashes with Unicode</b></summary>
+
+This is usually a terminal encoding issue, not a Tavily API failure. On Windows terminals using GBK, `tvly search --json` can fail when JSON contains Unicode characters such as bullets or long dashes. Write output to a file instead of stdout:
+
+```powershell
+tvly search "your query" --json -o tavily-search.json
+```
+
+For extraction, use the current Tavily CLI raw-content option rather than an invented markdown flag:
+
+```powershell
+tvly extract https://example.com --include-raw-content -o tavily-extract.json
+```
+</details>
+
+<details>
 <summary><b>The article feels unsupported / has facts not in the context pack</b></summary>
 
 Run `data-validator` on the context pack, then `grill-me` before outlining; if evidence is missing, return to `tech-research` or `audience-pain-point-research`. For a finished draft, run `fact-checker` against the draft + context pack and source or remove every unsupported claim.
@@ -568,7 +594,19 @@ Don't regenerate from scratch. Have the agent inspect `content/articles/<slug>/a
 <details>
 <summary><b>A handoff between sub-skills does not resolve</b></summary>
 
-When installed as a **plugin**, skills are namespaced as `blog-writing-skills:<skill-name>`; the routing docs use bare names for readability. As a **standalone** install, bare names work directly. If a bare name does not resolve, use the namespaced form, e.g. `blog-writing-skills:tech-blog-writer`.
+Claude Code has two install modes with different skill resolution behavior:
+
+- **Plugin install:** sub-skills are namespaced as `blog-writing-skills:<skill-name>` and should resolve through the plugin system, e.g. `blog-writing-skills:tech-blog-orchestrator`.
+- **Standalone install:** Claude Code loads the root `blog-writing-skills` router from `~/.claude/skills/blog-writing-skills/SKILL.md`. Nested sub-skills under this repo's `skills/` directory may not be directly invokable as namespaced skills unless the plugin is installed.
+
+If an agent says only "Invoke the skill" and does not inject the selected sub-skill instructions, check whether the plugin is installed:
+
+```bash
+claude plugin list --json --available
+claude plugin install blog-writing-skills
+```
+
+For full article requests, the root router should route to `blog-writing-workflow`; direct sub-skill calls are safest after a plugin install.
 </details>
 
 ## Maintaining this repo

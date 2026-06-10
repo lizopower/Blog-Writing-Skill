@@ -15,6 +15,13 @@ The repository already ships `.claude-plugin/plugin.json` and
 supports `plugin marketplace add`, `plugin install`, and `plugin update`; the
 README now presents this as the preferred Claude Code path.
 
+Follow-up testing found the practical failure mode this is meant to avoid:
+standalone filesystem installs can expose the root router, but they do not
+guarantee that nested sub-skills resolve through
+`blog-writing-skills:<sub-skill>`. When namespace resolution fails, an agent can
+receive only a generic "invoke the skill" hint instead of the actual sub-skill
+`SKILL.md` instructions, then accidentally write outside the pipeline.
+
 ### Risk
 The remaining risk is not command availability; it is clean-profile behavior:
 whether a first-time user can add this GitHub repository as a marketplace,
@@ -24,6 +31,10 @@ routes without manual filesystem repair.
 ### Acceptance criteria
 - [ ] Confirm install and update behavior from a clean Claude Code profile.
 - [ ] Confirm namespaced skill routing works after plugin install.
+- [ ] Confirm calling `blog-writing-skills:tech-blog-orchestrator` injects the
+      actual sub-skill instructions, not just a generic reminder.
+- [ ] Confirm a topic-only article request routes to `blog-writing-workflow`
+      and does not fall through to manual search/drafting.
 - [ ] Confirm uninstall/reinstall leaves no stale plugin state.
 - [ ] If any clean-profile issue appears, demote the plugin path back below the
       standalone installer and document the failure mode.

@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("codex", "claude", "all")]
+  [ValidateSet("codex", "claude", "claude-plugin", "claude-standalone", "all")]
   [string] $Target = "all",
   [string] $RepoUrl = "https://github.com/lizopower/Blog-Writing-Skill.git",
   [string] $SkillName = "blog-writing-skills"
@@ -55,12 +55,33 @@ function Install-One {
   if ($LASTEXITCODE -ne 0) { throw "git clone failed for $dest" }
 }
 
+function Install-ClaudePlugin {
+  if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
+    throw "claude CLI not found. Use target 'claude-standalone' for a filesystem skill install."
+  }
+
+  Write-Host "Adding/updating Claude Code marketplace source"
+  & claude plugin marketplace add lizopower/Blog-Writing-Skill
+  if ($LASTEXITCODE -ne 0) {
+    Write-Host "Marketplace add returned a non-zero exit code; continuing in case it is already configured."
+  }
+
+  Write-Host "Installing/updating Claude Code plugin: blog-writing-skills"
+  & claude plugin install blog-writing-skills
+  if ($LASTEXITCODE -ne 0) {
+    & claude plugin update blog-writing-skills
+    if ($LASTEXITCODE -ne 0) { throw "Claude plugin install/update failed" }
+  }
+}
+
 switch ($Target) {
   "codex" { Install-One "codex" }
-  "claude" { Install-One "claude" }
+  "claude" { Install-ClaudePlugin }
+  "claude-plugin" { Install-ClaudePlugin }
+  "claude-standalone" { Install-One "claude" }
   "all" {
     Install-One "codex"
-    Install-One "claude"
+    Install-ClaudePlugin
   }
 }
 
