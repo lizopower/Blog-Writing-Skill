@@ -56,7 +56,7 @@ If `content/articles/<slug>/` already exists, inspect it and continue from `arti
 python skills/blog-brainstorm/scripts/article.py doctor --root <project-root>
 ```
 
-If it reports problems, run `init.py --root <project-root>` to (re)install the runtime and hooks before continuing. `init.py --check` is the equivalent read-only probe.
+If it reports problems, run `blog-writing init <project-root>` to (re)install the runtime and hooks before continuing. If the `blog-writing` shim is unavailable, fall back to `python skills/blog-brainstorm/scripts/init.py --root <project-root>`. `blog-writing check <project-root>` / `init.py --check` is the equivalent read-only probe.
 
 ## Script-First Workspace Creation
 

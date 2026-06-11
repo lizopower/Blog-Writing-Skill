@@ -200,6 +200,8 @@ iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/
 .\install-blog-writing-skill.ps1 claude-standalone
 ```
 
+Standalone/Codex installs also create `blog-writing` and `bws` command shims in `~/.local/bin` (`%USERPROFILE%\.local\bin` on Windows). If that directory is not on `PATH`, the installer prints a reminder.
+
 Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
 
 | Agent | Method | Skill folder |
@@ -309,6 +311,24 @@ Agents can read the current package version with `cat VERSION` / `Get-Content VE
 
 After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: the bundle is the global scaffold, while each project gets its own `.trellis-writing/` runtime plus project-local article/spec directories and optional session context injection.
 
+If you installed with the standalone/Codex installer, it also installs a `blog-writing` command plus the short alias `bws`:
+
+```bash
+cd <project-root>
+blog-writing init
+
+# Equivalent short form
+bws init
+```
+
+Initialize another project without changing directories:
+
+```bash
+blog-writing init <project-root>
+```
+
+The lower-level script entry remains available when no shim is installed:
+
 ```bash
 python skills/blog-brainstorm/scripts/init.py --root <project-root>
 ```
@@ -325,8 +345,8 @@ By default, init creates:
 Use Codex or both hosts:
 
 ```bash
-python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness codex
-python skills/blog-brainstorm/scripts/init.py --root <project-root> --harness all
+blog-writing init --harness codex
+blog-writing init --harness all
 ```
 
 On Claude, a `PreToolUse` phase gate mechanically blocks writes to lifecycle artifacts before their phase. Codex has no `PreToolUse` hook, so the Codex install instead writes a managed lifecycle prelude into the project-root `AGENTS.md` (delimited by `<!-- BEGIN/END blog-writing-skill (managed) -->`). The block tells Codex agents to run `resume_context.py` first and to honor the same gates by convention. It is appended non-destructively — any user-authored `AGENTS.md` content is preserved — and `--uninstall` strips only the managed block.
@@ -334,7 +354,7 @@ On Claude, a `PreToolUse` phase gate mechanically blocks writes to lifecycle art
 Skip hook installation and only create project directories/spec store:
 
 ```bash
-python skills/blog-brainstorm/scripts/init.py --root <project-root> --no-session-hook
+blog-writing init --no-session-hook
 ```
 
 Hook installation prints a diff and asks for confirmation before writing host config. Add `--yes` only for trusted automation/tests.
@@ -343,7 +363,7 @@ Rerun the same init command after updating the bundle to refresh the managed hoo
 Refresh the project-local runtime after updating the bundle:
 
 ```bash
-python skills/blog-brainstorm/scripts/init.py --root <project-root> --update
+blog-writing update
 ```
 
 If update sees a user-modified managed runtime file, it keeps the original, writes a same-path `.new` file, and reports the conflict. It never updates `content/articles/` or `content/specs/`.
@@ -351,7 +371,7 @@ If update sees a user-modified managed runtime file, it keeps the original, writ
 Uninstall managed hooks and runtime files without deleting writing content:
 
 ```bash
-python skills/blog-brainstorm/scripts/init.py --root <project-root> --uninstall
+blog-writing uninstall
 ```
 
 ## Quick start

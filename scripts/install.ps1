@@ -2,10 +2,12 @@ param(
   [ValidateSet("codex", "claude", "claude-plugin", "claude-standalone", "all")]
   [string] $Target = "all",
   [string] $RepoUrl = "https://github.com/lizopower/Blog-Writing-Skill.git",
-  [string] $SkillName = "blog-writing-skills"
+  [string] $SkillName = "blog-writing-skills",
+  [string] $BinDir = $(Join-Path $HOME ".local\bin")
 )
 
 $ErrorActionPreference = "Stop"
+$script:LastStandaloneDest = ""
 
 function Get-Timestamp {
   Get-Date -Format "yyyyMMddHHmmss"
@@ -24,6 +26,7 @@ function Install-One {
   }
 
   $dest = Join-Path $base $SkillName
+  $script:LastStandaloneDest = $dest
   New-Item -ItemType Directory -Force $base | Out-Null
 
   if (Test-Path (Join-Path $dest ".git")) {
@@ -55,6 +58,37 @@ function Install-One {
   if ($LASTEXITCODE -ne 0) { throw "git clone failed for $dest" }
 }
 
+function Install-CliShim {
+  param(
+    [string] $SkillDir
+  )
+
+  $entry = Join-Path $SkillDir "scripts\blog-writing.py"
+  if (-not (Test-Path -LiteralPath $entry)) {
+    Write-Warning "CLI entry not found at $entry; skipping blog-writing shim."
+    return
+  }
+
+  New-Item -ItemType Directory -Force $BinDir | Out-Null
+
+  $cmdText = "@echo off`r`npython ""$entry"" %*`r`n"
+  Set-Content -LiteralPath (Join-Path $BinDir "blog-writing.cmd") -Value $cmdText -Encoding ASCII
+  Set-Content -LiteralPath (Join-Path $BinDir "bws.cmd") -Value $cmdText -Encoding ASCII
+
+  $escapedEntry = $entry.Replace("'", "''")
+  $psText = "& python '$escapedEntry' @args`n"
+  Set-Content -LiteralPath (Join-Path $BinDir "blog-writing.ps1") -Value $psText -Encoding UTF8
+  Set-Content -LiteralPath (Join-Path $BinDir "bws.ps1") -Value $psText -Encoding UTF8
+
+  Write-Host "Installed CLI shim: $(Join-Path $BinDir 'blog-writing.cmd')"
+  Write-Host "Alias installed: $(Join-Path $BinDir 'bws.cmd')"
+
+  $pathParts = ($env:PATH -split ';') | Where-Object { $_ }
+  if ($pathParts -notcontains $BinDir) {
+    Write-Host "NOTE: add $BinDir to PATH to run 'blog-writing init' from any directory."
+  }
+}
+
 function Install-ClaudePlugin {
   if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
     throw "claude CLI not found. Use target 'claude-standalone' for a filesystem skill install."
@@ -75,12 +109,19 @@ function Install-ClaudePlugin {
 }
 
 switch ($Target) {
-  "codex" { Install-One "codex" }
+  "codex" {
+    Install-One "codex"
+    Install-CliShim $script:LastStandaloneDest
+  }
   "claude" { Install-ClaudePlugin }
   "claude-plugin" { Install-ClaudePlugin }
-  "claude-standalone" { Install-One "claude" }
+  "claude-standalone" {
+    Install-One "claude"
+    Install-CliShim $script:LastStandaloneDest
+  }
   "all" {
     Install-One "codex"
+    Install-CliShim $script:LastStandaloneDest
     Install-ClaudePlugin
   }
 }
