@@ -1,5 +1,5 @@
 param(
-  [ValidateSet("codex", "claude", "claude-plugin", "claude-standalone", "all")]
+  [ValidateSet("codex", "claude", "claude-plugin", "claude-standalone", "cli", "all")]
   [string] $Target = "all",
   [string] $RepoUrl = "https://github.com/lizopower/Blog-Writing-Skill.git",
   [string] $SkillName = "blog-writing-skills",
@@ -115,6 +115,10 @@ switch ($Target) {
   }
   "claude" { Install-ClaudePlugin }
   "claude-plugin" { Install-ClaudePlugin }
+  "cli" {
+    $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot "..")).Path
+    Install-CliShim $repoRoot
+  }
   "claude-standalone" {
     Install-One "claude"
     Install-CliShim $script:LastStandaloneDest

@@ -202,6 +202,13 @@ iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/
 
 Standalone/Codex installs also create `blog-writing` and `bws` command shims in `~/.local/bin` (`%USERPROFILE%\.local\bin` on Windows). If that directory is not on `PATH`, the installer prints a reminder.
 
+If you keep this repository as an independent scaffold instead of a global agent skill, install only the command shims from the scaffold checkout:
+
+```powershell
+cd C:\Users\cuican\Blog-Writing-Skill
+.\scripts\install.ps1 cli
+```
+
 Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
 
 | Agent | Method | Skill folder |
@@ -311,7 +318,7 @@ Agents can read the current package version with `cat VERSION` / `Get-Content VE
 
 After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: the bundle is the global scaffold, while each project gets its own `.trellis-writing/` runtime plus project-local article/spec directories and optional session context injection.
 
-If you installed with the standalone/Codex installer, it also installs a `blog-writing` command plus the short alias `bws`:
+If you installed with the standalone/Codex installer, or ran `scripts/install.ps1 cli` from an independent scaffold checkout, it also installs a `blog-writing` command plus the short alias `bws`:
 
 ```bash
 cd <project-root>

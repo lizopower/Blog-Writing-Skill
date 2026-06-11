@@ -10,7 +10,7 @@ LAST_STANDALONE_DEST=""
 usage() {
   cat <<'USAGE'
 Usage:
-  scripts/install.sh [codex|claude|claude-plugin|claude-standalone|all]
+  scripts/install.sh [codex|claude|claude-plugin|claude-standalone|cli|all]
 
 Environment:
   BLOG_WRITING_SKILL_REPO   Override git repository URL.
@@ -21,6 +21,7 @@ Examples:
   curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
   curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
   curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude-standalone
+  ./scripts/install.sh cli
 USAGE
 }
 
@@ -106,6 +107,7 @@ case "$TARGET" in
     install_cli_shim "$LAST_STANDALONE_DEST"
     ;;
   claude|claude-plugin) install_claude_plugin ;;
+  cli) install_cli_shim "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)" ;;
   claude-standalone)
     install_one claude
     install_cli_shim "$LAST_STANDALONE_DEST"
