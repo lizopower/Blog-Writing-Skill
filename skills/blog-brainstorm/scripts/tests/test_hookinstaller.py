@@ -162,12 +162,17 @@ class HookInstallerTests(unittest.TestCase):
 
             installed = run_installer("--harness", "claude", "--install", "--root", str(root), "--yes")
             data = json.loads(settings.read_text(encoding="utf-8"))
+            claude_md = (root / "CLAUDE.md").read_text(encoding="utf-8")
             uninstalled = run_installer("--harness", "claude", "--uninstall", "--root", str(root), "--yes")
             cleaned = json.loads(settings.read_text(encoding="utf-8"))
+            claude_exists_after_uninstall = (root / "CLAUDE.md").exists()
 
         self.assertEqual(installed.returncode, 0, installed.stderr)
         self.assertIn("Why:", installed.stdout)
         self.assertIn("Uninstall with:", installed.stdout)
+        self.assertIn("Wrote Claude project instructions", installed.stdout)
+        self.assertIn("BEGIN blog-writing-skill claude", claude_md)
+        self.assertIn("blog-writing-workflow", claude_md)
         self.assertEqual(len(data["hooks"]["SessionStart"]), 4)
         self.assertEqual(data["hooks"]["SessionStart"][0]["hooks"][0]["command"], "python existing.py")
         self.assertEqual(len(data["hooks"]["PreToolUse"]), 1)
@@ -181,6 +186,7 @@ class HookInstallerTests(unittest.TestCase):
         self.assertEqual(len(cleaned["hooks"]["SessionStart"]), 1)
         self.assertEqual(cleaned["hooks"].get("PreToolUse"), [])
         self.assertEqual(cleaned["hooks"].get("UserPromptSubmit"), [])
+        self.assertFalse(claude_exists_after_uninstall)
 
     def test_installer_cli_uses_codex_hooks_json_schema_from_sample(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

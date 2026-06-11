@@ -361,6 +361,7 @@ By default, init creates:
 - `.trellis-writing/.version`
 - `.trellis-writing/.template-hashes.json`
 - Claude Code SessionStart context injection in `.claude/settings.json`
+- Claude Code scaffold-only project instructions in `CLAUDE.md`
 
 Use Codex or both hosts:
 
@@ -369,7 +370,9 @@ blog-writing init --harness codex
 blog-writing init --harness all
 ```
 
-On Claude, a `PreToolUse` phase gate mechanically blocks writes to lifecycle artifacts before their phase. Codex has no `PreToolUse` hook, so the Codex install instead writes a managed lifecycle prelude into the project-root `AGENTS.md` (delimited by `<!-- BEGIN/END blog-writing-skill (managed) -->`). The block tells Codex agents to run `resume_context.py` first and to honor the same gates by convention. It is appended non-destructively — any user-authored `AGENTS.md` content is preserved — and `--uninstall` strips only the managed block.
+On Claude, a `PreToolUse` phase gate mechanically blocks writes to lifecycle artifacts before their phase. Claude installs also write a managed `CLAUDE.md` block that points the project at the scaffold checkout, so scaffold-only users do not depend on global skill/plugin discovery. It is appended non-destructively and `--uninstall` strips only the managed block.
+
+Codex has no `PreToolUse` hook, so the Codex install instead writes a managed lifecycle prelude into the project-root `AGENTS.md` (delimited by `<!-- BEGIN/END blog-writing-skill (managed) -->`). The block tells Codex agents to run `resume_context.py` first and to honor the same gates by convention. It is appended non-destructively — any user-authored `AGENTS.md` content is preserved — and `--uninstall` strips only the managed block.
 
 Skip hook installation and only create project directories/spec store:
 

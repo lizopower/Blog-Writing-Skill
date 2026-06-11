@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from _hookinstaller import MANAGED_BY, PRE_TOOL_USE_MATCHER, SESSION_MATCHERS
+from _claudemd import MARKER_BEGIN as CLAUDE_MARKER_BEGIN, PRELUDE_FILENAME as CLAUDE_PRELUDE_FILENAME
 from _runtimeinstaller import (
     RUNTIME_ROOT,
     destination_path,
@@ -169,6 +170,16 @@ def _hook_checks(root: Path, harness: str) -> list[Check]:
                 "hook_breadcrumb",
                 breadcrumb_ok,
                 "matcherless -> inject_workflow_state.py" if breadcrumb_ok else "missing or misconfigured managed UserPromptSubmit breadcrumb",
+            )
+        )
+    if harness == "claude":
+        instructions = root / CLAUDE_PRELUDE_FILENAME
+        instructions_ok = instructions.exists() and CLAUDE_MARKER_BEGIN in instructions.read_text(encoding="utf-8")
+        checks.append(
+            Check(
+                "claude_project_instructions",
+                instructions_ok,
+                str(instructions) if instructions_ok else f"missing managed block in {instructions}",
             )
         )
     return checks

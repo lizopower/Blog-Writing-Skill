@@ -12,11 +12,18 @@ from pathlib import Path
 from typing import Any
 
 from _agentsmd import (
-    PRELUDE_FILENAME,
-    MARKER_BEGIN,
-    remove_prelude,
-    render_prelude,
-    upsert_prelude,
+    PRELUDE_FILENAME as AGENTS_PRELUDE_FILENAME,
+    MARKER_BEGIN as AGENTS_MARKER_BEGIN,
+    remove_prelude as remove_agents_prelude,
+    render_prelude as render_agents_prelude,
+    upsert_prelude as upsert_agents_prelude,
+)
+from _claudemd import (
+    PRELUDE_FILENAME as CLAUDE_PRELUDE_FILENAME,
+    MARKER_BEGIN as CLAUDE_MARKER_BEGIN,
+    remove_prelude as remove_claude_prelude,
+    render_prelude as render_claude_prelude,
+    upsert_prelude as upsert_claude_prelude,
 )
 from _hookinstaller import (
     build_pre_tool_use_entries,
@@ -39,6 +46,11 @@ HARNESS_CONFIG = {
 
 PHASE_GATE_TIMEOUT = 10
 BREADCRUMB_TIMEOUT = 5
+
+
+def scaffold_root() -> Path:
+    """Repository/scaffold root containing the source SKILL.md files."""
+    return Path(__file__).resolve().parents[3]
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -80,9 +92,9 @@ def breadcrumb_command_for(root: Path) -> str:
 
 def write_prelude(root: Path) -> Path:
     """Insert/refresh the managed Codex lifecycle prelude in AGENTS.md."""
-    path = root / PRELUDE_FILENAME
+    path = root / AGENTS_PRELUDE_FILENAME
     existing = path.read_text(encoding="utf-8") if path.exists() else ""
-    path.write_text(upsert_prelude(existing, render_prelude()), encoding="utf-8")
+    path.write_text(upsert_agents_prelude(existing, render_agents_prelude()), encoding="utf-8")
     return path
 
 
@@ -92,13 +104,37 @@ def clear_prelude(root: Path) -> Path | None:
     Returns the path when a managed block was present, else ``None``. Removes
     the file only when stripping the block leaves it empty.
     """
-    path = root / PRELUDE_FILENAME
+    path = root / AGENTS_PRELUDE_FILENAME
     if not path.exists():
         return None
     existing = path.read_text(encoding="utf-8")
-    if MARKER_BEGIN not in existing:
+    if AGENTS_MARKER_BEGIN not in existing:
         return None
-    remaining = remove_prelude(existing)
+    remaining = remove_agents_prelude(existing)
+    if remaining.strip():
+        path.write_text(remaining, encoding="utf-8")
+    else:
+        path.unlink()
+    return path
+
+
+def write_claude_instructions(root: Path) -> Path:
+    """Insert/refresh the managed Claude project instructions in CLAUDE.md."""
+    path = root / CLAUDE_PRELUDE_FILENAME
+    existing = path.read_text(encoding="utf-8") if path.exists() else ""
+    path.write_text(upsert_claude_prelude(existing, render_claude_prelude(scaffold_root())), encoding="utf-8")
+    return path
+
+
+def clear_claude_instructions(root: Path) -> Path | None:
+    """Strip the managed Claude project instructions, preserving user content."""
+    path = root / CLAUDE_PRELUDE_FILENAME
+    if not path.exists():
+        return None
+    existing = path.read_text(encoding="utf-8")
+    if CLAUDE_MARKER_BEGIN not in existing:
+        return None
+    remaining = remove_claude_prelude(existing)
     if remaining.strip():
         path.write_text(remaining, encoding="utf-8")
     else:
@@ -159,6 +195,12 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
 
     save_json(path, new)
     print(f"Installed {harness} session hook at {path}")
+    if harness == "claude":
+        instructions_path = write_claude_instructions(root)
+        print(
+            f"Wrote Claude project instructions to {instructions_path} - this makes "
+            "scaffold-only installs discoverable even when the global skill/plugin is absent."
+        )
     if not gate_supported:
         prelude_path = write_prelude(root)
         print(
@@ -195,6 +237,10 @@ def uninstall_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bo
     save_json(path, new)
     print(f"Uninstalled {harness} session hook from {path}")
     _directory, _filename, _timeout, gate_supported, _breadcrumb = HARNESS_CONFIG[harness]
+    if harness == "claude":
+        cleared_claude = clear_claude_instructions(root)
+        if cleared_claude is not None:
+            print(f"Removed managed Claude project instructions from {cleared_claude} (user content preserved)")
     if not gate_supported:
         cleared = clear_prelude(root)
         if cleared is not None:

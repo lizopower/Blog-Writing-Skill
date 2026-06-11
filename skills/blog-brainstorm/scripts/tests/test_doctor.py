@@ -43,6 +43,7 @@ class DoctorTests(unittest.TestCase):
             names = {c.name for c in diagnosis.checks}
             self.assertIn("hook_breadcrumb", names)
             self.assertIn("hook_phase_gate", names)
+            self.assertIn("claude_project_instructions", names)
 
     def test_missing_runtime_script_is_flagged(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -84,6 +85,17 @@ class DoctorTests(unittest.TestCase):
 
             self.assertFalse(diagnosis.ok)
             self.assertFalse(next(c for c in diagnosis.checks if c.name == "hook_breadcrumb").ok)
+
+    def test_missing_claude_project_instructions_are_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            create_project(root)
+            (root / "CLAUDE.md").unlink()
+
+            diagnosis = doctor.diagnose(root, "claude")
+
+            self.assertFalse(diagnosis.ok)
+            self.assertFalse(next(c for c in diagnosis.checks if c.name == "claude_project_instructions").ok)
 
     def test_session_start_with_right_count_but_wrong_command_is_flagged(self) -> None:
         # A managed config can keep the right matcher count while pointing at a
@@ -137,6 +149,7 @@ class DoctorTests(unittest.TestCase):
             names = {c.name for c in diagnosis.checks}
             self.assertNotIn("hook_phase_gate", names)
             self.assertNotIn("hook_breadcrumb", names)
+            self.assertNotIn("claude_project_instructions", names)
 
     def test_article_doctor_cli_returns_status(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
