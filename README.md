@@ -12,6 +12,12 @@ Works for any technical or B2B domain — industrial equipment, software, manufa
 
 ## Agent Quick Install
 
+```powershell
+# Independent scaffold install after cloning/downloading this repo
+cd Blog-Writing-Skill
+.\install.ps1
+```
+
 ```bash
 # Claude Code preferred: native plugin install/update
 claude plugin marketplace add lizopower/Blog-Writing-Skill
@@ -206,7 +212,14 @@ If you keep this repository as an independent scaffold instead of a global agent
 
 ```powershell
 cd C:\Users\cuican\Blog-Writing-Skill
-.\scripts\install.ps1 cli
+.\install.ps1
+```
+
+On macOS/Linux:
+
+```bash
+cd Blog-Writing-Skill
+./install.sh
 ```
 
 Restart the agent or start a new session after install, then verify the bundle is visible and Tavily is authenticated.
@@ -318,7 +331,7 @@ Agents can read the current package version with `cat VERSION` / `Get-Content VE
 
 After installing the bundle into an agent, initialize each writing project once. This is the Blog-Writing-Skill equivalent of `trellis init`: the bundle is the global scaffold, while each project gets its own `.trellis-writing/` runtime plus project-local article/spec directories and optional session context injection.
 
-If you installed with the standalone/Codex installer, or ran `scripts/install.ps1 cli` from an independent scaffold checkout, it also installs a `blog-writing` command plus the short alias `bws`:
+If you installed with the standalone/Codex installer, or ran `install.ps1` / `install.sh` from an independent scaffold checkout, it also installs a `blog-writing` command plus the short alias `bws`:
 
 ```bash
 cd <project-root>
