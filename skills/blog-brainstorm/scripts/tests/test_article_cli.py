@@ -68,6 +68,68 @@ class ArticleCliTests(unittest.TestCase):
             self.assertEqual(article["track"], "lightweight")
             self.assertEqual(article["waivers"], [])
 
+    def test_create_installs_hooks_by_default(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            result = run_article("create", "Demo Title", "--slug", "demo", "--root", str(root))
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            settings = json.loads((root / ".claude" / "settings.json").read_text(encoding="utf-8"))
+            events = settings["hooks"]
+            self.assertTrue(any(e.get("_managed_by") == "blog-writing-skill" for e in events["SessionStart"]))
+            self.assertTrue(any(e.get("_managed_by") == "blog-writing-skill" for e in events["UserPromptSubmit"]))
+
+    def test_create_fails_closed_when_hook_install_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            # An invalid host settings.json makes install_hook return non-zero,
+            # which must abort create instead of leaving a hook-less workspace.
+            (root / ".claude").mkdir()
+            (root / ".claude" / "settings.json").write_text("{bad json", encoding="utf-8")
+
+            result = run_article("create", "Demo Title", "--slug", "demo", "--root", str(root))
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("hook install failed", result.stderr)
+            self.assertIn("--no-hooks", result.stderr)
+            self.assertFalse((root / "content" / "articles" / "demo").exists())
+
+    def test_create_codex_harness_is_also_gated(self) -> None:
+        # The hard gate must not be Claude-only: Codex still needs SessionStart +
+        # prelude, so a Codex hook install failure must abort create too.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".codex").mkdir()
+            (root / ".codex" / "hooks.json").write_text("{bad json", encoding="utf-8")
+
+            result = run_article("create", "Demo Title", "--slug", "demo", "--root", str(root), "--harness", "codex")
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("hook install failed", result.stderr)
+            self.assertFalse((root / "content" / "articles" / "demo").exists())
+
+    def test_create_codex_harness_installs_and_succeeds(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            result = run_article("create", "Demo Title", "--slug", "demo", "--root", str(root), "--harness", "codex")
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "content" / "articles" / "demo" / "article.json").exists())
+            hooks = json.loads((root / ".codex" / "hooks.json").read_text(encoding="utf-8"))
+            self.assertTrue(any(e.get("_managed_by") == "blog-writing-skill" for e in hooks["hooks"]["SessionStart"]))
+
+    def test_create_no_hooks_opts_out_of_gate(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            # Even with broken host settings, --no-hooks must still create the workspace.
+            (root / ".claude").mkdir()
+            (root / ".claude" / "settings.json").write_text("{bad json", encoding="utf-8")
+
+            result = run_article("create", "Demo Title", "--slug", "demo", "--root", str(root), "--no-hooks")
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertTrue((root / "content" / "articles" / "demo" / "article.json").exists())
+
     def test_advance_rejects_illegal_transition(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

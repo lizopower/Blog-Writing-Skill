@@ -43,23 +43,46 @@ def save_article(workspace: Path, article: dict[str, Any]) -> None:
     )
 
 
-def ensure_hooks(root: Path, harness: str) -> None:
-    """Best-effort hook install so gates are active without a manual init step."""
+def ensure_hooks(root: Path, harness: str) -> bool:
+    """Install session/gate hooks for the selected harness(es).
+
+    Returns ``True`` only when every selected harness installs cleanly. This is
+    a hard gate for ``create`` (Trellis parity): the workflow must not run
+    without context injection, so a failure here is fatal unless the caller
+    explicitly opted out with ``--no-hooks``.
+    """
     from install_session_hook import HARNESS_CONFIG, install_hook
 
     harnesses = sorted(HARNESS_CONFIG) if harness == "all" else [harness]
+    ok = True
     for name in harnesses:
         try:
             code = install_hook(root, name, assume_yes=True, print_diff=False)
-        except Exception as exc:  # noqa: BLE001 - workspace creation must not fail on hook setup
-            print(f"warning: {name} hook install failed ({exc}); run init.py manually", file=sys.stderr)
+        except Exception as exc:  # noqa: BLE001 - report and fail the gate, do not crash
+            print(f"error: {name} hook install failed ({exc})", file=sys.stderr)
+            ok = False
             continue
         if code != 0:
-            print(f"warning: {name} hook install failed; run init.py manually", file=sys.stderr)
+            print(f"error: {name} hook install failed", file=sys.stderr)
+            ok = False
+    return ok
 
 
 def cmd_create(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
+    if not args.no_hooks:
+        # Hard gate: install context-injection hooks BEFORE creating the
+        # workspace so a hook failure leaves no half-initialized project (a
+        # workspace that would run without injection — the silent failure mode
+        # this gate exists to prevent). Opt out explicitly with --no-hooks.
+        if not ensure_hooks(root, args.harness):
+            print(
+                "error: session hook installation failed; refusing to create a workspace that "
+                "would run without workflow context injection. Fix the cause shown above and retry, "
+                "run init.py manually, or pass --no-hooks to create the workspace without hooks.",
+                file=sys.stderr,
+            )
+            return 1
     slug = args.slug or slugify(args.title)
     workspace = create_workspace(root, slug, args.title, args.type)
     article = migrate(load_article(workspace))
@@ -68,8 +91,6 @@ def cmd_create(args: argparse.Namespace) -> int:
     article.setdefault("waivers", [])
     article.setdefault("series", None)
     save_article(workspace, article)
-    if not args.no_hooks:
-        ensure_hooks(root, args.harness)
     print(workspace)
     return 0
 
@@ -194,7 +215,11 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--type", default="blog", help="Article type, e.g. blog, white-paper, guide.")
     create.add_argument("--track", choices=["full", "lightweight"], default="full")
     create.add_argument("--harness", choices=["claude", "codex", "all"], default="claude")
-    create.add_argument("--no-hooks", action="store_true", help="Skip session/gate hook installation.")
+    create.add_argument(
+        "--no-hooks",
+        action="store_true",
+        help="Opt out of the hard gate: create the workspace without installing session/gate hooks.",
+    )
     create.set_defaults(func=cmd_create)
 
     advance = subparsers.add_parser("advance", help="Advance to a lifecycle phase.")

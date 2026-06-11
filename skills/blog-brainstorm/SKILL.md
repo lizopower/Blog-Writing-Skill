@@ -68,6 +68,7 @@ python skills/blog-brainstorm/scripts/validate_article_workspace.py <project-roo
 
 Rules:
 - Prefer the script over manual file creation.
+- `article.py create` is a hard gate: it installs the session-context hooks (SessionStart + lifecycle gate + per-turn breadcrumb) before creating the workspace, and **fails without creating the workspace** if hook installation fails (runtime files under `.trellis-writing/` may already be written and are reused on retry). Fix the reported cause and retry — do not fall back to manual creation, which would produce a workspace with no context injection. Only pass `--no-hooks` to deliberately opt out (e.g. CI), and expect no workflow injection in that project.
 - If the script is unavailable, create the same skeleton manually and then inspect every required artifact.
 - Never overwrite existing files; continue from the existing workspace state.
 - Treat validation failure as a blocker before continuing the brainstorm.
