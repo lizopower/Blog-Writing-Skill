@@ -36,6 +36,11 @@ SERP from model memory — SERP data is time- and locale-sensitive, and a fabric
 Follow `standards/tavily_research_engine.md` for install/auth/preflight. If Tavily is unavailable, **stop**
 and ask the author to install/authenticate it. Do not fall back to generic guessing.
 
+On Windows, follow the standard's output discipline: Tavily CLI SERP/search/extract
+commands must write JSON/raw output to a file with `-o` (for example under
+`content/articles/<slug>/research/` or `.trellis-writing/research/`) instead of
+printing non-ASCII JSON to stdout. Read the file after the command succeeds.
+
 ## Boundaries (what this skill must NOT do)
 
 - **No technical facts.** SERP competitors are used only to read intent, content format, and structure

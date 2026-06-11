@@ -22,6 +22,12 @@ Before triggering topic research, confirm Tavily is available:
 
 If Tavily is unavailable and topic research is needed, stop and ask the user to install/authenticate Tavily. Do not silently fall back to generic web search.
 
+On Windows, any direct Tavily CLI search/extract used by this workflow must
+write to files with `-o`, preferably under the active article's
+`content/articles/<slug>/research/` directory. If no article workspace exists
+yet, use `.trellis-writing/research/`. Do not print Tavily JSON/raw content to
+stdout and then recover from GBK encoding errors; file output is the default.
+
 ## Industry Context
 
 This skill is domain-agnostic. Before running it, fill in the context for the subject at hand:

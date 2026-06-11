@@ -611,17 +611,19 @@ Stop it and remind: *"This bundle requires Tavily for online research. Do not us
 <details>
 <summary><b>Tavily works, but Windows terminal output crashes with Unicode</b></summary>
 
-This is usually a terminal encoding issue, not a Tavily API failure. On Windows terminals using GBK, `tvly search --json` can fail when JSON contains Unicode characters such as bullets or long dashes. Write output to a file instead of stdout:
+This is usually a terminal encoding issue, not a Tavily API failure. On Windows terminals using GBK, `tvly search --json` can fail when JSON contains Unicode characters such as bullets or long dashes. On Windows, default to Tavily's `-o` file output instead of printing JSON/raw content to stdout:
 
 ```powershell
-tvly search "your query" --json -o tavily-search.json
+tvly search "your query" --json -o content\articles\<slug>\research\tavily-search.json
 ```
 
 For extraction, use the current Tavily CLI raw-content option rather than an invented markdown flag:
 
 ```powershell
-tvly extract https://example.com --include-raw-content -o tavily-extract.json
+tvly extract https://example.com --include-raw-content -o content\articles\<slug>\research\tavily-extract.json
 ```
+
+If no article workspace exists yet, write to `.trellis-writing\research\...` and read the saved file afterward.
 </details>
 
 <details>
