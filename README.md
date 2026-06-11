@@ -10,26 +10,54 @@
 
 Works for any technical or B2B domain — industrial equipment, software, manufacturing, materials science, logistics, finance, energy — as long as **you** supply the real industry context, audience, business goal, and source material. The skills are designed to flag missing evidence instead of inventing statistics, quotes, or citations.
 
-## Agent Quick Install
+## Quick Install
+
+Recommended path: use this repo as an independent writing scaffold, then install
+the tiny `blog-writing` / `bws` command shim. This does **not** require a global
+Claude/Codex skill install.
 
 ```powershell
-# Independent scaffold install after cloning/downloading this repo
+# Windows PowerShell
+git clone https://github.com/lizopower/Blog-Writing-Skill.git
 cd Blog-Writing-Skill
 .\install.ps1
 ```
 
 ```bash
-# Claude Code preferred: native plugin install/update
+# macOS/Linux
+git clone https://github.com/lizopower/Blog-Writing-Skill.git
+cd Blog-Writing-Skill
+./install.sh
+```
+
+Then initialize each writing project once:
+
+```powershell
+cd <your-writing-project>
+bws init --harness claude
+bws check
+```
+
+Use `--harness codex` for Codex projects, or `--harness all` when the same
+project is used by both hosts.
+
+After `bws check` reports OK, start Claude/Codex in that writing project and ask
+for an article workflow. The project-level `CLAUDE.md` / `AGENTS.md` instructions
+plus runtime hooks keep the agent on the Blog-Writing-Skill lifecycle.
+
+<details>
+<summary><b>Optional: install as an agent skill/plugin</b></summary>
+
+```bash
+# Claude Code native plugin path
 claude plugin marketplace add lizopower/Blog-Writing-Skill
 claude plugin install blog-writing-skills
 claude plugin update blog-writing-skills
-```
 
-```bash
-# Codex preferred: standalone skill install/update
+# Codex standalone skill install/update
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
 
-# Claude Code plugin install/update through the same installer
+# Claude Code plugin install/update through the script
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- claude
 
 # Codex standalone + Claude plugin
@@ -47,6 +75,8 @@ iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/
 .\install-blog-writing-skill.ps1 claude-standalone
 ```
 
+</details>
+
 ## At a Glance
 
 | Need | Use |
@@ -63,7 +93,7 @@ Best fit: long-form technical content where source traceability matters. Not a f
 
 ## Table of Contents
 
-- [Agent Quick Install](#agent-quick-install)
+- [Quick Install](#quick-install)
 - [At a Glance](#at-a-glance)
 - [Why this bundle](#why-this-bundle)
 - [What you get](#what-you-get)

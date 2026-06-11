@@ -8,6 +8,30 @@ follows the release-version policy in [`VERSIONING.md`](VERSIONING.md): the
 
 For history predating this file, see the git log.
 
+## [3.8.0]
+
+### Added
+- Scaffold-first install path. Root `install.ps1` / `install.sh` now install the
+  lightweight `blog-writing` and `bws` CLI shims by default, so users can clone
+  the repo and initialize writing projects without global skill/plugin setup.
+- Claude scaffold-only project instructions. Claude `init` now writes a managed
+  `CLAUDE.md` block pointing at the scaffold checkout and the relevant workflow
+  files, so Claude Code can follow Blog-Writing-Skill even when plugin/skill
+  discovery is unavailable.
+- `bws check` / doctor validation for the managed Claude project instruction
+  block.
+
+### Changed
+- README first-screen install flow now emphasizes the recommended
+  scaffold + CLI setup, followed by per-project `bws init` / `bws check`.
+- Full-article routing rules now explicitly state that rich user input is raw
+  workflow material, not permission to bypass Context Pack validation, outline,
+  drafting, and fact-check stages.
+- Tavily usage on Windows now defaults to `-o` file output for JSON/raw content
+  to avoid GBK console crashes with Chinese or other non-ASCII text.
+- Documented the controlled fan-out boundary: main session owns canonical
+  artifacts and phase advancement; workers may only produce scratch outputs.
+
 ## [3.7.0]
 
 ### Added
@@ -67,6 +91,7 @@ See the git log for the detailed history of these releases (governed style and
 offering context, AEO/GEO citation signals, anti-AI style rules, and packaging
 changes).
 
+[3.8.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.8.0
 [3.7.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.7.0
 [3.6.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.6.0
 [3.4.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.4.0
