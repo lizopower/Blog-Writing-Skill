@@ -18,6 +18,7 @@ Rules:
 - If invoked, produce or continue the concrete workflow artifacts (context_pack, validation report, outline, draft, fact-check report, etc.) for each required stage, or stop and explain which dependency/user waiver prevents completion.
 - **Do not jump straight to drafting (step 7 / `tech-blog-writer`).** A draft produced without an upstream validated context_pack and an outline is a failure, even if the user only said "write an article about X."
 - **Research momentum is not a waiver.** Tavily search/extract results, deep-research notes, source lists, and "I already understand the structure" are raw material only. They are not a Context Pack, not validation, not an outline, and not permission to draft.
+- **Rich input is not a waiver.** A complete-looking user brief with title, audience, keywords, source links, pasted notes, desired structure, CTA, tone, and word count is still raw material for the workflow. It is not a validated Context Pack, not an approved outline, and not permission to draft directly.
 - **Pre-draft gate**: before writing any article body text, verify that:
   1. Context Pack v2.3.0 exists,
   2. `data-validator` has passed or returned warnings explicitly accepted by the user,
@@ -187,6 +188,7 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 ## Execution Notes
 
 - Pass outputs forward without silently reshaping them.
+- Convert rich user input into workflow artifacts first. If the user provides title, audience, keywords, source links, pasted notes, desired structure, CTA, tone, or word count, preserve those details in the Context Pack/brief/outline path instead of treating them as permission to draft directly.
 - Stop on failed validation unless the user explicitly accepts the risk.
 - Skip visualization when data is insufficient; do not invent chart values.
 - Present validation and fact-check warnings clearly in the final report.

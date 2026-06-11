@@ -15,7 +15,7 @@ Execution contract: invoking this router means executing the selected sub-skill 
 
 If `blog-writing-workflow` is selected, produce or continue the workflow artifacts. Do not extract writing-style or voice guidance from any file in this skill bundle (including sub-skill `SKILL.md` files, references, assets, templates, or examples) and use it to draft directly.
 
-Research momentum is not a waiver. Successful Tavily output, deep-research notes, or a clear mental structure are not a Context Pack, validation report, outline, or permission to draft. Before any article body text is written, confirm a validated `context_pack` and an `outline` exist or were explicitly waived by the user. After each workflow stage, emit a receipt with stage, artifact, status, and next allowed skill.
+Research momentum is not a waiver. Successful Tavily output, deep-research notes, or a clear mental structure are not a Context Pack, validation report, outline, or permission to draft. Rich input is not a waiver either: a complete-looking user brief with title, audience, keywords, source links, pasted notes, desired structure, CTA, tone, and word count is raw material for the workflow, not a validated Context Pack and approved outline. Before any article body text is written, confirm a validated `context_pack` and an `outline` exist or were explicitly waived by the user. After each workflow stage, emit a receipt with stage, artifact, status, and next allowed skill.
 
 If a dependency blocks the workflow, stop and report the blocker. Ask whether the user wants to install/authenticate the dependency, provide local sources, or explicitly accept a degraded non-workflow draft.
 
@@ -59,6 +59,7 @@ If the request is still under-specified, ask one clarifying question.
 
 - Do not "reference blog-writing-skill style" and draft directly when a full article request should route to `blog-writing-workflow`.
 - Do not jump straight to `tech-blog-writer`, or skip research/validation/outline/fact-check, for a topic-only article request. The full pipeline is the default; only the user can waive a step.
+- Do not treat a detailed user brief as if it were already a validated Context Pack and approved outline. Completeness of the prompt is not a workflow waiver.
 - Do not treat successful Tavily/deep-research output as enough to draft. Research notes must become a validated Context Pack and outline first.
 - Do not skip `blog-brainstorm` for vague article ideas.
 - Do not miss mandatory `grill-me` routing when the user asks to be challenged or pressure-tested.

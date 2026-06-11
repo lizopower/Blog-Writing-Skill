@@ -18,6 +18,7 @@ When the user asks to write, create, or draft a full article, blog post, or whit
 - If a required dependency blocks a stage (for example Tavily is unavailable for online research), stop and report that the complete workflow is blocked. Ask whether the user wants to install/authenticate the dependency, provide local sources, or explicitly accept a degraded non-workflow draft.
 - **Never** shortcut a topic-level article request straight to `tech-blog-writer`. That skill is the final drafting stage only; it requires an upstream validated context_pack and outline.
 - **Research momentum is not a waiver.** Successful Tavily search/extract results, deep-research notes, or a clear mental structure are not a Context Pack, not validation, not an outline, and not permission to draft.
+- **Rich input is not a waiver.** A complete-looking user brief — title, audience, angle, keyword list, desired structure, source links, pasted notes, CTA, tone, and word count — is raw material for the workflow. It is not a validated `context_pack`, not an approved outline, and not permission to write article body text directly.
 - **Never** skip research, validation, outline, or fact-check on your own initiative to "save time." A request that merely names a topic, audience, word count, or keyword density is **not** permission to skip steps.
 - **Pre-draft gate**: Before any article body text is written, verify that a validated `context_pack` and an `outline` exist or were explicitly waived by the user. If either is missing, stop and route back to `blog-writing-workflow`.
 - **Workflow receipts are mandatory** for full article work. After each stage, state the stage, artifact, status, and next allowed skill. Do not keep intermediate artifacts only in memory.
@@ -124,6 +125,11 @@ User: "Create a technical blog post about warehouse automation ROI from these re
 Action: Invoke `blog-writing-workflow`.
 Acceptance: The workflow produces research/context, an outline, a draft, and fact-checking steps as needed.
 
+### Example 4b: Rich Input Still Uses the Workflow
+User: "Here is the title, target audience, keyword list, section outline, source links, CTA, tone, and word count. Write the article."
+Action: Invoke `blog-writing-workflow`.
+Acceptance: Treat the rich input as raw material. Create or update workflow artifacts, validate/build the Context Pack, produce/confirm the outline, then draft and fact-check. Do not draft directly unless the user explicitly waives upstream workflow stages.
+
 ### Example 5: File Extraction
 User: "Pull the useful tables from this PDF and spreadsheet so we can use them in an article."
 Action: Invoke `tech-file-parser`.
@@ -162,6 +168,7 @@ Acceptance: The output identifies weak angles, stronger positioning, and concret
 ## Common Mistakes
 - **Treating this bundle as a writing-style reference instead of executing the routed sub-skill workflow. If the user asks for a full article, produce workflow artifacts or clearly say the full workflow was blocked/waived.**
 - **Jumping straight to `tech-blog-writer`, or skipping research / validation / outline / fact-check, for a topic-only article request. The full `blog-writing-workflow` pipeline is the default; only the user can waive a step (see Default Discipline).**
+- **Treating a detailed user brief as if it were already a validated Context Pack and approved outline. Completeness of the prompt is not a workflow waiver.**
 - **Treating successful Tavily/deep-research output as enough to draft. Research notes must be converted into a Context Pack, validated, outlined, drafted through `tech-blog-writer`, and fact-checked.**
 - Invoking `blog-writing-skills` directly instead of the specific sub-skill.
 - Sending vague ideation or Trellis-like article workspace creation directly to `blog-writing-workflow` instead of `blog-brainstorm`.
