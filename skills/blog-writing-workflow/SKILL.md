@@ -110,6 +110,12 @@ Step-to-phase mapping:
 
 A PreToolUse hook (installed by `init.py` and `article.py create`) independently denies writes to `outline.md`, `draft.md`, `fact_check.md`, and `editorial_review.md` before their phase. If a write is denied, do not work around it (no renamed files, no shell redirection, no inline article text in chat); run the missing upstream stages and advance the phase instead.
 
+## Controlled Fan-Out Boundary
+
+The main session is the only orchestrator, canonical artifact writer, and phase advancer. Do not use spawned workers to advance phases, make strategy decisions, write the outline, write the draft, or modify canonical lifecycle artifacts.
+
+Spawned workers may be used only for scratch-only parallel work such as source discovery, research-note gathering, source credibility checks, fact-check shard audits, visualization/material suggestions, or editorial review by separate dimensions. Give each worker a narrow task prompt and the minimum context needed; do not rely on lifecycle hook injection for sub-agents. Merge worker outputs into canonical artifacts only from the main session after validation.
+
 ## Pipeline (core 8 steps + optional SEO layers)
 
 1. `audience-pain-point-research` [optional]
@@ -213,6 +219,6 @@ Before handoff to `tech-blog-writer`, confirm the Context Pack includes all avai
 
 ## Metadata
 
-- Updated: 2026-06-10
+- Updated: 2026-06-11
 - Industry: Domain-agnostic
 - Version: governed by the release version in the manifests (see `VERSIONING.md`).

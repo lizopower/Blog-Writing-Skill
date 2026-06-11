@@ -248,3 +248,67 @@ changes if the host-consumption check fails.
 consume-side check is self-observational — the executing Codex must open a new
 thread *inside the target project* to trigger injection, then reason about
 whether it already knows the workspace state without reading files.
+
+---
+
+## 3. Controlled fan-out for research/fact-check only; no sub-agent lifecycle injection
+
+**Status:** future · **Opened:** 2026-06-11 · **Area:** workflow architecture, hooks
+
+### Decision
+Do **not** add PreToolUse/UserPromptSubmit lifecycle-context injection for
+sub-agents. This is an intentional architecture boundary, not a missing
+Trellis-parity feature.
+
+The canonical article pipeline stays linear:
+
+```text
+brief -> context_pack -> strategy -> outline -> draft -> fact_check -> editorial_review
+```
+
+The main session remains the only orchestrator, canonical artifact writer, and
+phase advancer. Spawned workers, if used later, receive narrow task prompts,
+read only the minimum required context, and write only scratch outputs.
+
+### Rationale
+Dual-model review found no disagreement on the core invariant:
+
+- The workflow's value comes from one coherent context-pack/phase-gate chain.
+- Deep articles are highly sensitive to context entropy; parallel drafting or
+  parallel strategy decisions create more stitching cost than throughput.
+- Workers should be scoped to natural fan-out tasks, not re-anchored to the full
+  lifecycle state.
+- Existing `is_subagent` suppression in `inject_workflow_state.py` is the right
+  direction: sub-agents should not receive the per-turn workflow breadcrumb.
+- Write/Edit phase gates already protect canonical artifacts; prose injection is
+  not the right permission mechanism.
+
+### Allowed future enhancement
+Controlled fan-out is acceptable only inside naturally parallel phases, with
+scratch-only outputs:
+
+- source discovery and research-note gathering;
+- source credibility checks;
+- fact-check shard audits;
+- visualization or material suggestions;
+- editorial review by separate dimensions.
+
+### Non-goals
+- No sub-agent SessionStart/UserPromptSubmit/PreToolUse lifecycle injection.
+- No sub-agent phase advancement.
+- No sub-agent writes to `article.json`, `brief.md`, `context_pack.json`,
+  `strategy.md`, `outline.md`, `draft.md`, `fact_check.md`,
+  `editorial_review.md`, or `finish.md`.
+- No parallel ownership of narrative logic, outline structure, or prose style.
+
+### Acceptance criteria for any future fan-out work
+- [ ] Main session is the only caller allowed to advance article phases.
+- [ ] Worker prompts explicitly say scratch-only and name the output path under
+      `research/`, `sources.jsonl` candidates, or another non-canonical review
+      file.
+- [ ] Worker outputs are merged into canonical artifacts only by the main
+      session after validation.
+- [ ] Tests keep `inject_workflow_state.py` silent for `isSubagent` /
+      `is_subagent` payloads.
+- [ ] README/skill docs continue to describe the workflow as linear for
+      canonical artifacts, even if some evidence-gathering work is parallelized.
