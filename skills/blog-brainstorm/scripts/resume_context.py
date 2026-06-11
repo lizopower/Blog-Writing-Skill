@@ -79,6 +79,28 @@ def select_current(workspaces: list[dict[str, Any]], slug: str | None) -> dict[s
     return max(candidates, key=lambda item: str(item["article"].get("updatedAt", "")))
 
 
+DIRECTIVE_HEADER = "== BLOG WORKFLOW ACTIVE =="
+
+
+def render_directive(slug: str, phase: str, track: str) -> list[str]:
+    """Imperative bootstrap so the agent acts on the workflow instead of
+    treating the injected status as passive background context."""
+    return [
+        DIRECTIVE_HEADER,
+        f"Article '{slug}' is in progress (phase: {phase}, track: {track}). "
+        "Unless your latest user request explicitly overrides this writing "
+        "workflow, treat this workspace as the active task:",
+        "- Invoke the `blog-writing-skills` skill (or the matching phase "
+        "sub-skill) before starting other work.",
+        '- Read only the files listed under "Phase context" below; skip the rest.',
+        f"- Continue from the '{phase}' phase and advance only through the "
+        "lifecycle CLI (do not edit lifecycle artifacts out of phase).",
+        '- Respect "Next phases"; do not skip a blocked phase unless the user '
+        "explicitly waives it.",
+        "",
+    ]
+
+
 def render_context(root: Path, slug: str | None = None) -> str:
     statemachine, statemachine_error = load_statemachine()
     specstore, specstore_error = load_specstore()
@@ -97,6 +119,7 @@ def render_context(root: Path, slug: str | None = None) -> str:
     track = str(article.get("track", "full"))
 
     lines = [
+        *render_directive(current["slug"], current_phase, track),
         f"Current Target: {current['slug']}",
         f"Phase: {current_phase}",
         f"Track: {track}",
@@ -150,6 +173,58 @@ def render_context(root: Path, slug: str | None = None) -> str:
             lines.append("- none")
 
     return "\n".join(lines).rstrip() + "\n"
+
+
+def render_breadcrumb(root: Path, slug: str | None = None) -> str | None:
+    """Short per-turn workflow-state breadcrumb for the UserPromptSubmit hook.
+
+    Returns ``None`` when there is no actionable in-progress article, so the
+    hook can stay silent instead of adding per-turn noise. Kept deliberately
+    small (status only, no file/spec lists) so re-injecting it every turn does
+    not conflict with the one-time heavyweight SessionStart context.
+    """
+    statemachine, _ = load_statemachine()
+    workspaces = article_workspaces(root)
+    if not workspaces:
+        return None
+    current = select_current(workspaces, slug)
+    if current is None:
+        return None
+
+    article = current["article"]
+    if statemachine is not None:
+        article = statemachine.migrate(article)
+    phase = str(article.get("currentPhase", "unknown"))
+    if phase == "completed":
+        return None
+    track = str(article.get("track", "full"))
+
+    lines = [
+        "<workflow-state>",
+        "Blog-Writing-Skill active for this project.",
+        f"Current article: {current['slug']}",
+        f"Phase: {phase}",
+        f"Track: {track}",
+    ]
+    if statemachine is not None:
+        next_phases = sorted(
+            statemachine.TRANSITIONS.get(phase, set()),
+            key=lambda candidate: statemachine.PHASES.index(candidate),
+        )
+        if next_phases:
+            summary = ", ".join(
+                f"{candidate}=ok"
+                if statemachine.can_transition(article, candidate, current["workspace"]).ok
+                else f"{candidate}=blocked"
+                for candidate in next_phases
+            )
+            lines.append(f"Next phases: {summary}")
+    lines.append(
+        "Continue this article through the lifecycle CLI; do not skip a blocked "
+        "phase unless the user explicitly waives it."
+    )
+    lines.append("</workflow-state>")
+    return "\n".join(lines) + "\n"
 
 
 def read_specs(root: Path, specstore: Any) -> list[tuple[str, str, str]]:

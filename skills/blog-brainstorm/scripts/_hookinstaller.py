@@ -10,9 +10,14 @@ from typing import Any
 
 
 MANAGED_BY = "blog-writing-skill"
+# Mirror Trellis's SessionStart matcher set exactly. `resume` is intentionally
+# omitted: a resumed session already carries the original startup injection in
+# its restored transcript, and the per-turn UserPromptSubmit breadcrumb re-anchors
+# workflow state on the next prompt, so re-injecting the heavyweight SessionStart
+# block on resume would only duplicate context.
 SESSION_MATCHERS = ("startup", "clear", "compact")
 PRE_TOOL_USE_MATCHER = "Write|Edit"
-MANAGED_EVENTS = ("SessionStart", "PreToolUse")
+MANAGED_EVENTS = ("SessionStart", "PreToolUse", "UserPromptSubmit")
 
 
 def build_session_start_entries(command: str, *, timeout: int) -> list[dict[str, Any]]:
@@ -37,6 +42,25 @@ def build_pre_tool_use_entries(command: str, *, timeout: int) -> list[dict[str, 
         {
             "_managed_by": MANAGED_BY,
             "matcher": PRE_TOOL_USE_MATCHER,
+            "hooks": [
+                {
+                    "type": "command",
+                    "command": command,
+                    "timeout": timeout,
+                }
+            ],
+        }
+    ]
+
+
+def build_user_prompt_submit_entries(command: str, *, timeout: int) -> list[dict[str, Any]]:
+    # UserPromptSubmit fires on every user turn and is matcher-less in Claude
+    # Code (Trellis registers it without a `matcher` key). This per-turn
+    # breadcrumb is what keeps the agent anchored to the workflow as the
+    # conversation grows and the one-time SessionStart context decays.
+    return [
+        {
+            "_managed_by": MANAGED_BY,
             "hooks": [
                 {
                     "type": "command",

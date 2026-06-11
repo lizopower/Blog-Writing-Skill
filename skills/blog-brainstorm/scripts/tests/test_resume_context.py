@@ -110,10 +110,52 @@ class ResumeContextTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, result.stderr)
         first_line = result.stdout.splitlines()[0]
-        self.assertEqual(first_line, "Current Target: newer")
+        self.assertEqual(first_line, "== BLOG WORKFLOW ACTIVE ==")
+        self.assertLess(
+            result.stdout.index("== BLOG WORKFLOW ACTIVE =="),
+            result.stdout.index("Current Target: newer"),
+        )
         self.assertIn("Other in-progress articles:", result.stdout)
         self.assertIn("older", result.stdout)
         self.assertIn("Switch with: resume_context.py --slug older", result.stdout)
+
+    def test_active_article_emits_imperative_directive_with_slug_and_phase(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_article(root, "demo", phase="drafting", track="full", updated_at="2026-06-09T03:00:00Z")
+
+            result = run_resume("--root", str(root))
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(result.stdout.startswith("== BLOG WORKFLOW ACTIVE =="))
+        self.assertIn("Article 'demo' is in progress (phase: drafting", result.stdout)
+        self.assertIn("blog-writing-skills", result.stdout)
+
+    def test_no_articles_emits_no_directive(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_resume("--root", directory)
+
+        self.assertNotIn("== BLOG WORKFLOW ACTIVE ==", result.stdout)
+
+    def test_render_breadcrumb_is_short_and_phase_aware(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_article(root, "demo", phase="drafting", track="full", updated_at="2026-06-09T03:00:00Z")
+
+            breadcrumb = resume_context.render_breadcrumb(root)
+
+        self.assertIsNotNone(breadcrumb)
+        self.assertTrue(breadcrumb.startswith("<workflow-state>"))
+        self.assertIn("Current article: demo", breadcrumb)
+        self.assertIn("Phase: drafting", breadcrumb)
+        self.assertLessEqual(len(breadcrumb.splitlines()), 8)
+
+    def test_render_breadcrumb_is_none_without_active_article(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            write_article(root, "done", phase="completed", track="full", updated_at="2026-06-09T03:00:00Z")
+
+            self.assertIsNone(resume_context.render_breadcrumb(root))
 
     def test_completed_article_is_not_listed_as_other_in_progress(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

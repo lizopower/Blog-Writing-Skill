@@ -78,6 +78,10 @@ def template_files() -> list[TemplateFile]:
     return [
         TemplateFile(RUNTIME_SCRIPTS / "session_start.py", content=render_session_start()),
         TemplateFile(RUNTIME_SCRIPTS / "resume_context.py", source=SCRIPTS_DIR / "resume_context.py"),
+        TemplateFile(
+            RUNTIME_SCRIPTS / "inject_workflow_state.py",
+            source=SCRIPTS_DIR / "inject_workflow_state.py",
+        ),
         TemplateFile(RUNTIME_SCRIPTS / "_statemachine.py", source=SCRIPTS_DIR / "_statemachine.py"),
         TemplateFile(RUNTIME_SCRIPTS / "_specstore.py", source=SCRIPTS_DIR / "_specstore.py"),
         TemplateFile(RUNTIME_SCRIPTS / "phase_gate.py", source=SCRIPTS_DIR / "phase_gate.py"),

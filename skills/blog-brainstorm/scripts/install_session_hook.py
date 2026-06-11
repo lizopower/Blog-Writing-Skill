@@ -21,6 +21,7 @@ from _agentsmd import (
 from _hookinstaller import (
     build_pre_tool_use_entries,
     build_session_start_entries,
+    build_user_prompt_submit_entries,
     merge_block,
     remove_block,
     render_diff,
@@ -28,13 +29,16 @@ from _hookinstaller import (
 from _runtimeinstaller import RUNTIME_ROOT, ensure_runtime
 
 
-# directory, filename, timeout, supports PreToolUse phase gate
+# directory, filename, session timeout, PreToolUse phase gate, UserPromptSubmit breadcrumb.
+# The last two are independent capabilities: Codex has neither verified on a real host,
+# but a future harness could support one without the other.
 HARNESS_CONFIG = {
-    "claude": (".claude", "settings.json", 30, True),
-    "codex": (".codex", "hooks.json", 10, False),
+    "claude": (".claude", "settings.json", 30, True, True),
+    "codex": (".codex", "hooks.json", 10, False, False),
 }
 
 PHASE_GATE_TIMEOUT = 10
+BREADCRUMB_TIMEOUT = 5
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -55,7 +59,7 @@ def save_json(path: Path, data: dict[str, Any]) -> None:
 
 
 def config_path(root: Path, harness: str) -> Path:
-    directory, filename, _timeout, _gate = HARNESS_CONFIG[harness]
+    directory, filename, _timeout, _gate, _breadcrumb = HARNESS_CONFIG[harness]
     return root / directory / filename
 
 
@@ -66,6 +70,11 @@ def command_for(root: Path, harness: str) -> str:
 
 def gate_command_for(root: Path) -> str:
     script = f"{RUNTIME_ROOT}/runtime/scripts/phase_gate.py"
+    return shell_command(["python", script])
+
+
+def breadcrumb_command_for(root: Path) -> str:
+    script = f"{RUNTIME_ROOT}/runtime/scripts/inject_workflow_state.py"
     return shell_command(["python", script])
 
 
@@ -123,16 +132,24 @@ def install_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bool
         print(str(exc), file=sys.stderr)
         return 1
 
-    _directory, _filename, timeout, gate_supported = HARNESS_CONFIG[harness]
+    _directory, _filename, timeout, gate_supported, breadcrumb_supported = HARNESS_CONFIG[harness]
     block = build_session_start_entries(command_for(root, harness), timeout=timeout)
     new = merge_block(old, block, "SessionStart")
     if gate_supported:
         gate_block = build_pre_tool_use_entries(gate_command_for(root), timeout=PHASE_GATE_TIMEOUT)
         new = merge_block(new, gate_block, "PreToolUse")
+    if breadcrumb_supported:
+        # Re-anchoring every turn is what stops the workflow from being ignored as the
+        # one-time SessionStart context decays. Claude-only for now: the UserPromptSubmit
+        # envelope/event name is unverified on a real Codex host, so Codex keeps
+        # SessionStart + AGENTS.md prelude only.
+        breadcrumb_block = build_user_prompt_submit_entries(breadcrumb_command_for(root), timeout=BREADCRUMB_TIMEOUT)
+        new = merge_block(new, breadcrumb_block, "UserPromptSubmit")
     why = (
         "Install Blog-Writing-Skill session context injection so new sessions receive the current "
         "article target, lifecycle gates, and project writing specs. On Claude, also install the "
-        "PreToolUse phase gate that blocks writes to lifecycle artifacts before their phase."
+        "PreToolUse phase gate that blocks writes to lifecycle artifacts before their phase, and the "
+        "UserPromptSubmit breadcrumb that re-anchors the active article/phase on every turn."
     )
     if print_diff:
         print(render_diff(old, new, why), end="")
@@ -177,7 +194,7 @@ def uninstall_hook(root: Path, harness: str, *, assume_yes: bool, print_diff: bo
         return 1
     save_json(path, new)
     print(f"Uninstalled {harness} session hook from {path}")
-    _directory, _filename, _timeout, gate_supported = HARNESS_CONFIG[harness]
+    _directory, _filename, _timeout, gate_supported, _breadcrumb = HARNESS_CONFIG[harness]
     if not gate_supported:
         cleared = clear_prelude(root)
         if cleared is not None:

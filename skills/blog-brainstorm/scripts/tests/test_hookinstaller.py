@@ -16,6 +16,7 @@ from _hookinstaller import (  # noqa: E402
     MANAGED_BY,
     build_pre_tool_use_entries,
     build_session_start_entries,
+    build_user_prompt_submit_entries,
     merge_block,
     remove_block,
     render_diff,
@@ -50,6 +51,34 @@ class HookInstallerTests(unittest.TestCase):
             [entry["_managed_by"] for entry in merged["hooks"]["SessionStart"][1:]],
             [MANAGED_BY, MANAGED_BY, MANAGED_BY],
         )
+
+    def test_session_start_entries_match_trellis_source_set(self) -> None:
+        entries = build_session_start_entries("python session.py", timeout=10)
+
+        self.assertEqual(
+            [entry["matcher"] for entry in entries],
+            ["startup", "clear", "compact"],
+        )
+
+    def test_user_prompt_submit_entry_is_matcherless_and_managed(self) -> None:
+        entries = build_user_prompt_submit_entries("python inject_workflow_state.py", timeout=5)
+
+        self.assertEqual(len(entries), 1)
+        self.assertNotIn("matcher", entries[0])
+        self.assertEqual(entries[0]["_managed_by"], MANAGED_BY)
+        self.assertEqual(entries[0]["hooks"][0]["command"], "python inject_workflow_state.py")
+
+    def test_merge_and_remove_handle_matcherless_user_prompt_submit(self) -> None:
+        config = merge_block(
+            {"hooks": {"UserPromptSubmit": [{"hooks": [{"type": "command", "command": "python keep.py"}]}]}},
+            build_user_prompt_submit_entries("python inject_workflow_state.py", timeout=5),
+            "UserPromptSubmit",
+        )
+
+        self.assertEqual(len(config["hooks"]["UserPromptSubmit"]), 2)
+        removed = remove_block(config)
+        self.assertEqual(len(removed["hooks"]["UserPromptSubmit"]), 1)
+        self.assertEqual(removed["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"], "python keep.py")
 
     def test_merge_block_replaces_previous_managed_entries(self) -> None:
         old_block = build_session_start_entries("python old.py", timeout=10)
@@ -144,10 +173,14 @@ class HookInstallerTests(unittest.TestCase):
         self.assertEqual(len(data["hooks"]["PreToolUse"]), 1)
         self.assertIn("phase_gate.py", data["hooks"]["PreToolUse"][0]["hooks"][0]["command"])
         self.assertEqual(data["hooks"]["PreToolUse"][0]["matcher"], "Write|Edit")
+        self.assertEqual(len(data["hooks"]["UserPromptSubmit"]), 1)
+        self.assertNotIn("matcher", data["hooks"]["UserPromptSubmit"][0])
+        self.assertIn("inject_workflow_state.py", data["hooks"]["UserPromptSubmit"][0]["hooks"][0]["command"])
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"][0]["hooks"][0]["command"], "python existing.py")
         self.assertEqual(len(cleaned["hooks"]["SessionStart"]), 1)
         self.assertEqual(cleaned["hooks"].get("PreToolUse"), [])
+        self.assertEqual(cleaned["hooks"].get("UserPromptSubmit"), [])
 
     def test_installer_cli_uses_codex_hooks_json_schema_from_sample(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -166,6 +199,7 @@ class HookInstallerTests(unittest.TestCase):
         self.assertNotIn("session_start", data)
         self.assertEqual(len(data["hooks"]["SessionStart"]), 3)
         self.assertNotIn("PreToolUse", data["hooks"])
+        self.assertNotIn("UserPromptSubmit", data["hooks"])
         self.assertIn("--harness codex", command)
         self.assertEqual(uninstalled.returncode, 0, uninstalled.stderr)
         self.assertEqual(cleaned["hooks"]["SessionStart"], [])
