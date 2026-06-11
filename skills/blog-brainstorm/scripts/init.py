@@ -23,8 +23,25 @@ def selected_harnesses(value: str) -> list[str]:
     return [value]
 
 
+def cmd_check(root: Path, harness: str) -> int:
+    """Read-only health check: report whether runtime + hooks are installed."""
+    from doctor import diagnose, render_report
+
+    overall_ok = True
+    for name in selected_harnesses(harness):
+        diagnosis = diagnose(root, name)
+        print(render_report(diagnosis))
+        overall_ok = overall_ok and diagnosis.ok
+    return 0 if overall_ok else 1
+
+
 def cmd_init(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
+    if args.check:
+        if args.update or args.uninstall:
+            print("--check cannot be combined with --update or --uninstall")
+            return 1
+        return cmd_check(root, args.harness)
     if args.update and args.uninstall:
         print("--update and --uninstall cannot be used together")
         return 1
@@ -104,6 +121,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--no-session-hook", action="store_true", help="Only create project directories/spec store.")
     parser.add_argument("--update", action="store_true", help="Refresh project-local runtime templates.")
     parser.add_argument("--uninstall", action="store_true", help="Remove managed hooks and project-local runtime.")
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Read-only: report whether runtime + hooks are installed, exit non-zero if not.",
+    )
     parser.add_argument("--yes", action="store_true", help="Skip hook confirmation prompt.")
     return parser
 

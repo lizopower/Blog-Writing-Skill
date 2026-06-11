@@ -50,7 +50,13 @@ content/articles/<slug>/
   finish.md
 ```
 
-If `content/articles/<slug>/` already exists, inspect it and continue from `article.json.currentPhase` instead of overwriting existing work.
+If `content/articles/<slug>/` already exists, inspect it and continue from `article.json.currentPhase` instead of overwriting existing work. For a resumed or older project (created before this version, or with `--no-hooks`), first verify the runtime and hooks are in place — the `create` gate only fires on first creation:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py doctor --root <project-root>
+```
+
+If it reports problems, run `init.py --root <project-root>` to (re)install the runtime and hooks before continuing. `init.py --check` is the equivalent read-only probe.
 
 ## Script-First Workspace Creation
 

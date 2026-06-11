@@ -189,6 +189,26 @@ def cmd_archive(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_doctor(args: argparse.Namespace) -> int:
+    root = Path(args.root).resolve()
+    try:
+        from doctor import diagnose, render_report
+        from install_session_hook import HARNESS_CONFIG
+    except ImportError as exc:
+        # doctor depends on installer-side modules that ship only in the source
+        # scripts dir, not the project-local runtime copy. Run it from source.
+        print(f"error: doctor is unavailable here ({exc}); run article.py from the skill's source scripts dir.", file=sys.stderr)
+        return 1
+
+    harnesses = sorted(HARNESS_CONFIG) if args.harness == "all" else [args.harness]
+    overall_ok = True
+    for name in harnesses:
+        diagnosis = diagnose(root, name)
+        print(render_report(diagnosis))
+        overall_ok = overall_ok and diagnosis.ok
+    return 0 if overall_ok else 1
+
+
 def cmd_link(args: argparse.Namespace) -> int:
     root = Path(args.root).resolve()
     workspace = workspace_path(root, args.slug)
@@ -248,6 +268,11 @@ def build_parser() -> argparse.ArgumentParser:
     archive.add_argument("--root", default=".", help="Project root where content/articles lives.")
     archive.add_argument("--slug", required=True, help="Article slug.")
     archive.set_defaults(func=cmd_archive)
+
+    doctor = subparsers.add_parser("doctor", help="Verify runtime + hooks are installed for this project.")
+    doctor.add_argument("--root", default=".", help="Project root where content/articles lives.")
+    doctor.add_argument("--harness", choices=["claude", "codex", "all"], default="claude")
+    doctor.set_defaults(func=cmd_doctor)
 
     link = subparsers.add_parser("link", help="Attach an article to a parent series slug.")
     link.add_argument("--root", default=".", help="Project root where content/articles lives.")
