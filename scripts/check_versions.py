@@ -21,6 +21,7 @@ RELEASE_FILES = {
     ".codex-plugin/plugin.json": ("version",),
     ".claude-plugin/marketplace.json": ("plugins", 0, "version"),
 }
+CHANGELOG = ROOT / "CHANGELOG.md"
 
 
 def dig(data, path):
@@ -48,7 +49,19 @@ def main() -> int:
     if len(unique) != 1:
         print(f"FAIL: release versions diverge: {sorted(unique)}")
         return 1
-    print(f"OK: all release files agree on {unique.pop()}")
+    version = unique.pop()
+    print(f"OK: all release files agree on {version}")
+
+    heading = f"## [{version}]"
+    try:
+        changelog = CHANGELOG.read_text(encoding="utf-8")
+    except OSError as exc:
+        print(f"ERROR: cannot read CHANGELOG.md: {exc}")
+        return 1
+    if heading not in changelog:
+        print(f"FAIL: CHANGELOG.md missing release heading {heading}")
+        return 1
+    print(f"OK: CHANGELOG.md contains release heading {heading}")
     return 0
 
 

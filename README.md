@@ -51,7 +51,7 @@ plus runtime hooks keep the agent on the Blog-Writing-Skill lifecycle.
 ```bash
 # Claude Code native plugin path
 claude plugin marketplace add lizopower/Blog-Writing-Skill
-claude plugin install blog-writing-skills
+claude plugin install blog-writing-skills@blog-writing-marketplace
 claude plugin update blog-writing-skills@blog-writing-marketplace
 
 # Codex standalone skill install/update
@@ -206,7 +206,7 @@ For Claude Code, prefer the native plugin path. It lets Claude Code own plugin i
 
 ```bash
 claude plugin marketplace add lizopower/Blog-Writing-Skill
-claude plugin install blog-writing-skills
+claude plugin install blog-writing-skills@blog-writing-marketplace
 claude plugin update blog-writing-skills@blog-writing-marketplace
 ```
 
@@ -288,7 +288,7 @@ Plugin metadata lives in `.claude-plugin/plugin.json` and `.claude-plugin/market
 
 ```bash
 claude plugin marketplace add lizopower/Blog-Writing-Skill
-claude plugin install blog-writing-skills
+claude plugin install blog-writing-skills@blog-writing-marketplace
 claude plugin update blog-writing-skills@blog-writing-marketplace
 claude plugin validate <path-to-Blog-Writing-Skill>
 ```
@@ -568,7 +568,7 @@ The bundle has three layers:
 
 - Portable context: `resume_context.py` prints the current article target, phase, track, next allowed phases, blocked gate reasons, and project specs. You can run it manually in any project.
 - Project runtime: `init.py` installs `.trellis-writing/runtime/scripts/` into each writing project, so hooks do not depend on a global bundle path.
-- Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically. Both hosts receive the context as a structured SessionStart envelope (`hookSpecificOutput.additionalContext`); `--harness` only selects the install location and timeout. Re-run the installer after updating the bundle so existing hooks pick up the current format.
+- Host integration: `install_session_hook.py` installs a SessionStart hook for Claude Code or Codex so new sessions receive that context automatically. Claude receives a structured SessionStart envelope (`hookSpecificOutput.additionalContext`). The Codex envelope is schema-aligned but still pending real-host consumption validation; the managed `AGENTS.md` lifecycle prelude is the current Codex fallback that tells agents to load `resume_context.py` and honor the workflow gates. Re-run the installer after updating the bundle so existing hooks pick up the current format.
 
 Manual context check:
 
@@ -686,7 +686,7 @@ If an agent says only "Invoke the skill" and does not inject the selected sub-sk
 
 ```bash
 claude plugin list --json --available
-claude plugin install blog-writing-skills
+claude plugin install blog-writing-skills@blog-writing-marketplace
 ```
 
 For full article requests, the root router should route to `blog-writing-workflow`; direct sub-skill calls are safest after a plugin install.

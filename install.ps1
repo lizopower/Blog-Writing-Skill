@@ -12,6 +12,4 @@ if ($InstallerArgs.Count -eq 0) {
   & $installer @InstallerArgs
 }
 
-if (-not $?) {
-  exit 1
-}
+exit $LASTEXITCODE

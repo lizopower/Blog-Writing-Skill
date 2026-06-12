@@ -3,6 +3,8 @@ set -euo pipefail
 
 REPO_URL="${BLOG_WRITING_SKILL_REPO:-https://github.com/lizopower/Blog-Writing-Skill.git}"
 SKILL_NAME="${BLOG_WRITING_SKILL_NAME:-blog-writing-skills}"
+MARKETPLACE_SOURCE="${BLOG_WRITING_SKILL_MARKETPLACE_SOURCE:-}"
+MARKETPLACE_NAME="${BLOG_WRITING_SKILL_MARKETPLACE_NAME:-blog-writing-marketplace}"
 TARGET="${1:-all}"
 BIN_DIR="${BLOG_WRITING_SKILL_BIN:-$HOME/.local/bin}"
 LAST_STANDALONE_DEST=""
@@ -15,6 +17,10 @@ Usage:
 Environment:
   BLOG_WRITING_SKILL_REPO   Override git repository URL.
   BLOG_WRITING_SKILL_NAME   Override installed skill folder name.
+  BLOG_WRITING_SKILL_MARKETPLACE_SOURCE
+                            Override Claude marketplace source (default: derived from repo URL).
+  BLOG_WRITING_SKILL_MARKETPLACE_NAME
+                            Override Claude marketplace name (default: blog-writing-marketplace).
   BLOG_WRITING_SKILL_BIN    Override CLI shim directory (default: ~/.local/bin).
 
 Examples:
@@ -27,6 +33,31 @@ USAGE
 
 timestamp() {
   date +%Y%m%d%H%M%S
+}
+
+claude_marketplace_source() {
+  if [ -n "$MARKETPLACE_SOURCE" ]; then
+    printf '%s\n' "$MARKETPLACE_SOURCE"
+    return
+  fi
+
+  case "$REPO_URL" in
+    https://github.com/*/*.git|https://github.com/*/*)
+      local slug="${REPO_URL#https://github.com/}"
+      printf '%s\n' "${slug%.git}"
+      ;;
+    git@github.com:*/*.git|git@github.com:*/*)
+      local slug="${REPO_URL#git@github.com:}"
+      printf '%s\n' "${slug%.git}"
+      ;;
+    *)
+      printf '%s\n' "$REPO_URL"
+      ;;
+  esac
+}
+
+is_already_configured_message() {
+  printf '%s' "$1" | grep -Eiq 'already[[:space:]-]*(exists|configured|added)|marketplace.*already|source.*already'
 }
 
 install_one() {
@@ -94,11 +125,32 @@ install_claude_plugin() {
     exit 1
   fi
 
-  echo "Adding/updating Claude Code marketplace source"
-  claude plugin marketplace add lizopower/Blog-Writing-Skill || true
+  local source
+  local qualified_plugin
+  local output
+  local status
+  source="$(claude_marketplace_source)"
+  qualified_plugin="${SKILL_NAME}@${MARKETPLACE_NAME}"
 
-  echo "Installing/updating Claude Code plugin: blog-writing-skills"
-  claude plugin install blog-writing-skills || claude plugin update blog-writing-skills@blog-writing-marketplace
+  echo "Adding/updating Claude Code marketplace source"
+  set +e
+  output="$(claude plugin marketplace add "$source" 2>&1)"
+  status=$?
+  set -e
+  if [ -n "$output" ]; then
+    printf '%s\n' "$output"
+  fi
+  if [ "$status" -ne 0 ]; then
+    if is_already_configured_message "$output"; then
+      echo "Marketplace source already configured; continuing."
+    else
+      echo "ERROR: Claude marketplace add failed for source: $source" >&2
+      exit "$status"
+    fi
+  fi
+
+  echo "Installing/updating Claude Code plugin: $qualified_plugin"
+  claude plugin install "$qualified_plugin" || claude plugin update "$qualified_plugin"
 }
 
 case "$TARGET" in

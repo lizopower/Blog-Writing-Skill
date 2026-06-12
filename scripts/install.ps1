@@ -3,7 +3,9 @@ param(
   [string] $Target = "all",
   [string] $RepoUrl = "https://github.com/lizopower/Blog-Writing-Skill.git",
   [string] $SkillName = "blog-writing-skills",
-  [string] $BinDir = $(Join-Path $HOME ".local\bin")
+  [string] $BinDir = $(Join-Path $HOME ".local\bin"),
+  [string] $MarketplaceSource = "",
+  [string] $MarketplaceName = "blog-writing-marketplace"
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,6 +13,25 @@ $script:LastStandaloneDest = ""
 
 function Get-Timestamp {
   Get-Date -Format "yyyyMMddHHmmss"
+}
+
+function Get-ClaudeMarketplaceSource {
+  if ($MarketplaceSource) {
+    return $MarketplaceSource
+  }
+
+  if ($RepoUrl -match '^https://github\.com/([^/]+/[^/]+?)(?:\.git)?$') {
+    return $Matches[1]
+  }
+  if ($RepoUrl -match '^git@github\.com:([^/]+/[^/]+?)(?:\.git)?$') {
+    return $Matches[1]
+  }
+  return $RepoUrl
+}
+
+function Test-AlreadyConfiguredMessage {
+  param([string] $Message)
+  return $Message -match '(?i)already[\s-]*(exists|configured|added)|marketplace.*already|source.*already'
 }
 
 function Install-One {
@@ -94,16 +115,28 @@ function Install-ClaudePlugin {
     throw "claude CLI not found. Use target 'claude-standalone' for a filesystem skill install."
   }
 
+  $source = Get-ClaudeMarketplaceSource
+  $qualifiedPlugin = "$SkillName@$MarketplaceName"
+
   Write-Host "Adding/updating Claude Code marketplace source"
-  & claude plugin marketplace add lizopower/Blog-Writing-Skill
-  if ($LASTEXITCODE -ne 0) {
-    Write-Host "Marketplace add returned a non-zero exit code; continuing in case it is already configured."
+  $addOutput = & claude plugin marketplace add $source 2>&1
+  $addExit = $LASTEXITCODE
+  if ($addOutput) {
+    $addOutput | ForEach-Object { Write-Host $_ }
+  }
+  if ($addExit -ne 0) {
+    $message = ($addOutput | Out-String)
+    if (Test-AlreadyConfiguredMessage $message) {
+      Write-Host "Marketplace source already configured; continuing."
+    } else {
+      throw "Claude marketplace add failed for source: $source"
+    }
   }
 
-  Write-Host "Installing/updating Claude Code plugin: blog-writing-skills"
-  & claude plugin install blog-writing-skills
+  Write-Host "Installing/updating Claude Code plugin: $qualifiedPlugin"
+  & claude plugin install $qualifiedPlugin
   if ($LASTEXITCODE -ne 0) {
-    & claude plugin update blog-writing-skills@blog-writing-marketplace
+    & claude plugin update $qualifiedPlugin
     if ($LASTEXITCODE -ne 0) { throw "Claude plugin install/update failed" }
   }
 }
