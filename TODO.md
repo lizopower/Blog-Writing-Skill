@@ -55,9 +55,10 @@ acceptance criteria are Claude Code *runtime* behaviors that an external shell
    `claude plugin marketplace add <repo-url-or-path>`.
 2. `claude plugin install blog-writing-skills`; capture the installed location
    and the resolved plugin manifest (`.claude-plugin/plugin.json`,
-   `marketplace.json`) version (expect `3.7.0`).
-3. `claude plugin update blog-writing-skills`; confirm it moves to the latest
-   tag without manual filesystem repair.
+   `marketplace.json`) version (expect the current release version, `3.8.0`;
+   if reusing the existing `.clean-profile`, expect it to start from `3.7.0`).
+3. `claude plugin update blog-writing-skills@blog-writing-marketplace`;
+   confirm it moves to `3.8.0` without manual filesystem repair.
 4. Inspect the installed plugin to confirm all 15 sub-skills are registered
    (cross-check against `check_router_sync.py`).
 5. `claude plugin uninstall blog-writing-skills`, then reinstall; confirm **no
@@ -137,8 +138,9 @@ path (no network).
 - **Update: works only with the marketplace-qualified name.** `claude plugin
   update blog-writing-skills` fails with `Plugin "blog-writing-skills" not
   found`; `claude plugin update blog-writing-skills@blog-writing-marketplace`
-  succeeds ("already at latest 3.7.0"). README update instructions should use
-  the qualified form.
+  succeeds (reported "already at latest 3.7.0" at the time; the current
+  release is `3.8.0`). README and script update instructions should use the
+  qualified form.
 - **Uninstall stale state: NOT fully clean.** `claude plugin uninstall` empties
   `installed_plugins.json` but leaves the cached plugin tree under
   `plugins/cache/blog-writing-marketplace/blog-writing-skills/3.7.0/` with an

@@ -1,11 +1,11 @@
 ---
 name: blog-writing-skills
-description: Use when a Codex user asks to brainstorm, plan, write, draft, outline, research, fact-check, improve, pressure-test, grill, challenge, or deeply review a technical/B2B blog post, article, white paper, or thought-leadership piece and you need to choose the right blog-writing sub-skill.
+description: Use when a user asks to brainstorm, plan, write, draft, outline, research, fact-check, improve, pressure-test, grill, challenge, or deeply review a technical/B2B blog post, article, white paper, or thought-leadership piece and you need to choose the right blog-writing sub-skill.
 ---
 
-# Blog-Writing-Skills Codex Router
+# Blog-Writing-Skills Plugin Router
 
-This is the Codex plugin-facing router for the Blog-Writing-Skill bundle. It mirrors the root `SKILL.md` entry so Codex plugin installs that load skills from `./skills/` still expose the top-level routing behavior.
+This is the plugin-facing router for the Blog-Writing-Skill bundle. It mirrors the root `SKILL.md` entry so native plugin installs that load skills from `./skills/` still expose the top-level routing behavior.
 
 ## Default Discipline: Full Pipeline (mandatory)
 
@@ -23,7 +23,7 @@ Disabling or declining CCG, project management, task archival, or any other proc
 
 ## Required Dependency
 
-Online research requires Tavily in the same Codex environment.
+Online research requires Tavily in the same agent environment.
 
 Before research-dependent workflows, confirm:
 
@@ -66,6 +66,6 @@ If the request is still under-specified, ask one clarifying question.
 - Do not draft factual articles before building or validating a Context Pack.
 - Do not call a factual draft complete before `fact-checker`.
 
-## Codex Install Note
+## Plugin Install Note
 
-This router exists so Codex plugin installs can discover the top-level bundle behavior from `./skills/`. Direct skill installs into `$CODEX_HOME/skills/blog-writing-skills` should use the root `SKILL.md`.
+This router exists so plugin installs can discover the top-level bundle behavior from `./skills/`. Direct standalone skill installs should use the root `SKILL.md`.

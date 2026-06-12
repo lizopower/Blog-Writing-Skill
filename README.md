@@ -52,7 +52,7 @@ plus runtime hooks keep the agent on the Blog-Writing-Skill lifecycle.
 # Claude Code native plugin path
 claude plugin marketplace add lizopower/Blog-Writing-Skill
 claude plugin install blog-writing-skills
-claude plugin update blog-writing-skills
+claude plugin update blog-writing-skills@blog-writing-marketplace
 
 # Codex standalone skill install/update
 curl -fsSL https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/install.sh | bash -s -- codex
@@ -207,7 +207,7 @@ For Claude Code, prefer the native plugin path. It lets Claude Code own plugin i
 ```bash
 claude plugin marketplace add lizopower/Blog-Writing-Skill
 claude plugin install blog-writing-skills
-claude plugin update blog-writing-skills
+claude plugin update blog-writing-skills@blog-writing-marketplace
 ```
 
 For Codex, or when you want a script to manage both hosts, use the installer. `claude` means Claude Code plugin install/update; `claude-standalone` is the filesystem fallback. For standalone folders, the installer automatically chooses between:
@@ -289,9 +289,15 @@ Plugin metadata lives in `.claude-plugin/plugin.json` and `.claude-plugin/market
 ```bash
 claude plugin marketplace add lizopower/Blog-Writing-Skill
 claude plugin install blog-writing-skills
-claude plugin update blog-writing-skills
+claude plugin update blog-writing-skills@blog-writing-marketplace
 claude plugin validate <path-to-Blog-Writing-Skill>
 ```
+
+For local development installs, add the marketplace from a clean checkout or
+delete unreadable cache directories such as `.pytest_cache/` first. The Claude
+Code CLI scans the local source tree when adding a filesystem marketplace, and
+an unreadable cache directory can fail the add step before plugin metadata is
+loaded.
 
 Plugin skills are exposed with **namespacing** (`blog-writing-skills:<skill>`) rather than the bare skill name — see [Troubleshooting](#troubleshooting) if a router prompt does not trigger.
 </details>
@@ -328,7 +334,7 @@ Agent Skills are local copies unless installed through a native plugin manager. 
 
 ```bash
 claude plugin marketplace update
-claude plugin update blog-writing-skills
+claude plugin update blog-writing-skills@blog-writing-marketplace
 ```
 
 For Codex and standalone installs, re-run the installer any time:

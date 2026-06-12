@@ -103,7 +103,7 @@ function Install-ClaudePlugin {
   Write-Host "Installing/updating Claude Code plugin: blog-writing-skills"
   & claude plugin install blog-writing-skills
   if ($LASTEXITCODE -ne 0) {
-    & claude plugin update blog-writing-skills
+    & claude plugin update blog-writing-skills@blog-writing-marketplace
     if ($LASTEXITCODE -ne 0) { throw "Claude plugin install/update failed" }
   }
 }

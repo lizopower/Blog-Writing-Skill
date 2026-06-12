@@ -98,7 +98,7 @@ install_claude_plugin() {
   claude plugin marketplace add lizopower/Blog-Writing-Skill || true
 
   echo "Installing/updating Claude Code plugin: blog-writing-skills"
-  claude plugin install blog-writing-skills || claude plugin update blog-writing-skills
+  claude plugin install blog-writing-skills || claude plugin update blog-writing-skills@blog-writing-marketplace
 }
 
 case "$TARGET" in
