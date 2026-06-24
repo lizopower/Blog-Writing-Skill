@@ -1,0 +1,45 @@
+{
+  "query": "technical blog fact check unsourced statistics citation lint",
+  "follow_up_questions": null,
+  "answer": null,
+  "images": [],
+  "results": [
+    {
+      "url": "https://mcpmarket.com/tools/skills/blog-fact-checker-1",
+      "title": "Blog Fact-Check: Verify Content Claims | Claude Code Skill",
+      "content": "Automatically verify statistics and citations in your blog posts. Use Claude Code to fetch sources and score claim accuracy for credible",
+      "score": 0.4009141,
+      "raw_content": null
+    },
+    {
+      "url": "https://libguides.uark.edu/technicalwriting/background_information/fact_checking",
+      "title": "Fact Checking on the Web - ENGL 30503 Technical Writing",
+      "content": "A blog maintained by Glenn Kessler that highlights rhetoric, and which accepts public questions and suggestions for investigation. Snopes.com. All the latest",
+      "score": 0.26234236,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.noyalizor.com/always-provide-proper-sources-for-statistics-in-blog-posts",
+      "title": "95% Of Readers Don’t Give a Hoot If There’s No Source Provided for Statistics in A Blog Post – Noya Lizor",
+      "content": "Home » Content Marketing » 95% Of Readers Don’t Give a Hoot If There’s No Source Provided for Statistics in A Blog Post. **But here’s the thing (and it’s the whole premise for this post):** Despite that stat being a total fabrication, there’s a chance that someone who isn’t going to bother reading beyond the headline might quote it in their blog post – either with or without attributing it to me – and then someone else will quote it in their blog post, and **before long, this bullshit statistic will be repeated again and again throughout the blogosphere until it’s accepted as legitimate**. **In the course of researching my own blog posts, it has become increasingly frustrating** to see that this phenomenon is alive and well, especially since “statistic listicle” posts are both highly-read and highly-shared, and many of those who create them curate stats from other lists, so they cite someone else’s statistic list-post as the source rather than locating the original source.",
+      "score": 0.24221052,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.eesel.ai/blog/how-to-fact-check-ai-generated-content",
+      "title": "How to fact check AI generated content: A practical guide - eesel AI",
+      "content": "The eesel AI blog writer dashboard, a tool to help you fact check AI generated content by providing researched drafts with citations.",
+      "score": 0.12123791,
+      "raw_content": null
+    },
+    {
+      "url": "https://www.amazon.science/blog/automated-fact-checking-using-evidence-from-tables-and-text",
+      "title": "Automated fact-checking using evidence from tables and text - Amazon Science",
+      "content": "- Reduced padding - Research areas  Cloud and systems. - Reduced padding - Research areas  Computer vision. - Reduced padding - Research areas  Conversational AI. - Reduced padding - Research areas  Economics. - Reduced padding - Research areas  Information and knowledge management. - Reduced padding - Research areas  Machine learning. - Reduced padding - Research areas  Operations research and optimization. - Reduced padding - Research areas  Robotics. - Reduced padding - Research areas  Search and information retrieval. - Reduced padding - Research areas  Sustainability. As we did with the first two shared tasks, with FEVEROUS, we released a baseline approach to support researchers in the design of fact-checking systems and to assess the feasibility of the task.",
+      "score": 0.10748451,
+      "raw_content": null
+    }
+  ],
+  "response_time": 0.75,
+  "request_id": "2f0fb33f-19e1-49d0-8e67-06d85383352d"
+}

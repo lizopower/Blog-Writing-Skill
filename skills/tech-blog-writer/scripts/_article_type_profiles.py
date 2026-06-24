@@ -1,10 +1,12 @@
 """Machine-readable article type profiles for check_draft.py.
 
 Human-readable spec: standards/article_type_profiles.md
+Lint guide: standards/draft_lint_guide.md
 """
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 VALID_ARTICLE_TYPES = frozenset(
@@ -74,10 +76,28 @@ MARKETING_WORDS = [
     "elevate",
 ]
 
+HEDGE_WORDS = [
+    "very",
+    "really",
+    "just",
+    "actually",
+    "basically",
+    "essentially",
+    "quite",
+    "rather",
+    "somewhat",
+    "arguably",
+    "potentially",
+    "presumably",
+    "seemingly",
+]
+
 AI_CLICHES_EN = [
     "in today's fast-paced",
     "ever-evolving",
     "rapidly changing world",
+    "in a world of",
+    "in today's fast-paced digital world",
     "it's worth noting",
     "it's important to note",
     "needless to say",
@@ -87,6 +107,9 @@ AI_CLICHES_EN = [
     "at the end of the day",
     "in essence",
     "simply put",
+    "in summary",
+    "to sum up",
+    "in conclusion",
     "let's dive in",
     "let's explore",
     "buckle up",
@@ -112,6 +135,9 @@ AI_CLICHES_EN = [
     "moreover",
     "consequently",
     "it is evident that",
+    "here's the thing",
+    "but here's the thing",
+    "let me be direct",
 ]
 
 AI_CLICHES_ZH = [
@@ -129,6 +155,45 @@ AI_CLICHES_ZH = [
     "一站式",
 ]
 
+# Keep technical terms when used as terms of art (writing_style_guide Rule 9).
+AI_TERM_ALLOWLIST_PATTERNS = [
+    re.compile(r"\brobust\s+regression\b", re.IGNORECASE),
+    re.compile(r"\brobust\s+statistics\b", re.IGNORECASE),
+    re.compile(r"\bcable\s+harness\b", re.IGNORECASE),
+    re.compile(r"\bwiring\s+harness\b", re.IGNORECASE),
+    re.compile(r"\bharness\s+connector\b", re.IGNORECASE),
+]
+
+CONTRAST_REFRAME_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (
+        re.compile(r"it['']s not (?:about|just)\s+[^,.]{3,80},?\s+it['']s\b", re.IGNORECASE),
+        "it's not X, it's Y",
+    ),
+    (
+        re.compile(r"this isn['']t [^,.]{3,80},?\s+it['']s\b", re.IGNORECASE),
+        "this isn't X, it's Y",
+    ),
+    (
+        re.compile(
+            r"the (?:problem|goal|answer) isn['']t [^,.]{3,80}\.\s+the (?:problem|goal|answer) is\b",
+            re.IGNORECASE,
+        ),
+        "the problem isn't X. The problem is Y",
+    ),
+    (
+        re.compile(r"stop [^.!?]{3,60}\.\s+start\b", re.IGNORECASE),
+        "Stop X. Start Y",
+    ),
+    (
+        re.compile(r"most people think [^.!?]{3,120}\.\s+the truth is\b", re.IGNORECASE),
+        "Most people think X. The truth is Y",
+    ),
+    (
+        re.compile(r"not only [^,]{3,80},\s+but also\b", re.IGNORECASE),
+        "Not only X but also Y",
+    ),
+]
+
 PLACEHOLDER_PATTERNS = [
     r"\[TODO\]",
     r"\[todo\]",
@@ -141,9 +206,25 @@ PLACEHOLDER_PATTERNS = [
     r"\[待核实\]",
 ]
 
-UNIT_INCONSISTENCIES = [
-    (r"\bKW\b", "kW", "Use kW not KW"),
-    (r"\bkw\b", "kW", "Use kW not kw"),
-    (r"°C", "℃", "Mixed Celsius symbols (°C vs ℃)"),
-    (r"℃", "°C", "Mixed Celsius symbols (℃ vs °C)"),
+NUMBER_PATTERNS = [
+    re.compile(r"\d+%"),
+    re.compile(r"\d+\s*°[CF]"),
+    re.compile(r"\d+\.\d+\s*[A-Za-z]+"),
+    re.compile(r"\$\d+"),
+    re.compile(r"\d+\s*cycles", re.IGNORECASE),
+    re.compile(r"\d+-\d+%"),
 ]
+
+SOURCE_PATTERNS = [
+    re.compile(r"\(PDF p\.\d+", re.IGNORECASE),
+    re.compile(r"\(Sheet:", re.IGNORECASE),
+    re.compile(r"\(Word:", re.IGNORECASE),
+    re.compile(r"\(Source:", re.IGNORECASE),
+    re.compile(r"Source:", re.IGNORECASE),
+    re.compile(r"https?://"),
+    re.compile(r"\[[^\]]+\]\([^)]+\)"),
+]
+
+EM_DASH_WARN_PER_1000_WORDS = 15
+EM_DASH_ISSUE_PER_1000_WORDS = 30
+OPENING_MAX_SENTENCES = 3
