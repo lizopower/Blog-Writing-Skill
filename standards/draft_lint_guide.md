@@ -133,7 +133,7 @@ flowchart LR
 
 - 写作风格：`skills/tech-blog-writer/assets/writing_style_guide.md`（Anti-AI Rules 1–18）
 - 类型配置：`skills/tech-blog-writer/scripts/_article_type_profiles.py`
-- Tavily 调研原文：`.trellis-writing/research/`（见文末附录）
+- Tavily 调研摘要与来源链接见文末附录；原始 research cache 不随 bundle 发布。
 
 新增规则时：在 `_article_type_profiles.py` 增常量，在 `check_draft.py` 的 `check_draft()` 接线，并在 `skills/tech-blog-writer/scripts/tests/test_check_draft.py` 补用例。
 
@@ -159,7 +159,7 @@ flowchart LR
 
 ### A.2 深度调研：五类机械检查（Tavily Research）
 
-来源：`.trellis-writing/research/tavily-research-lint-gaps.md`
+来源：Tavily research 摘要（2026-06-24），下方保留来源链接，不提交原始 cache。
 
 #### 1. 结构（Structure）
 
@@ -219,7 +219,7 @@ flowchart LR
 
 ### A.3 Jodie Cook Ban-List 要点
 
-来源：[jodiecook.com/ban-list](https://www.jodiecook.com/ban-list)（已 extract 至 `.trellis-writing/research/jodie-ban-list.md`）
+来源：[jodiecook.com/ban-list](https://www.jodiecook.com/ban-list)
 
 | 类别 | 代表项 | `check_draft` 覆盖 |
 |------|--------|-------------------|
@@ -288,15 +288,9 @@ flowchart LR
 
 Tavily 与 Winston AI 共识：**补检方向 = 句式正则 + 句长节奏 + em-dash + 来源数字**，而非无限扩词表。
 
-### A.7 调研产物路径
+### A.7 调研产物说明
 
-| 文件 | 内容 |
-|------|------|
-| `.trellis-writing/research/tavily-research-lint-gaps.md` | 深度调研报告（结构/引用/节奏/破折号/Vale） |
-| `.trellis-writing/research/jodie-ban-list.md` | Jodie Cook ban-list 全文 extract |
-| `.trellis-writing/research/tavily-ai-slop.json` | AI slop 词表与句式检索结果 |
-| `.trellis-writing/research/tavily-vale-lint.json` | Vale 技术写作 lint 实践 |
-| `.trellis-writing/research/tavily-fact-lint.json` | 无来源统计 / 事实核查检索 |
+本附录保留可复核的摘要与公开来源链接。原始 Tavily JSON / extract cache 属于本地 research 工作产物，不随 bundle 发布。
 
 ### A.8 推荐阅读（规则编写时）
 
@@ -324,4 +318,4 @@ Tavily 与 Winston AI 共识：**补检方向 = 句式正则 + 句长节奏 + em
 
 **完全避免**：冗长铺垫、与主题无关的伦理段落、人人适用的空话、营销黑话、假深刻/假对立、无细节的 emotionally weighted 词
 
-完整列表见 [Jodie Cook ban-list](https://www.jodiecook.com/ban-list) 或本地 `.trellis-writing/research/jodie-ban-list.md`。
+完整列表见 [Jodie Cook ban-list](https://www.jodiecook.com/ban-list)。

@@ -145,8 +145,13 @@ def _line_has_source(line: str, next_line: str = "") -> bool:
 def _find_unsourced_numbers(body: str, *, limit: int = 5) -> list[tuple[int, str]]:
     findings: list[tuple[int, str]] = []
     lines = body.splitlines()
+    in_fence = False
     for index, line in enumerate(lines):
-        if line.startswith("---") or line.startswith("```") or line.startswith("|") or line.startswith("#"):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_fence = not in_fence
+            continue
+        if in_fence or stripped.startswith("---") or stripped.startswith("|") or stripped.startswith("#"):
             continue
         if not any(pattern.search(line) for pattern in NUMBER_PATTERNS):
             continue

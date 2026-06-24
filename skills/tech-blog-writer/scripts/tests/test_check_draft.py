@@ -88,6 +88,11 @@ class CheckDraftTests(unittest.TestCase):
         result = check_draft(draft, article_type="blog")
         self.assertTrue(any("sources" in warn for warn in result.warns))
 
+    def test_unsourced_number_ignores_code_fence(self) -> None:
+        draft = _sample_draft() + "\n\n```python\nratio = 42%\n```\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("42%" in warn for warn in result.warns))
+
     def test_robust_regression_allowlisted(self) -> None:
         draft = _sample_draft() + "\n\nWe used robust regression for the baseline.\n"
         result = check_draft(draft, article_type="blog")
