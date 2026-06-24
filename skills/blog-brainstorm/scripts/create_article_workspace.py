@@ -22,6 +22,8 @@ REQUIRED_FILES = {
     "finish.md": "# Finish\n\n## What Worked\n\n## Reusable Patterns\n\n## Weak Sources\n\n## Standards Update Candidates\n\n## Follow-Up Ideas\n",
 }
 
+VALID_ARTICLE_TYPES = ("blog", "how-to", "case-study", "comparison", "white-paper")
+
 
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
@@ -77,7 +79,7 @@ def main() -> int:
     parser.add_argument("title", help="Working article title.")
     parser.add_argument("--slug", help="Lowercase kebab-case article slug. Defaults to slugified title.")
     parser.add_argument("--root", default=".", help="Project root where content/articles will be created.")
-    parser.add_argument("--type", default="blog", help="Article type, e.g. blog, white-paper, guide.")
+    parser.add_argument("--type", choices=VALID_ARTICLE_TYPES, default="blog", help="Article type.")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()

@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GenreConventions",
+  "type": "object",
+  "required": ["version", "generated_at", "article_type", "topic", "sample_count", "conventions", "optional_styles"],
+  "properties": {
+    "version": { "type": "string", "pattern": "^1\\." },
+    "generated_at": { "type": "string" },
+    "article_type": {
+      "type": "string",
+      "enum": ["blog", "how-to", "case-study", "comparison", "white-paper"]
+    },
+    "topic": { "type": "string", "minLength": 1 },
+    "sample_count": { "type": "integer", "minimum": 1 },
+    "conventions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["trait", "frequency", "classification", "detail"],
+        "properties": {
+          "trait": { "type": "string" },
+          "frequency": { "type": "integer", "minimum": 1 },
+          "classification": { "type": "string", "enum": ["convention", "optional_style"] },
+          "detail": { "type": "string" }
+        }
+      }
+    },
+    "optional_styles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "structure": {
+      "type": "object",
+      "properties": {
+        "avg_h2_count": { "type": "number" },
+        "avg_table_count": { "type": "number" },
+        "common_h2_patterns": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  }
+}

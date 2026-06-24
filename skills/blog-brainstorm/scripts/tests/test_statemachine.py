@@ -56,7 +56,10 @@ def write_workspace(root: Path) -> None:
     (root / "outline.md").write_text("# Outline\n\n1. Intro\n", encoding="utf-8")
     (root / "draft.md").write_text("# Draft\n\nBody copy.\n", encoding="utf-8")
     (root / "fact_check.md").write_text("# Fact Check\n\nStatus: PASS\n", encoding="utf-8")
-    (root / "editorial_review.md").write_text("# Editorial Review\n\nApproved.\n", encoding="utf-8")
+    (root / "editorial_review.md").write_text(
+        "# Editorial Review\n\nApproved.\n\nPublishability: PASS\n",
+        encoding="utf-8",
+    )
     (root / "finish.md").write_text("# Finish\n", encoding="utf-8")
 
 
@@ -117,6 +120,22 @@ class StateMachineTests(unittest.TestCase):
 
         self.assertFalse(result.ok)
         self.assertIn("fact_check.md must record PASS", result.reason)
+
+    def test_completed_requires_publishability_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = Path(directory)
+            write_workspace(workspace)
+            (workspace / "fact_check.md").write_text("# Fact Check\n\nStatus: PASS\n", encoding="utf-8")
+            (workspace / "editorial_review.md").write_text(
+                "# Editorial Review\n\nLooks good but no publishability line.\n",
+                encoding="utf-8",
+            )
+            article = base_article("editorial_review", track="lightweight")
+
+            result = can_transition(article, "completed", workspace)
+
+        self.assertFalse(result.ok)
+        self.assertIn("Publishability: PASS", result.reason)
 
     def test_waive_excuses_missing_artifact_on_a_legal_transition(self) -> None:
         # brainstorming -> brief_confirmed is a legal edge whose gate requires a

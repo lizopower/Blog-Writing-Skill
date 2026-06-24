@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from create_article_workspace import VALID_ARTICLE_TYPES
+
 
 REQUIRED_FILES = [
     "article.json",
@@ -78,6 +80,9 @@ def validate_workspace(workspace: Path) -> tuple[bool, list[str], list[str]]:
         phase = article.get("currentPhase")
         if phase not in VALID_PHASES:
             errors.append(f"article.json.currentPhase: invalid phase {phase!r}")
+        article_type = article.get("articleType")
+        if article_type is not None and article_type not in VALID_ARTICLE_TYPES:
+            errors.append(f"article.json.articleType: invalid value {article_type!r}")
 
     context_pack, context_error = _load_json(workspace / "context_pack.json")
     if context_error:

@@ -108,8 +108,18 @@ Each phase should leave a durable artifact before moving forward:
 | outlining | `outline.md` | Structure maps to reader decision path |
 | drafting | `draft.md` | Draft uses only supported claims |
 | fact_checking | `fact_check.md` | Critical fact issues are resolved or flagged |
-| editorial_review | `editorial_review.md` | Article is differentiated, readable, and publishable |
-| completed | `finish.md` | Lessons and reusable patterns are captured |
+| editorial_review | `editorial_review.md` | Taste dimensions scored; `Publishability: PASS` recorded |
+| completed | `editorial_review.md` | Final gate passed with `Publishability: PASS` |
+
+`finish.md` is a post-completion learning artifact. Capture lessons there when useful; it is not required by the `completed` lifecycle gate.
+
+## editorial_review.md required sections
+
+When `content-taste-advisor` completes the editorial phase, `editorial_review.md` must include:
+
+1. **Seven-dimension scores** (topic, angle, structure, evidence use, tone, differentiation, publishability) — each with a brief rationale.
+2. **Publishability:** `PASS` or `FAIL` on its own line (lifecycle gate requires `Publishability: PASS` before `completed`).
+3. **Top revisions** (if any) — concrete edits still recommended before external publish.
 
 ## Finish-Time Learning
 

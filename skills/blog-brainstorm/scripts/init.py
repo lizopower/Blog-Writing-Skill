@@ -17,6 +17,22 @@ def ensure_articles_dir(root: Path) -> Path:
     return articles
 
 
+def ensure_reference_dir(root: Path) -> Path:
+    reference = root / "content" / "reference"
+    reference.mkdir(parents=True, exist_ok=True)
+    readme = reference / "README.md"
+    if not readme.exists():
+        template = Path(__file__).resolve().parents[3] / "content" / "reference" / "README.md"
+        if template.exists():
+            readme.write_text(template.read_text(encoding="utf-8"), encoding="utf-8")
+        else:
+            readme.write_text(
+                "# Reference Corpus\n\nAdd benchmark articles under <topic>/<article-type>/.\n",
+                encoding="utf-8",
+            )
+    return reference
+
+
 def selected_harnesses(value: str) -> list[str]:
     if value == "all":
         return ["claude", "codex"]
@@ -69,6 +85,7 @@ def cmd_init(args: argparse.Namespace) -> int:
         return 0
 
     articles = ensure_articles_dir(root)
+    reference = ensure_reference_dir(root)
     ensure_store(root)
     specs_index = index_path(root)
     update_result = None
@@ -90,6 +107,7 @@ def cmd_init(args: argparse.Namespace) -> int:
     action = "update" if args.update else "init"
     print(f"\nBlog-Writing-Skill project {action} complete.")
     print(f"- Articles directory: {articles}")
+    print(f"- Reference corpus: {reference}")
     print(f"- Project specs index: {specs_index}")
     print(f"- Project runtime: {runtime_root(root)}")
     for message in runtime_messages:

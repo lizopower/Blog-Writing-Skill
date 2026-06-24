@@ -31,6 +31,7 @@ class RuntimeInstallerTests(unittest.TestCase):
         self.assertIn("runtime/scripts/session_start.py", registry["files"])
         self.assertIn("runtime/scripts/resume_context.py", registry["files"])
         self.assertIn("runtime/scripts/inject_workflow_state.py", registry["files"])
+        self.assertIn("runtime/prompts/draft.md", registry["files"])
 
     def test_update_rewrites_unchanged_managed_file(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

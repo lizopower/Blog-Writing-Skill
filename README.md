@@ -86,6 +86,8 @@ iwr https://raw.githubusercontent.com/lizopower/Blog-Writing-Skill/main/scripts/
 | You need SEO strategy before writing | `seo-serp-strategist` adds SERP intent, keyword, and gap analysis |
 | You have files or tables | `tech-file-parser` and `tech-blog-orchestrator` turn them into a context pack |
 | You need final publish QA | `fact-checker` and `on-page-seo-finalizer` verify claims and page metadata |
+| You need mechanical draft lint | `check_draft.py` flags marketing/AI clichés and profile gaps |
+| You want stage-by-stage resume | `bws run --slug <slug> --stage <phase>` assembles context + sub-skill hint |
 
 Best fit: long-form technical content where source traceability matters. Not a fit: generic lifestyle posts, unsupported thought pieces, or requests where the agent is allowed to make up evidence.
 
@@ -381,6 +383,13 @@ Initialize another project without changing directories:
 
 ```bash
 blog-writing init <project-root>
+```
+
+Resume or prepare a single lifecycle stage:
+
+```bash
+bws run --slug <slug> --root <project-root>
+bws run --slug <slug> --stage outlining --root <project-root>
 ```
 
 The lower-level script entry remains available when no shim is installed:

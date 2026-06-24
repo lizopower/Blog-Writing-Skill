@@ -176,6 +176,22 @@ python skills/blog-brainstorm/scripts/article.py advance --to editorial_review -
 
 If the command exits non-zero, stop and report the gate reason. Do not edit `article.json.currentPhase` manually. Only use `--waive "<reason>"` when the user explicitly accepts the audit trail.
 
+**Handoff:** After advancing to `editorial_review`, invoke `content-taste-advisor` to write `editorial_review.md` and advance to `completed`. Do not advance directly to `completed` from fact-check.
+
+Optional mechanical pre-check before editorial review:
+
+```bash
+python skills/tech-blog-writer/scripts/check_draft.py <project-root>/content/articles/<slug> --workspace
+```
+
+Near-duplicate audit (recommended before or during fact-check):
+
+```bash
+python skills/fact-checker/scripts/audit_near_duplicate.py --root <project-root> --slug <slug> --include-reference
+```
+
+Warnings from `near_duplicate_report.md` do not block lifecycle advance unless the user treats them as blockers.
+
 ## When to Use
 
 **调用时机:**

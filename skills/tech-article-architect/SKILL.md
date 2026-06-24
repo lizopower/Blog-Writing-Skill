@@ -22,6 +22,13 @@ This skill is domain-agnostic — fill in the actual context before designing an
 
 ### Optional
 - `target_word_count`: Target word count for final article (default: 2000 words)
+- `genre_conventions.json`: Optional conventions from `extract_genre_conventions.py` (reference corpus)
+  - Generate when `content/reference/<topic>/<type>/` has benchmark articles:
+    ```bash
+    python skills/tech-article-architect/scripts/extract_genre_conventions.py \
+      --root <project-root> --topic <topic> --type <articleType> --slug <slug>
+    ```
+  - Prefer `classification: convention` traits in outline structure; treat `optional_styles` as non-mandatory
   - Architect will design outline with word budget allocation per section
   - Total sections and depth adjusted to meet target
 - `preferred_modules`: Default structure or custom modules

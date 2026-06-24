@@ -58,6 +58,17 @@ Proceed to draft directly **only** when the user explicitly supplied both artifa
 
 When an article workspace (`content/articles/<slug>/`) exists, this guard is mechanical, not judgment-based: `article.json.currentPhase` must already be `drafting` (advance with `python skills/blog-brainstorm/scripts/article.py advance --to drafting --slug <slug> --root <project-root>`; the gate fails unless `outline.md` has body content). A PreToolUse hook denies writes to `draft.md` in earlier phases — if denied, hand back to `blog-writing-workflow` instead of working around the gate.
 
+## Post-draft mechanical checks
+
+Before handoff to `fact-checker`, when scripts are available:
+
+```bash
+python skills/tech-blog-writer/scripts/check_draft.py <project-root>/content/articles/<slug> --workspace
+python skills/tech-blog-writer/scripts/normalize_draft.py <project-root>/content/articles/<slug> --workspace --check-only
+```
+
+Read `genre_conventions.json` when present and align section flow to recorded conventions (without copying benchmark prose).
+
 ---
 
 ## Input Structure

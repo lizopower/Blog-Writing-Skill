@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import importlib.util
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType
@@ -13,6 +14,7 @@ from types import ModuleType
 REPO_ROOT = Path(__file__).resolve().parents[1]
 BRAINSTORM_SCRIPTS = REPO_ROOT / "skills" / "blog-brainstorm" / "scripts"
 INIT_SCRIPT = BRAINSTORM_SCRIPTS / "init.py"
+RUN_STAGE_SCRIPT = BRAINSTORM_SCRIPTS / "run_stage.py"
 
 
 def _load_script(path: Path, module_name: str) -> ModuleType:
@@ -55,6 +57,14 @@ def _forward_init(command: str, args: list[str]) -> int:
     return int(init_module.main(forwarded))
 
 
+def _forward_run(args: list[str]) -> int:
+    if not RUN_STAGE_SCRIPT.exists():
+        print(f"error: missing run_stage script: {RUN_STAGE_SCRIPT}", file=sys.stderr)
+        return 1
+    proc = subprocess.run([sys.executable, str(RUN_STAGE_SCRIPT), *args], check=False)
+    return int(proc.returncode)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="blog-writing",
@@ -63,7 +73,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "command",
         nargs="?",
-        choices=["init", "check", "update", "uninstall"],
+        choices=["init", "check", "update", "uninstall", "run"],
         help="Command to run. Use 'init' to set up the current project.",
     )
     parser.add_argument("args", nargs=argparse.REMAINDER, help="Arguments passed to the command.")
@@ -76,6 +86,8 @@ def main(argv: list[str] | None = None) -> int:
     if parsed.command is None:
         parser.print_help()
         return 0
+    if parsed.command == "run":
+        return _forward_run(parsed.args)
     return _forward_init(parsed.command, parsed.args)
 
 

@@ -3,3 +3,4 @@ __pycache__/
 .ccg/
 .pytest_cache/
 .clean-profile/
+.cursor/

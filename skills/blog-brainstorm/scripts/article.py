@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from _statemachine import PHASES, TRANSITIONS, advance_article, can_transition, migrate
-from create_article_workspace import create_workspace, slugify
+from create_article_workspace import VALID_ARTICLE_TYPES, create_workspace, slugify
 
 
 def now_iso() -> str:
@@ -119,6 +119,20 @@ def cmd_advance(args: argparse.Namespace) -> int:
     print(f"{args.slug}: {article.get('currentPhase')} -> {args.to}")
     if result.reason.startswith("waived:"):
         print(result.reason)
+    try:
+        from _pipeline_log import append_receipt
+
+        append_receipt(
+            workspace,
+            phase=args.to,
+            skill="article.py",
+            artifact=args.to,
+            status="advanced",
+            advance_exit_code=0,
+            waive_reason=args.waive,
+        )
+    except Exception as exc:  # noqa: BLE001 - receipts are advisory, lifecycle already advanced
+        print(f"warning: pipeline receipt not written ({exc})", file=sys.stderr)
     return 0
 
 
@@ -232,7 +246,7 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("title", help="Working article title.")
     create.add_argument("--slug", help="Lowercase kebab-case article slug. Defaults to slugified title.")
     create.add_argument("--root", default=".", help="Project root where content/articles lives.")
-    create.add_argument("--type", default="blog", help="Article type, e.g. blog, white-paper, guide.")
+    create.add_argument("--type", choices=VALID_ARTICLE_TYPES, default="blog", help="Article type.")
     create.add_argument("--track", choices=["full", "lightweight"], default="full")
     create.add_argument("--harness", choices=["claude", "codex", "all"], default="claude")
     create.add_argument(

@@ -138,6 +138,20 @@ class ValidateArticleWorkspaceTests(unittest.TestCase):
         self.assertFalse(ok)
         self.assertTrue(any("currentPhase" in error and "invalid phase" in error for error in errors))
 
+    def test_validate_workspace_invalid_article_type_surfaces_error(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workspace = create_workspace(Path(directory), "demo", "Demo Title", "blog")
+            article_path = workspace / "article.json"
+            data = json.loads(article_path.read_text(encoding="utf-8"))
+            data["articleType"] = "guide"
+            article_path.write_text(json.dumps(data), encoding="utf-8")
+
+            ok, errors, warnings = validate_workspace(workspace)
+
+        self.assertFalse(ok)
+        self.assertEqual(warnings, [])
+        self.assertTrue(any("articleType" in error and "invalid value" in error for error in errors))
+
     def test_cli_exit_codes_for_valid_and_invalid_workspace(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

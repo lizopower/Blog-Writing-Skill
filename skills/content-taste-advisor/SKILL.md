@@ -851,6 +851,49 @@ Your advice is effective when:
 
 ---
 
+## Lifecycle Gate (article workspace)
+
+When invoked during the `editorial_review` phase inside `content/articles/<slug>/`:
+
+1. Read `draft.md`, `fact_check.md`, and `brief.md`.
+2. Optionally run `check_draft.py --workspace` and fold mechanical warnings into the review.
+3. Write `editorial_review.md` using this structure:
+
+```markdown
+# Editorial Review
+
+## Dimension Scores
+| Dimension | Score (1-5) | Notes |
+|-----------|-------------|-------|
+| Topic selection | | |
+| Angle / differentiation | | |
+| Structure | | |
+| Evidence use | | |
+| Tone | | |
+| CTA | | |
+| Publishability | | |
+
+## Summary
+[2-4 sentences: worth publishing? what still needs work?]
+
+## Top Revisions
+- [concrete item or "None"]
+
+Publishability: PASS
+```
+
+Use `Publishability: FAIL` when the article should not ship yet; do not advance to `completed`.
+
+4. When publishability passes, advance lifecycle:
+
+```bash
+python skills/blog-brainstorm/scripts/article.py advance --to completed --slug <slug> --root <project-root>
+```
+
+If advance fails, report the gate reason. Do not hand-edit `article.json.currentPhase`.
+
+---
+
 ## When to Invoke This Skill
 
 Use `content-taste-advisor` when:

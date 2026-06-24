@@ -62,7 +62,7 @@ class CreateArticleWorkspaceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
 
-            workspace = create_workspace(root, "custom-slug", "Custom Title", "guide")
+            workspace = create_workspace(root, "custom-slug", "Custom Title", "how-to")
             article = json.loads((workspace / "article.json").read_text(encoding="utf-8"))
 
         self.assertEqual(workspace, root / "content" / "articles" / "custom-slug")
@@ -74,7 +74,7 @@ class CreateArticleWorkspaceTests(unittest.TestCase):
                 "status": "brainstorming",
                 "currentPhase": "brainstorming",
                 "nextAction": "clarify audience and angle",
-                "articleType": "guide",
+                "articleType": "how-to",
                 "businessGoal": "",
                 "audience": [],
                 "primaryKeyword": "",
@@ -127,6 +127,15 @@ class CreateArticleWorkspaceTests(unittest.TestCase):
         self.assertEqual(article["articleType"], "white-paper")
         self.assertEqual(validated.returncode, 0, validated.stderr)
         self.assertIn("Article workspace is VALID", validated.stdout)
+
+    def test_cli_rejects_unknown_article_type(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+
+            created = run_create("Bad Type", "--root", str(root), "--type", "guide")
+
+        self.assertEqual(created.returncode, 2)
+        self.assertFalse((root / "content" / "articles" / "bad-type").exists())
 
 
 if __name__ == "__main__":

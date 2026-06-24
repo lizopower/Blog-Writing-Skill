@@ -8,6 +8,30 @@ follows the release-version policy in [`VERSIONING.md`](VERSIONING.md): the
 
 For history predating this file, see the git log.
 
+## [4.1.0]
+
+### Added
+- Mechanical draft linter `check_draft.py` with article-type profiles (`standards/article_type_profiles.md`).
+- Reference corpus contract (`standards/reference_corpus_contract.md`) and `content/reference/` scaffold on `bws init`.
+- Genre convention extractor `extract_genre_conventions.py` + `schemas/genre_conventions_schema.json`.
+- Near-duplicate audit `audit_near_duplicate.py` for draft vs sources/reference.
+- Stage runner `bws run` / `run_stage.py` with prompt templates under `templates/prompts/`.
+- Draft normalizer `normalize_draft.py` (optional workflow step 7b).
+- Append-only `logs/pipeline.log` receipts on `article.py advance`; `resume_context.py` shows recent entries.
+
+### Changed
+- `content-taste-advisor` now owns `editorial_review` lifecycle: writes `editorial_review.md` and advances to `completed`.
+- `blog-writing-workflow` adds required step 10 (editorial review) and optional normalize step 7b.
+- `completed` gate requires `Publishability: PASS` in `editorial_review.md`.
+- `validate_article_workspace.py` validates `articleType` against known profiles.
+- CI runs tech-blog-writer, tech-article-architect, and fact-checker script tests.
+
+### Fixed
+- Unified `articleType` enum across create, validate, and CLI (`guide` no longer accepted).
+- Runtime installer now copies `templates/prompts/` so `bws run` works in installed projects.
+- Pipeline log write failures surface as stderr warnings instead of silent drops.
+- Clarified `finish.md` vs `completed` lifecycle gate in workflow docs.
+
 ## [3.8.0]
 
 ### Added
@@ -91,6 +115,7 @@ See the git log for the detailed history of these releases (governed style and
 offering context, AEO/GEO citation signals, anti-AI style rules, and packaging
 changes).
 
+[4.1.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v4.1.0
 [3.8.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.8.0
 [3.7.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.7.0
 [3.6.0]: https://github.com/lizopower/Blog-Writing-Skill/releases/tag/v3.6.0

@@ -12,10 +12,12 @@ from typing import Any
 
 RUNTIME_ROOT = ".trellis-writing"
 RUNTIME_SCRIPTS = PurePosixPath("runtime/scripts")
+RUNTIME_PROMPTS = PurePosixPath("runtime/prompts")
 VERSION_FILE = ".version"
 HASHES_FILE = ".template-hashes.json"
 SCRIPTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPTS_DIR.parents[2]
+PROMPTS_DIR = REPO_ROOT / "templates" / "prompts"
 
 
 @dataclass(frozen=True)
@@ -75,7 +77,7 @@ def release_version() -> str:
 
 
 def template_files() -> list[TemplateFile]:
-    return [
+    files = [
         TemplateFile(RUNTIME_SCRIPTS / "session_start.py", content=render_session_start()),
         TemplateFile(RUNTIME_SCRIPTS / "resume_context.py", source=SCRIPTS_DIR / "resume_context.py"),
         TemplateFile(
@@ -86,11 +88,19 @@ def template_files() -> list[TemplateFile]:
         TemplateFile(RUNTIME_SCRIPTS / "_specstore.py", source=SCRIPTS_DIR / "_specstore.py"),
         TemplateFile(RUNTIME_SCRIPTS / "phase_gate.py", source=SCRIPTS_DIR / "phase_gate.py"),
         TemplateFile(RUNTIME_SCRIPTS / "article.py", source=SCRIPTS_DIR / "article.py"),
+        TemplateFile(RUNTIME_SCRIPTS / "run_stage.py", source=SCRIPTS_DIR / "run_stage.py"),
+        TemplateFile(RUNTIME_SCRIPTS / "_pipeline_log.py", source=SCRIPTS_DIR / "_pipeline_log.py"),
         TemplateFile(
             RUNTIME_SCRIPTS / "create_article_workspace.py",
             source=SCRIPTS_DIR / "create_article_workspace.py",
         ),
     ]
+    if PROMPTS_DIR.exists():
+        files.extend(
+            TemplateFile(RUNTIME_PROMPTS / path.name, source=path)
+            for path in sorted(PROMPTS_DIR.glob("*.md"))
+        )
+    return files
 
 
 def render_session_start() -> str:

@@ -55,7 +55,10 @@ def write_article(root: Path, slug: str, *, phase: str, track: str, updated_at: 
     (workspace / "outline.md").write_text("# Outline\n\n", encoding="utf-8")
     (workspace / "draft.md").write_text("# Draft\n\nBody.\n", encoding="utf-8")
     (workspace / "fact_check.md").write_text("# Fact Check\n\nStatus: PASS\n", encoding="utf-8")
-    (workspace / "editorial_review.md").write_text("# Editorial Review\n\nApproved.\n", encoding="utf-8")
+    (workspace / "editorial_review.md").write_text(
+        "# Editorial Review\n\nApproved.\n\nPublishability: PASS\n",
+        encoding="utf-8",
+    )
     return workspace
 
 
@@ -186,6 +189,22 @@ class ResumeContextTests(unittest.TestCase):
         self.assertIn("Current Target: demo", output)
         self.assertIn("Lifecycle state machine unavailable.", output)
         self.assertIn("Project specs unavailable.", output)
+
+    def test_recent_pipeline_receipts_are_shown(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            workspace = write_article(root, "demo", phase="drafting", track="full", updated_at="2026-06-09T03:00:00Z")
+            log_dir = workspace / "logs"
+            log_dir.mkdir()
+            (log_dir / "pipeline.log").write_text(
+                '{"timestamp":"2026-06-09T03:00:00+00:00","phase":"drafting","status":"advanced","skill":"article.py"}\n',
+                encoding="utf-8",
+            )
+
+            output = resume_context.render_context(root, "demo")
+
+        self.assertIn("Recent pipeline receipts:", output)
+        self.assertIn("drafting (advanced) skill=article.py", output)
 
 
 if __name__ == "__main__":

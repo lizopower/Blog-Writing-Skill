@@ -242,4 +242,10 @@ def _completed_gate(workspace: Path) -> TransitionResult:
     fact_check = _read_text(workspace / "fact_check.md")
     if not re.search(r"\bPASS(?:ED)?\b", fact_check, re.IGNORECASE):
         return TransitionResult(False, "fact_check.md must record PASS before completed")
+    editorial = _read_text(workspace / "editorial_review.md")
+    if not re.search(r"Publishability:\s*PASS", editorial, re.IGNORECASE):
+        return TransitionResult(
+            False,
+            "editorial_review.md must include a line 'Publishability: PASS' before completed",
+        )
     return _file_has_body(workspace / "editorial_review.md", "editorial_review.md")

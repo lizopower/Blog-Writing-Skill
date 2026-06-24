@@ -134,6 +134,20 @@ def render_context(root: Path, slug: str | None = None) -> str:
             suffix = "" if artifact.exists() else " (missing)"
             lines.append(f"- {artifact}{suffix}")
 
+    try:
+        from _pipeline_log import recent_receipts
+
+        receipts = recent_receipts(current["workspace"], limit=3)
+        if receipts:
+            lines.extend(["", "Recent pipeline receipts:"])
+            for item in receipts:
+                lines.append(
+                    f"- {item.get('timestamp', '?')}: {item.get('phase', '?')} "
+                    f"({item.get('status', '?')}) skill={item.get('skill', '')}"
+                )
+    except Exception as exc:  # noqa: BLE001 - corrupt optional logs should not hide lifecycle context
+        lines.append(f"- Pipeline receipts unavailable: {exc}")
+
     other_active = [
         item
         for item in workspaces

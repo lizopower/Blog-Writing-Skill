@@ -53,7 +53,10 @@ def complete_workspace(root: Path, slug: str) -> Path:
     (workspace / "outline.md").write_text("# Outline\n\n1. Intro\n", encoding="utf-8")
     (workspace / "draft.md").write_text("# Draft\n\nBody copy.\n", encoding="utf-8")
     (workspace / "fact_check.md").write_text("# Fact Check\n\nStatus: PASS\n", encoding="utf-8")
-    (workspace / "editorial_review.md").write_text("# Editorial Review\n\nApproved.\n", encoding="utf-8")
+    (workspace / "editorial_review.md").write_text(
+        "# Editorial Review\n\nApproved.\n\nPublishability: PASS\n",
+        encoding="utf-8",
+    )
     return workspace
 
 
@@ -67,6 +70,24 @@ class ArticleCliTests(unittest.TestCase):
             article = load_article(root, "demo")
             self.assertEqual(article["track"], "lightweight")
             self.assertEqual(article["waivers"], [])
+
+    def test_create_rejects_unknown_article_type(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            result = run_article(
+                "create",
+                "Demo Title",
+                "--slug",
+                "demo",
+                "--root",
+                str(root),
+                "--type",
+                "guide",
+                "--no-hooks",
+            )
+
+            self.assertEqual(result.returncode, 2)
+            self.assertFalse((root / "content" / "articles" / "demo").exists())
 
     def test_create_installs_hooks_by_default(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -164,6 +185,8 @@ class ArticleCliTests(unittest.TestCase):
             article = load_article(root, "demo")
             self.assertEqual(article["currentPhase"], "brief_confirmed")
             self.assertEqual(article["waivers"][0]["reason"], "legacy import")
+            log_path = root / "content" / "articles" / "demo" / "logs" / "pipeline.log"
+            self.assertIn('"phase": "brief_confirmed"', log_path.read_text(encoding="utf-8"))
 
     def test_advance_waive_cannot_bypass_illegal_transition(self) -> None:
         # A waiver must not skip phases to fabricate a terminal state.

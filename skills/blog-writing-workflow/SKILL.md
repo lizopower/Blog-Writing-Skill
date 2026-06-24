@@ -107,7 +107,8 @@ Step-to-phase mapping:
 | step 5: outline approved | `drafting` |
 | step 7: draft complete | `fact_checking` |
 | step 8: fact-check report written | `editorial_review` |
-| editorial review done + fact-check PASS | `completed` |
+| step 9 (optional SEO): `seo_finalization` written | `editorial_review` |
+| step 10: editorial review + `Publishability: PASS` | `completed` |
 
 A PreToolUse hook (installed by `init.py` and `article.py create`) independently denies writes to `outline.md`, `draft.md`, `fact_check.md`, and `editorial_review.md` before their phase. If a write is denied, do not work around it (no renamed files, no shell redirection, no inline article text in chat); run the missing upstream stages and advance the phase instead.
 
@@ -145,6 +146,9 @@ Spawned workers may be used only for scratch-only parallel work such as source d
 7. `tech-blog-writer` [required]
    Draft the article from outline, Context Pack, charts manifest, and strategy summary.
 
+7b. `normalize_draft` [optional]
+   Run `normalize_draft.py --workspace --check-only` (or `--apply` after user confirmation) between draft and fact-check.
+
 8. `fact-checker` [required]
    Verify factual claims, numbers, units, logic, and source traceability.
 
@@ -154,6 +158,11 @@ Spawned workers may be used only for scratch-only parallel work such as source d
    must not touch `glossary` terms. Metadata-only changes do **not** re-run `fact-checker`; a rare body-fact
    change re-runs it at most once, else stop and ask the author. Run when `seo_strategy` is present or the user
    asks for on-page SEO finishing.
+
+10. `content-taste-advisor` [required · editorial_review phase]
+   After fact-check (and optional on-page SEO), run the seven-dimension taste review.
+   Write `editorial_review.md` with dimension scores and `Publishability: PASS` or `FAIL`.
+   When publishability passes, advance lifecycle state to `completed` (or use `article.py finish`, which advances to `completed`).
 
 ## Mandatory `grill-me` Triggers
 

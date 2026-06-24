@@ -9,7 +9,7 @@
     {
       "name": "blog-writing-skills",
       "description": "Technical and B2B article skills for Claude Code: brainstorm, research, pressure-test, draft, fact-check, and review.",
-      "version": "3.8.0",
+      "version": "4.1.0",
       "source": "./",
       "author": {
         "name": "lizopower",
