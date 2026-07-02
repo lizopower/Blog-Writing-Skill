@@ -8,6 +8,16 @@ follows the release-version policy in [`VERSIONING.md`](VERSIONING.md): the
 
 For history predating this file, see the git log.
 
+## [4.2.0]
+
+### Added
+- Mechanical cross-article linter `cluster_voice_check.py` (in `skills/tech-blog-writer/scripts/`) that compares 2+ cluster drafts against each other for shared opening formulas, shared AI cliches and contrast-reframe patterns, repeated multi-word phrases, near-identical sentence runs, matching cadence, and parallel section skeletons. Reuses the `_article_type_profiles.py` cliche/pattern constants; exits 1 on any issue; supports `--slugs`, `--allow`, and `--write-report`.
+- `standards/cluster_voice_guide.md` documenting the check, thresholds, exit codes, and workflow.
+
+### Changed
+- `editorial_review` is now an eight-dimension review: added **Cross-article voice diversity** to the `content-taste-advisor` rubric. For cluster/series articles the reviewer reads sibling drafts and runs `cluster_voice_check.py`; a cross-article collision scores the dimension 1-2 and fails `Publishability`. Standalone articles score it `N/A`.
+- `templates/prompts/editorial_review.md` updated from seven to eight dimensions with cluster-check instructions.
+
 ## [4.1.0]
 
 ### Added

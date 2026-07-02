@@ -857,7 +857,23 @@ When invoked during the `editorial_review` phase inside `content/articles/<slug>
 
 1. Read `draft.md`, `fact_check.md`, and `brief.md`.
 2. Optionally run `check_draft.py --workspace` and fold mechanical warnings into the review.
-3. Write `editorial_review.md` using this structure:
+3. **Cluster check (when the article is one of several written together).** The other
+   seven dimensions score a single article in isolation, so a cluster of articles can
+   each pass and still read like one voice: the same opening formula, the same AI
+   cliches, repeated multi-word phrases, and matching sentence cadence. When sibling
+   articles exist (other `content/articles/<slug>/` written for the same cluster/series):
+   - Read the sibling `draft.md` files too, not just this one, and judge whether the set
+     sounds like distinct pieces or one template refilled.
+   - Run the mechanical cross-article linter over all sibling drafts and fold its findings
+     into the review:
+     ```bash
+     python skills/tech-blog-writer/scripts/cluster_voice_check.py \
+       --root <project-root> --slugs <slug-a>,<slug-b>,<slug-c> --write-report
+     ```
+     (Pass shared brand/entity/keyword terms via `--allow "term1,term2"` so they are not
+     counted as repetition.) Any `[ISSUE]` from this linter is a cross-article voice
+     collision and should drive the new dimension below toward a low score.
+4. Write `editorial_review.md` using this structure:
 
 ```markdown
 # Editorial Review
@@ -870,6 +886,7 @@ When invoked during the `editorial_review` phase inside `content/articles/<slug>
 | Structure | | |
 | Evidence use | | |
 | Tone | | |
+| Cross-article voice diversity | | (cluster only; N/A for standalone articles) |
 | CTA | | |
 | Publishability | | |
 
@@ -882,7 +899,11 @@ When invoked during the `editorial_review` phase inside `content/articles/<slug>
 Publishability: PASS
 ```
 
-Use `Publishability: FAIL` when the article should not ship yet; do not advance to `completed`.
+Score **Cross-article voice diversity** only when the article belongs to a cluster; write
+`N/A` for standalone pieces. Score it 1-2 when the cluster linter reports issues or the
+siblings share openers/cadence/phrasing; 4-5 when each article reads as its own voice.
+Use `Publishability: FAIL` when the article should not ship yet — including when this
+dimension scores 1-2 — and do not advance to `completed`.
 
 4. When publishability passes, advance lifecycle:
 
