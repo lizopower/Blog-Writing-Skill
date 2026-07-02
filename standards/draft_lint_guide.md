@@ -63,7 +63,7 @@ python scripts/blog-writing.py run --stage editorial_review --slug <slug>
 | `P0-data` | 数据信号不足（%、单位、表格、PDF/Sheet/Source 引用等启发式计数） |
 | `P0-placeholder` | 残留 `[TODO]`、`[TBD]`、`[待补充]` 等 |
 | `P0-units` | 混用 `°C` 与 `℃` |
-| `P0-punctuation` | em-dash 密度 > 30 / 1000 词 |
+| `P0-punctuation` | em-dash 密度 > 15 / 1000 词 |
 | `P0-final` | `--strict-final` 下缺少 TL;DR 或 FAQ |
 
 ### Warnings（建议修订）
@@ -76,12 +76,14 @@ python scripts/blog-writing.py run --stage editorial_review --slug <slug>
 | `AI-pattern` | 对比重构句式（如 “It's not X, it's Y”） |
 | `translationese` | 中式英语迁移短语（in recent years、more and more、plays an important role 等） |
 | `spelling` | 英式拼写（organise、colour、whilst 等，建议美式拼写） |
+| `grammar` | 不可数名词误加复数（equipments、feedbacks、informations 等，Rule 22 自查区） |
+| `definition` | 模糊定义开头（can be considered、may be regarded as、is a kind of 等，Rule 15：直接写 "X is Y"） |
 | `rhythm` | 句长节奏（Rule 1–3）：均值 >25 词、标准差 <6、≥4 句连续等长（±3 词）、全文无 <6 词短句。仅英文稿（中文字符占比 >20% 跳过）、≥10 句时启用 |
-| `punctuation` | em-dash 密度 > 15 / 1000 词；单句多 em-dash |
+| `punctuation` | em-dash 密度 > 6 / 1000 词（Rule 11：约每 200 词最多 1 个）；单句多 em-dash |
 | `sources` | 疑似无来源的定量表述（与 `validate_article.py` 同源逻辑） |
 | `section-balance` | 单节过短（<40 词）或过长（>1200 词） |
-| `structure` | 开篇段落句子数 > 3 |
-| `profile` | 未命中该类型的 section 关键词或 CTA 模式 |
+| `structure` | 开篇段落句子数 > 3；问句 H2 下首段以代词开头（Rule 16：须复现问题主体实体） |
+| `profile` | 未命中该类型的 section 关键词或 CTA 模式（CTA 同时匹配 profile 模式与通用 CTA 词表，且检查收尾章节） |
 | `units` | `KW` / `kw` 应写作 `kW` |
 
 ### Passes
@@ -211,7 +213,7 @@ flowchart LR
 | 同句多个 em-dash | 出现即 warn | warn | regex |
 | 连字符 / en-dash / em-dash 混用 | 与选定风格冲突 | warn | Vale substitution |
 
-**本项目现状**：**已实现** 密度与同句聚类；Jodie Cook 建议技术营销文**完全不用 em-dash**（见附录 B），与 B2B 技术文惯例可二选一，当前采用密度阈值而非零容忍。
+**本项目现状**：**已实现** 密度与同句聚类，阈值已对齐 writing_style_guide Rule 11（约每 200 词最多 1 个）：>6/千词 warn，>15/千词 issue。Jodie Cook 建议技术营销文**完全不用 em-dash**（见附录 B），与 B2B 技术文惯例可二选一，当前采用密度阈值而非零容忍。
 
 #### 5. 横切项（Cross-cutting）
 
@@ -247,8 +249,11 @@ flowchart LR
 
 | 检测项 | `check_draft` | `writing_style_guide` | `validate_article` |
 |--------|---------------|----------------------|-------------------|
-| 营销词 | warn (~17) | 更长列表 | — |
-| AI 套话 | warn (~40 英 + 12 中) | Rule 9–10 | — |
+| 营销词 | warn (~18) | 更长列表 | — |
+| AI 套话 | warn (~49 英 + 12 中) | Rule 9–10 | — |
+| 不可数名词复数 | warn（`[grammar]`，10 词） | Rule 22 自查区 | — |
+| 模糊定义开头 | warn（`[definition]`，5 模式） | Rule 15 | — |
+| 问句 H2 实体回声 | warn（`[structure]` 代词开头） | Rule 16 | — |
 | 对比句式 | warn（6 模式） | Rule 10 | — |
 | em-dash | warn/issue | Rule 11 | — |
 | hedge 词 | warn | Rule 禁词 | — |
@@ -317,4 +322,8 @@ Tavily 与 Winston AI 共识：**补检方向 = 句式正则 + 句长节奏 + em
 
 **问句开篇**：Imagine if, What if, Have you ever wondered, How can we
 
-**虚假直接**：Honestly?, 
+**虚假直接**：Honestly?, Here's the breakdown, Here's what nobody tells you
+
+**完全避免**：冗长铺垫、与主题无关的伦理段落、人人适用的空话、营销黑话、假深刻/假对立、无细节的 emotionally weighted 词
+
+完整列表见 [Jodie Cook ban-list](https://www.jodiecook.com/ban-list)。

@@ -444,7 +444,7 @@ These rules override default writing habits. Violation = rewrite.
 - American conventions: US spelling (color/optimize/analyze), serial comma, "July 2, 2026" dates, sentence-case headings, periods inside quotes; imperial alongside metric for US audiences.
 - Native connective tissue: sentence-initial And/But/So instead of However/Additionally/Therefore most of the time; contractions (it's, don't) as the default register; "That said," / "In practice," / "Here's the catch:".
 - Idiom bank (Rule 21a in the style guide): verified American B2B idioms (downtime spikes, headcount, dial in, workaround, know the drill, blast radius…) — max 1–2 per article, matched to the reader, never in definition sentences or FAQ answers, always alongside a number not instead of one.
-- No translationese (Chinese-transfer phrasing): "in recent years"→name the years; "more and more"→state the number; "plays an important role in"→say what it does; "pay attention to"→watch for; "as we all know"/"it is worth mentioning"→cut; "a double-edged sword"→state the trade-off. Self-check articles (a/the) and mass nouns (equipment/feedback take no plural). `check_draft` warns on these as `[translationese]` and `[spelling]`.
+- No translationese (Chinese-transfer phrasing): "in recent years"→name the years; "more and more"→state the number; "plays an important role in"→say what it does; "pay attention to"→watch for; "as we all know"/"it is worth mentioning"→cut; "a double-edged sword"→state the trade-off. Self-check articles (a/the) and mass nouns (equipment/feedback take no plural). `check_draft` warns on these as `[translationese]`, `[spelling]`, and `[grammar]` (mass-noun plurals); hedged definition openers and question-H2 pronoun answers surface as `[definition]` and `[structure]` (Rules 15–16).
 
 **Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–22 + Chinese tells) and `standards/aeo_geo_signals.md`.
 
@@ -991,4 +991,67 @@ Only generate if user explicitly requests:
 
 ---
 
-## Fi
+## Final Reminders
+
+1. **Numerical Governance**: Every number needs a source
+2. **No Fabrication**: If data doesn't exist, mark "To Verify"
+3. **Chart Integration**: Use real `chart_id` or TBD placeholders
+4. **Self-Audit**: Always include at end of article
+5. **Engineer Tone**: Direct, verifiable, no marketing fluff
+6. **Brand Alignment**: Don't exaggerate; state conditions
+7. **Clean Output**: Only `final_article.md` (no temp files)
+
+---
+
+## Success Criteria
+
+Your article is ready when:
+
+- ✅ Every quantitative claim has traceable source
+- ✅ All charts properly integrated (or gaps documented)
+- ✅ Follows outline structure (≤20 sections)
+- ✅ Includes all required components (SEO, FAQ, CTA, Self-Audit)
+- ✅ Engineer-to-engineer tone throughout
+- ✅ No marketing fluff or unsupported claims
+- ✅ Self-audit completed with honest assessment
+- ✅ Data gaps explicitly documented
+- ✅ Publication-ready Markdown format
+
+---
+
+## Post-Writing Validation (NEW - v2.0)
+
+After completing the article, trigger **fact-checker** skill for final validation:
+
+**Purpose**: Catch inconsistencies, contradictions, and untraceable claims before publication
+
+**Checks performed**:
+1. Numerical consistency (same metric = same value across sections)
+2. Unit consistency (°C vs °F, Ah vs kWh)
+3. Logical contradictions (conflicting statements)
+4. Source traceability (all claims traceable to context_pack)
+5. Range reasonableness (percentages 0-100%, temperatures > -273.15°C)
+
+**Example output**:
+```
+✅ Fact Check: PASSED (22/25 claims consistent)
+
+Issues Found:
+❌ Inconsistency: Section 1.1 vs 3.2
+   - Location 1: "87% performance retention under [extreme condition]"
+   - Location 2: "85% performance retention under [extreme condition]"
+   - Recommendation: Use 87% (source: test_report.pdf:Page 12)
+```
+
+---
+
+**You are now ready to transform technical outlines into publication-ready articles that engineering decision-makers trust.**
+
+**Remember**: You write for engineers who will fact-check every claim. Precision and traceability are non-negotiable.
+
+---
+
+*Tech-Blog-Writer Skill v1.0.0*  
+*Industry: Domain-agnostic — supply your own industry context*  
+*Output: Publication-Ready Technical Content*  
+*Governance: Strict Numerical Validation + Source Attribution*

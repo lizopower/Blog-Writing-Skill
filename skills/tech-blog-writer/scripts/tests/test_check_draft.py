@@ -152,6 +152,56 @@ class CheckDraftTests(unittest.TestCase):
         result = check_draft(draft, article_type="blog")
         self.assertFalse(any("rhythm" in w for w in result.warns))
 
+    def test_mass_noun_plural_warns(self) -> None:
+        draft = _sample_draft() + "\n\nThe equipments and feedbacks were logged.\n"
+        result = check_draft(draft, article_type="blog")
+        grammar = [w for w in result.warns if "[grammar]" in w]
+        self.assertEqual(len(grammar), 2)
+
+    def test_mass_noun_singular_clean(self) -> None:
+        draft = _sample_draft() + "\n\nThe equipment and feedback were logged.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("[grammar]" in w for w in result.warns))
+
+    def test_hedged_definition_warns(self) -> None:
+        draft = _sample_draft() + "\n\nA BMS can be considered a safety layer.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("[definition]" in w for w in result.warns))
+
+    def test_question_h2_pronoun_opener_warns(self) -> None:
+        draft = _sample_draft() + "\n\n## What is a BMS?\n\nIt is a battery management system that monitors cells.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("Rule 16" in w for w in result.warns))
+
+    def test_question_h2_entity_echo_clean(self) -> None:
+        draft = _sample_draft() + "\n\n## What is a BMS?\n\nA BMS is a battery management system that monitors cells.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("Rule 16" in w for w in result.warns))
+
+    def test_generic_cta_in_closing_section_passes(self) -> None:
+        draft = _sample_draft().replace(
+            "## Next Steps\n\nContact the team to pilot on your line.",
+            "## Closing\n\nRun the numbers for your site before you commit.",
+        )
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("CTA" in w for w in result.warns))
+
+    def test_missing_cta_still_warns(self) -> None:
+        draft = _sample_draft().replace(
+            "## Next Steps\n\nContact the team to pilot on your line.",
+            "## Closing\n\nThe results speak for themselves.",
+        )
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("CTA" in w for w in result.warns))
+
+    def test_em_dash_rule11_density_warns(self) -> None:
+        # ~10 em-dashes over ~400 words = 25/1000: above warn (6), above issue (15)
+        filler = ("word " * 40 + "— aside. ") * 10
+        draft = _sample_draft() + "\n\n" + filler
+        result = check_draft(draft, article_type="blog")
+        combined = result.warns + result.issues
+        self.assertTrue(any("em-dash density" in item for item in combined))
+
     def test_case_study_requires_more_data(self) -> None:
         minimal = "# Title\n\n## Challenge\n\nOne line only.\n\n## Solution\n\nAnother.\n"
         result = check_draft(minimal, article_type="case-study")

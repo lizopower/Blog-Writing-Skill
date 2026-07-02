@@ -331,4 +331,6 @@ Warnings:
 ## Important Notes
 
 - **Role Clarity**: This skill is an orchestrator/router ONLY. It coordinates work but does not perform content generation.
-- *
+- **Human Review**: The Context Pack output is designed for human review before article writing begins.
+- **Extensibility**: If a Parse skill is not available, use local file-reading/parsing tools where possible. Online research still requires Tavily and must not fall back to generic web search.
+- **Quality Control**: Prioritize source attribution and risk flagging to ensure downstream content is trustworthy.

@@ -28,6 +28,10 @@ from _article_type_profiles import (
     AI_TERM_ALLOWLIST_PATTERNS,
     ARTICLE_TYPE_PROFILES,
     CONTRAST_REFRAME_PATTERNS,
+    CTA_GENERIC_PATTERNS,
+    DEFINITION_HEDGE_PATTERNS,
+    MASS_NOUN_PLURALS,
+    PRONOUN_OPENER,
     EM_DASH_ISSUE_PER_1000_WORDS,
     EM_DASH_WARN_PER_1000_WORDS,
     HEDGE_WORDS,
@@ -410,6 +414,26 @@ def check_draft(
         if pattern.search(lint_text):
             result.warns.append(f"[spelling] British spelling: {suggestion}")
 
+    for pattern, suggestion in MASS_NOUN_PLURALS:
+        if pattern.search(lint_text):
+            result.warns.append(f"[grammar] mass noun pluralized: {suggestion} (Rule 22)")
+
+    for pattern, label in DEFINITION_HEDGE_PATTERNS:
+        if pattern.search(lint_text):
+            result.warns.append(
+                f"[definition] hedged definition opener: {label!r} (Rule 15: write 'X is Y')"
+            )
+
+    for title, text in sections:
+        if not title.rstrip().endswith(("?", "？")):
+            continue
+        first_para = _opening_paragraph(text)
+        if first_para and PRONOUN_OPENER.match(first_para):
+            result.warns.append(
+                f"[structure] answer under {title!r} opens with a pronoun "
+                "(Rule 16: repeat the question's subject entity)"
+            )
+
     _check_rhythm(result, lint_lines, body)
 
     for pattern, label in CONTRAST_REFRAME_PATTERNS:
@@ -465,8 +489,15 @@ def check_draft(
             result.passes.append(f"[OK] opening block sentence count: {opening_sentences}")
 
     cta_patterns = profile.get("cta_patterns") or []
-    if cta_patterns and not any(re.search(p, body, re.IGNORECASE) for p in cta_patterns):
-        result.warns.append(f"[profile] no CTA pattern matched for {article_type}")
+    if cta_patterns:
+        closing = sections[-1][1] if sections else body
+        closing_hit = any(
+            re.search(p, closing, re.IGNORECASE | re.MULTILINE)
+            for p in cta_patterns + CTA_GENERIC_PATTERNS
+        )
+        body_hit = any(re.search(p, body, re.IGNORECASE) for p in cta_patterns)
+        if not closing_hit and not body_hit:
+            result.warns.append(f"[profile] no CTA pattern matched for {article_type}")
 
     if strict_final:
         if "TL;DR" not in body and "tl;dr" not in body.lower():
@@ -545,3 +576,4 @@ def main() -> int:
 
 if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())
+

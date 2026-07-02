@@ -489,4 +489,59 @@ When the article is in Chinese, cut the machine-typical phrasing the same way:
 - 列表腔：首先……其次……最后 / 一方面……另一方面（机械套用时）→ 自然过渡或直接陈述。
 - 空对仗：不仅……而且 / 不但……还（堆砌时）→ 拆成短句。
 - 万能黑话：赋能 / 抓手 / 闭环 / 打法 / 一站式 / 无缝 / 强大 → 换成具体动作或数字。
-- 虚词
+- 虚词冗余：众所周知 / 毋庸置疑 / 不言而喻 → 删，并给出证据。
+
+### What "human" does NOT mean
+
+This is engineer-to-engineer B2B writing. "Removing AI flavor" means **more specificity, not artificial messiness**. Some popular "humanize to beat AI detectors" advice is wrong for this skill — explicitly reject it:
+
+- ✅ Do: concrete numbers, named mechanisms, real test conditions, one clear idea per sentence, a stated point of view backed by the context_pack.
+- ❌ Do NOT: insert fake typos, deliberate grammar errors, run-ons, filler interjections, slang, or hedging to dodge AI detectors. Do NOT add invented anecdotes or a chatty "over coffee" tone. That destroys B2B credibility, can fabricate unsourced claims, and is not the goal. Authenticity comes from real data and real reasoning, not from sounding sloppy or casual.
+
+### Rhythm Examples
+
+**❌ AI-typical (monotone rhythm)**:
+> The [product unit] maintains 90% [performance metric] at [extreme threshold]. The [control system] provides six layers of protection. The [core components] passed all safety tests. The [product unit] weighs approximately [weight value].
+
+**✅ Human rhythm (varied)**:
+> At [extreme threshold], this [product unit] holds 90% [performance metric]. That's the headline. The [control system] backs it up with six protection layers, and every [core component] cleared safety testing — [test 1], [test 2], [test 3], the full gauntlet. Weight sits at [weight value].
+
+**❌ AI-typical (abstract + banned words)**:
+> This solution is very reliable and essentially provides really good performance in basically all extreme weather conditions.
+
+**✅ Human (concrete + no banned words)**:
+> This [product unit] delivers [N]+ usable [output unit] at [extreme threshold] and survives [N] [operating cycles] before hitting 80% [performance metric].
+
+---
+
+### ✅ Correct Tone Examples
+
+1. **Authoritative without arrogance**:
+   > "[Variant B] wins for most [target deployment] applications."
+
+2. **Precise without being academic**:
+   > "At [threshold], [Variant A] retains 70-80% vs [Variant B]'s 50-60%."
+
+3. **Honest about limitations**:
+   > "Below [extreme threshold], or for applications with short expected lifespans, [Variant A] becomes a valid consideration."
+
+4. **Practical with real consequences**:
+   > "Get this wrong, and even the best [core components] and [control system] won't deliver expected performance."
+
+### ❌ Wrong Tone Examples
+
+1. **Too academic**:
+   > "Research indicates that [Variant B] may potentially offer advantages in certain scenarios."
+
+2. **Too marketing**:
+   > "Our revolutionary [product category] delivers unmatched performance!"
+
+3. **Too vague**:
+   > "Performance varies depending on conditions."
+
+4. **Too passive**:
+   > "It should be noted that consideration should be given to..."
+
+---
+
+*Use this guide when writing technical blog content to maintain consistent voice and style.*

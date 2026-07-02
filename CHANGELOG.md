@@ -8,6 +8,20 @@ follows the release-version policy in [`VERSIONING.md`](VERSIONING.md): the
 
 For history predating this file, see the git log.
 
+## [4.3.0]
+
+### Added
+- `check_draft.py` new warn checks closing gaps found in an end-to-end de-AI-flavor test:
+  - `[grammar]` mass/count-noun errors (equipments, feedbacks, informations, …) per writing_style_guide Rule 22.
+  - `[definition]` hedged definition openers ("can be considered", "may be regarded as", "is a kind of", …) per Rule 15.
+  - `[structure]` Rule 16 entity-echo check: the first paragraph under a question H2 must not open with a pronoun (It/This/That/These/They/该/它/这).
+- Rule 9 vocabulary added to `AI_CLICHES_EN`: pivotal, crucial, multifaceted, paradigm shift, symphony. Added "unprecedented" to `MARKETING_WORDS`.
+- 8 new unit tests covering the checks above.
+
+### Changed
+- Em-dash density thresholds aligned with Rule 11 (max ~1 per 200 words): warn above 6/1000 words (was 15), issue above 15/1000 (was 30).
+- CTA check: profile `cta_patterns` plus a new generic CTA list (`CTA_GENERIC_PATTERNS`) are now also matched against the final H2 section, so action-oriented closings ("run the numbers", "start with", "reach out", …) no longer false-warn. Whole-body profile matching is kept for backward compatibility.
+
 ## [4.2.0]
 
 ### Added

@@ -22,6 +22,9 @@ ARTICLE_TYPE_PROFILES: dict[str, dict[str, Any]] = {
         "section_keywords": [],
         "cta_patterns": [r"next steps", r"contact", r"learn more", r"get started"],
     },
+    # NOTE: profile cta_patterns are matched against the whole body (legacy) AND,
+    # together with CTA_GENERIC_PATTERNS, against the closing section only.
+
     "how-to": {
         "label": "How-to guide",
         "min_h2": 4,
@@ -74,6 +77,7 @@ MARKETING_WORDS = [
     "supercharge",
     "unlock",
     "elevate",
+    "unprecedented",
 ]
 
 HEDGE_WORDS = [
@@ -131,6 +135,11 @@ AI_CLICHES_EN = [
     "meticulous",
     "nuanced",
     "intricate",
+    "pivotal",
+    "crucial",
+    "multifaceted",
+    "paradigm shift",
+    "symphony",
     "furthermore",
     "moreover",
     "consequently",
@@ -183,6 +192,57 @@ TRANSLATIONESE_PHRASES = [
     "a double-edged sword",
     "give full play to",
     "vigorously promote",
+]
+
+# Mass/count-noun errors typical of Chinese-transfer English (writing_style_guide
+# Rule 22 self-check zones). Warn only; "researches"/"trainings" omitted (valid verbs/plurals).
+MASS_NOUN_PLURALS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\bequipments\b", re.IGNORECASE), "equipments -> equipment"),
+    (re.compile(r"\bfeedbacks\b", re.IGNORECASE), "feedbacks -> feedback"),
+    (re.compile(r"\binformations\b", re.IGNORECASE), "informations -> information"),
+    (re.compile(r"\badvices\b", re.IGNORECASE), "advices -> advice"),
+    (re.compile(r"\bsoftwares\b", re.IGNORECASE), "softwares -> software"),
+    (re.compile(r"\bhardwares\b", re.IGNORECASE), "hardwares -> hardware"),
+    (re.compile(r"\bevidences\b", re.IGNORECASE), "evidences -> evidence"),
+    (re.compile(r"\bknowledges\b", re.IGNORECASE), "knowledges -> knowledge"),
+    (re.compile(r"\bfurnitures\b", re.IGNORECASE), "furnitures -> furniture"),
+    (re.compile(r"\bmachineries\b", re.IGNORECASE), "machineries -> machinery"),
+]
+
+# Hedged definition openers (writing_style_guide Rule 15: definitions go straight
+# to the bridge verb — "X is Y"). Warn only.
+DEFINITION_HEDGE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\bcan be considered\b", re.IGNORECASE), "can be considered"),
+    (re.compile(r"\b(?:may|can) be regarded as\b", re.IGNORECASE), "may/can be regarded as"),
+    (re.compile(r"\bcould be described as\b", re.IGNORECASE), "could be described as"),
+    (re.compile(r"\bcan be thought of as\b", re.IGNORECASE), "can be thought of as"),
+    (re.compile(r"\bis a kind of\b", re.IGNORECASE), "is a kind of"),
+]
+
+# Pronoun openers that violate entity echo (writing_style_guide Rule 16): the first
+# sentence answering a question H2 must repeat the question's subject entity.
+PRONOUN_OPENER = re.compile(r"^(?:It|This|That|These|They|该|它|这)\b")
+
+# Generic closing-CTA signals, matched only against the final H2 section
+# (in addition to the per-profile cta_patterns).
+CTA_GENERIC_PATTERNS = [
+    r"next steps?",
+    r"contact",
+    r"learn more",
+    r"get started",
+    r"\btry\b",
+    r"start with",
+    r"start by",
+    r"download",
+    r"subscribe",
+    r"reach out",
+    r"talk to",
+    r"book a",
+    r"schedule",
+    r"sign up",
+    r"run the numbers",
+    r"request",
+    r"^spec\b",
 ]
 
 # American English enforcement: flag British spellings (warn only).
@@ -286,8 +346,10 @@ SOURCE_PATTERNS = [
     re.compile(r"\[[^\]]+\]\([^)]+\)"),
 ]
 
-EM_DASH_WARN_PER_1000_WORDS = 15
-EM_DASH_ISSUE_PER_1000_WORDS = 30
+# Rule 11: at most one em-dash per ~200 words = 5/1000. Warn just above that;
+# issue at 3x the budget.
+EM_DASH_WARN_PER_1000_WORDS = 6
+EM_DASH_ISSUE_PER_1000_WORDS = 15
 OPENING_MAX_SENTENCES = 3
 
 # Rhythm thresholds (writing_style_guide Rules 1-3; draft_lint_guide appendix A.2).
@@ -300,3 +362,4 @@ RHYTHM_MONOTONE_BAND = 3
 RHYTHM_PUNCH_MAX_WORDS = 6
 RHYTHM_PUNCH_MIN_BODY_WORDS = 300
 RHYTHM_MAX_ZH_RATIO = 0.2
+
