@@ -174,6 +174,20 @@ If an exemplar contains a useful claim, that claim must appear separately in `co
 
 ---
 
+### 1b. Default Voice Exemplars (when `style_exemplars` is empty)
+
+Exemplars beat rules: imitating verified native prose produces native cadence more reliably than following constraints. If the article is in English and `context_pack.style_exemplars` is empty or missing, load defaults from the project reference corpus **before drafting**:
+
+0. `assets/cadence_card.md` — ALWAYS read first (one page; verbatim native micro-excerpts grouped by move). This is the minimum calibration even when full exemplars are skipped.
+1. `content/reference/american-voice/README.md` — read next when available; it lists eight verified exemplars and the transfer rules (what carries into B2B prose, what is oratory-only).
+2. Pick 2–3 exemplars matched to the task: `business-prose/buffett-1989-letter.md` for any B2B article (closest register match); `speeches/mcraven-ut-austin-2014.md` for how-to; `speeches/feynman-cargo-cult-1974.md` for engineer-to-engineer explainers; genre-matched pieces from `content/reference/<topic>/<articleType>/` (e.g. `industrial-b2b/`) when they exist.
+3. **Match the cadence, not the content**: sentence-length variance, verb plainness, punch-sentence placement, register mixing. All §1a prohibitions apply — these files are style-only, never sources. When in doubt, run `audit_near_duplicate.py`.
+4. Treat each exemplar file's "Transfer notes" as binding guardrails (e.g. McRaven's refrain and JFK's antithesis do NOT transfer).
+
+If the reference corpus is absent from the project, proceed with the style guide alone and note it in the Self-Audit.
+
+---
+
 ### 2. No New Data Beyond Context Pack
 
 **Prohibited**:
@@ -263,7 +277,7 @@ For each section:
 1. Confirm the section follows the outline's stated intent and word budget.
 2. Verify every factual claim comes from `context_pack.key_claims`, `extracted_tables`, `glossary`, or approved source-backed notes.
 3. Apply the style guide and anti-AI checklist for rhythm, specificity, and banned phrasing.
-4. Use `style_exemplars` only for voice and structure, never for claims.
+4. Use `style_exemplars` (or the §1b default exemplars) only for voice and structure, never for claims. Before each section, briefly re-check your cadence against one exemplar: is the sentence-length variance and verb plainness comparable?
 5. Mention a `core_offerings` item only when it answers the current reader problem and its `source_ref` supports the value claim.
 6. Use `author_experience_notes` only as supplied; do not invent first-person lessons.
 
@@ -285,6 +299,7 @@ Your `final_article.md` MUST include:
 8. **Self-Audit Section**:
    - High-risk statements (may exaggerate/lack conditions/insufficient data)
    - Assumptions / To Verify (explicit data gaps)
+   - Voice calibration (English articles): which exemplars/cadence card were read, plus ONE concrete cadence observation applied to this draft (e.g. "kept punch sentences after long setups per Feynman excerpt"). A generic statement ("I matched the style") does not satisfy this item.
 9. **Optional**: JSON-LD FAQ Schema (only if user explicitly requests)
 
 ---
@@ -390,13 +405,13 @@ These rules override default writing habits. Violation = rewrite.
 
 **Rhythm**:
 - Max two consecutive sentences of similar length. Then break the pattern.
-- Every paragraph needs one sentence under five words.
-- Every fourth paragraph: one sentence only.
+- Short punch sentences (under ~6 words) a few times per section — at irregular intervals, never one-per-paragraph on a fixed beat.
+- A few single-sentence paragraphs per article at natural emphasis points — never on a fixed schedule.
 
 **Vocabulary**:
 - **Banned words**: very, really, just, actually, basically, essentially
 - Replace abstract nouns with concrete nouns (not "reliability" — state the failure rate)
-- One adjective per sentence maximum
+- Few adjectives: one strong noun/number beats stacked modifiers; two adjectives only if both carry information; never three
 
 **Structure**:
 - Opening paragraph: three sentences max
@@ -424,7 +439,14 @@ These rules override default writing habits. Violation = rewrite.
 - Named entities only from the context_pack — no invented brands, no stuffing for density.
 - Stats carry source name + year + sample size; prefer primary over secondary, else downgrade confidence.
 
-**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–18 + Chinese tells) and `standards/aeo_geo_signals.md`.
+**Native American English (Rules 19–22)** — anti-AI rules remove robotic flavor; these add native fluency (English articles only):
+- Prefer phrasal/Anglo-Saxon verbs when precision is equal: figure out (not ascertain), start (not commence), show (not demonstrate), about (not approximately), to (not "in order to"), before (not "prior to"). Keep genuine technical terms (configure, deploy, calibrate).
+- American conventions: US spelling (color/optimize/analyze), serial comma, "July 2, 2026" dates, sentence-case headings, periods inside quotes; imperial alongside metric for US audiences.
+- Native connective tissue: sentence-initial And/But/So instead of However/Additionally/Therefore most of the time; contractions (it's, don't) as the default register; "That said," / "In practice," / "Here's the catch:".
+- Idiom bank (Rule 21a in the style guide): verified American B2B idioms (downtime spikes, headcount, dial in, workaround, know the drill, blast radius…) — max 1–2 per article, matched to the reader, never in definition sentences or FAQ answers, always alongside a number not instead of one.
+- No translationese (Chinese-transfer phrasing): "in recent years"→name the years; "more and more"→state the number; "plays an important role in"→say what it does; "pay attention to"→watch for; "as we all know"/"it is worth mentioning"→cut; "a double-edged sword"→state the trade-off. Self-check articles (a/the) and mass nouns (equipment/feedback take no plural). `check_draft` warns on these as `[translationese]` and `[spelling]`.
+
+**Full reference**: See `assets/writing_style_guide.md` → "Anti-AI Writing Constraints" (Rules 1–22 + Chinese tells) and `standards/aeo_geo_signals.md`.
 
 ### Formatting
 - ✅ Use bulleted/numbered lists for complex information
@@ -748,7 +770,7 @@ Before finalizing `final_article.md`, verify:
 - [ ] Lists and tables for complex info
 - [ ] **Bold** used for key conclusions
 
-### Anti-AI Tone (Rules 1–18)
+### Anti-AI Tone & Native Fluency (Rules 1–22)
 - [ ] No banned filler words (very/really/just/actually/basically/essentially)
 - [ ] No corporate-AI buzzwords (leverage/robust/seamless/delve/harness/realm/transformative…) except genuine technical terms
 - [ ] No filler signposts or academic connectives ("It's worth noting", "When it comes to", furthermore/moreover/consequently/thus/hence) and no empty antithesis ("not just X, it's Y")
@@ -760,6 +782,9 @@ Before finalizing `final_article.md`, verify:
 - [ ] Named entities all trace to context_pack (no invented brands, no density stuffing)
 - [ ] Stats carry source + year + sample size; primary preferred over secondary
 - [ ] Specificity over mess: no fake typos, slang, invented anecdotes, or casual tone to dodge detectors
+- [ ] (English) Phrasal verbs over Latinate defaults; contractions used; And/But/So over However/Additionally
+- [ ] (English) US spelling + serial comma + sentence-case headings; no `[spelling]` warns from check_draft
+- [ ] (English) No translationese ("in recent years", "more and more", "plays an important role", "pay attention to"…); no `[translationese]` warns from check_draft
 
 ### Brand Alignment
 - [ ] No exaggeration of capabilities
@@ -966,67 +991,4 @@ Only generate if user explicitly requests:
 
 ---
 
-## Final Reminders
-
-1. **Numerical Governance**: Every number needs a source
-2. **No Fabrication**: If data doesn't exist, mark "To Verify"
-3. **Chart Integration**: Use real `chart_id` or TBD placeholders
-4. **Self-Audit**: Always include at end of article
-5. **Engineer Tone**: Direct, verifiable, no marketing fluff
-6. **Brand Alignment**: Don't exaggerate; state conditions
-7. **Clean Output**: Only `final_article.md` (no temp files)
-
----
-
-## Success Criteria
-
-Your article is ready when:
-
-- ✅ Every quantitative claim has traceable source
-- ✅ All charts properly integrated (or gaps documented)
-- ✅ Follows outline structure (≤20 sections)
-- ✅ Includes all required components (SEO, FAQ, CTA, Self-Audit)
-- ✅ Engineer-to-engineer tone throughout
-- ✅ No marketing fluff or unsupported claims
-- ✅ Self-audit completed with honest assessment
-- ✅ Data gaps explicitly documented
-- ✅ Publication-ready Markdown format
-
----
-
-## Post-Writing Validation (NEW - v2.0)
-
-After completing the article, trigger **fact-checker** skill for final validation:
-
-**Purpose**: Catch inconsistencies, contradictions, and untraceable claims before publication
-
-**Checks performed**:
-1. Numerical consistency (same metric = same value across sections)
-2. Unit consistency (°C vs °F, Ah vs kWh)
-3. Logical contradictions (conflicting statements)
-4. Source traceability (all claims traceable to context_pack)
-5. Range reasonableness (percentages 0-100%, temperatures > -273.15°C)
-
-**Example output**:
-```
-✅ Fact Check: PASSED (22/25 claims consistent)
-
-Issues Found:
-❌ Inconsistency: Section 1.1 vs 3.2
-   - Location 1: "87% performance retention under [extreme condition]"
-   - Location 2: "85% performance retention under [extreme condition]"
-   - Recommendation: Use 87% (source: test_report.pdf:Page 12)
-```
-
----
-
-**You are now ready to transform technical outlines into publication-ready articles that engineering decision-makers trust.**
-
-**Remember**: You write for engineers who will fact-check every claim. Precision and traceability are non-negotiable.
-
----
-
-*Tech-Blog-Writer Skill v1.0.0*  
-*Industry: Domain-agnostic — supply your own industry context*  
-*Output: Publication-Ready Technical Content*  
-*Governance: Strict Numerical Validation + Source Attribution*
+## Fi

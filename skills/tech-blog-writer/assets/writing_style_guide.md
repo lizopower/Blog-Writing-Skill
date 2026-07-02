@@ -273,24 +273,21 @@ These constraints eliminate robotic patterns. Every rule is non-negotiable.
 
 Break the pattern. Mix a three-word punch with a twenty-word explanation. Then drop a medium sentence between them. Monotone rhythm numbs readers — they forget what they read, why they started, and what year it is.
 
-**Rule 2**: Every paragraph must contain at least one sentence shorter than five words.
+**Rule 2**: Use short sentences (under ~6 words) as regular punctuation — a few per section, where the content earns them.
 
-Examples of qualifying short sentences:
-- "Here's why."
-- "It failed."
-- "Check the data."
-- "Not anymore."
-- "That matters."
+Examples: "Here's why." / "It failed." / "Check the data." / "Not anymore."
 
-**Rule 3**: Every fourth paragraph should contain only one sentence.
+Do **not** apply this mechanically (one per paragraph, every paragraph). A fixed cadence of punchy fragments reads as gimmicky aphorism-speak — itself a tell. Native writers vary the interval.
 
-This creates breathing room. A single-sentence paragraph forces the reader to pause, absorb, and reset before the next block of information.
+**Rule 3**: Use occasional single-sentence paragraphs for emphasis.
+
+This creates breathing room. A single-sentence paragraph forces the reader to pause, absorb, and reset. A few per article is right; never on a fixed schedule (e.g. "every fourth paragraph") — predictable rhythm is machine rhythm.
 
 **Self-Check Method**:
 1. After writing each section, count sentence lengths
 2. Flag any run of three+ sentences within ±5 words of each other
-3. Verify each paragraph has its sub-five-word sentence
-4. Count paragraphs — every fourth one should stand alone
+3. Check each section has at least one short punch sentence — and that they don't land on a predictable beat
+4. Check the article has a few single-sentence paragraphs at natural emphasis points
 
 ### Vocabulary Constraints
 
@@ -313,9 +310,9 @@ This creates breathing room. A single-sentence paragraph forces the reader to pa
 | "quality" | describe the test result |
 | "solution" | name the specific product or method |
 
-**Rule 5**: Maximum one adjective per sentence.
+**Rule 5**: Default to few adjectives — let nouns and numbers carry weight.
 
-Not "the robust, reliable, high-performance [product unit]." Pick one. "The [N]-cycle [product unit]." Let the noun carry weight.
+Not "the robust, reliable, high-performance [product unit]." Pick one: "The [N]-cycle [product unit]." Two adjectives are fine when both carry real information ("a sealed 280 Ah prismatic cell"). Never stack three, and never pad with evaluative adjectives (great, powerful, impressive).
 
 ### Structure Constraints
 
@@ -395,6 +392,94 @@ Rules 15–18 come from AEO/GEO research on what makes content quotable by AI as
 
 **Rule 18** — Primary-source attribution. State a statistic as: source name + year + sample size + subject ("Semrush's 2026 analysis of 337,785 URLs", not "recent research"). Prefer the primary study over a blog that cites it. If name, year, or sample size is missing, mark the claim medium/low confidence and hand it to `fact-checker`.
 
+### Native American English — Positive Signals (Rules 19–22)
+
+Rules 1–18 are subtractive: they remove AI flavor. Removing AI tells does not by itself produce native-sounding English — prose can be rule-clean and still read like a careful non-native writer. Rules 19–22 add the positive signals of American native fluency. They apply only to English-language articles.
+
+**Rule 19 — Prefer phrasal and Anglo-Saxon verbs over Latinate verbs** when precision is equal. Native technical writing leans on short verbs; ESL and AI writing lean Latinate.
+
+| ❌ Latinate default | ✅ Native default |
+|---|---|
+| ascertain / determine whether | figure out / check whether |
+| commence / initiate | start / kick off |
+| terminate | end / stop / kill (a process) |
+| demonstrate | show |
+| sufficient / insufficient | enough / not enough |
+| purchase | buy |
+| approximately | about / roughly |
+| attempt to | try to |
+| in order to | to |
+| prior to | before |
+| subsequently | then / later |
+
+Keep Latinate words that ARE the technical term (configure, provision, deploy, calibrate, terminate a contract). This is about defaults, not bans.
+
+**Rule 20 — American conventions, consistently.** American spelling (color, optimize, analyze, center, catalog); the serial comma; dates as "July 2, 2026"; sentence case for headings; periods and commas inside closing quotes. For US-facing deployment content, give imperial alongside metric on first use: "−40°C (−40°F)", "30 m (about 100 ft)".
+
+**Rule 21 — Natural connective tissue.** Sentence-initial "And", "But", "So" are correct and native — use them instead of "However," / "Additionally," / "Therefore," most of the time. Contractions (it's, don't, you'll, that's) are the native default in blog prose; write them out only for emphasis ("do not skip this test"). Good transitions: "That said," "Even so," "In practice," "Here's the catch:", "The short version:". Native register is conversational precision — plain syntax carrying exact numbers — not formality.
+
+**Rule 21a — American B2B idiom bank (verified, optional).** Real idioms from native industrial/B2B writing. Each is an *option* when the register fits — never a quota.
+
+*Operations & buyer-pain vocabulary* (fits fleet managers, plant/warehouse ops, procurement):
+
+| Idiom | Meaning / use |
+|---|---|
+| downtime spikes | 停机时间激增 — "Capacity drops and downtime spikes." |
+| headcount | 人头/编制 — "without adding a single headcount" |
+| out the door | 发货/出库 — "orders out the door in under 24 hours" |
+| the math doesn't work / gets brutal | 这笔账算不过来 — cost-pressure framing |
+| floor staff / shop-floor | 一线员工/车间现场 — "shop-floor realities" |
+| your investment (for capital equipment) | 大宗设备称资产而非产品 |
+| burn out (people) / wear out (equipment) | 人是 burn out,设备是 wear out |
+
+*Engineer verbs & discourse moves* (fits engineer-to-engineer content):
+
+| Idiom | Meaning / use |
+|---|---|
+| dial in (parameters, a process) | 精调到位 — "dial in the parameters" |
+| know the drill | 你懂的/老流程了 — shared-experience opener |
+| right off the bat | 一上来/立刻 — "flags design issues right off the bat" |
+| workaround | 绕行方案 — more concrete than "solution" |
+| bottleneck | 瓶颈 — name WHICH step is the bottleneck |
+| blast radius (IT/security) | 故障波及面 |
+| signal vs. noise | 有效信息 vs 噪音 |
+| fighting a losing battle | 打注定输的仗 — for a doomed approach |
+| flip the script | 彻底反转 — sparingly; marketing-adjacent |
+| take you a long way | 能帮你走很远 — "These tips will take you a long way." |
+| bring X to a grinding halt | 让项目/产线嘎然而止 — for a blocking failure |
+| treat X as an afterthought | 把关键事项当事后补救 — critiques late-stage planning |
+| can't [verb] your way out of | 靠 X 补救不了先天缺陷 — "you can't tune your way out of a bad sensor choice" |
+| de-risk | 降风险 — compliance/procurement register (medical, finance, aero) |
+| rack up (costs, penalties) | 费用迅速累积 — "racking up daily storage penalties" |
+| line item / flag | 账单明细 / 标记提醒 — "a line item nobody flagged" |
+
+*Guardrails* (violating these recreates the AI tell in the opposite direction):
+1. **Max 1–2 idioms per article.** Stacked idioms read as an AI imitating a human.
+2. **Match the reader.** Ops idioms for ops audiences, engineer idioms for engineers. A CTO whitepaper gets fewer than a fleet-manager blog post.
+3. **Never in definition sentences or FAQ answers** — those must stay literal for citability (Rules 15–16).
+4. **Never force one in during editing.** If it wasn't natural in drafting, it won't be natural in revision.
+5. Idioms are seasoning on top of specificity, not a substitute for it. "Downtime spikes" still needs the number: "downtime spikes — 11 hours lost per line per month."
+
+**Rule 22 — Kill translationese.** These phrasings are grammatical but mark the writer as non-native (Chinese-transfer patterns; `check_draft` warns on them as `[translationese]`):
+
+| ❌ Translationese | ✅ Native fix |
+|---|---|
+| In recent years, … | Name the years: "Since 2023, …" |
+| more and more X | "increasingly" — or state the number |
+| X plays an important role in Y | Say what X does: "X cuts Y by 30%" |
+| pay attention to X | watch for / check / mind X |
+| with the development of X | Cut, or name the specific change |
+| as we all know / as is known to all | Cut |
+| it is worth mentioning that | Cut — state it |
+| last but not least | finally — or nothing |
+| a double-edged sword | State the actual trade-off |
+| under the background of | given / amid — or cut |
+| to some extent | Quantify it, or cut |
+| the above-mentioned X | this X / that X |
+| give full play to | use / get the most out of |
+
+Also self-check the two grammar zones where Chinese-transfer errors cluster: articles (a/an/the — "the accuracy improves" → "accuracy improves" for general claims; "install BMS" → "install a BMS" for countables) and mass/count nouns (equipment, feedback, research take no plural).
+
 ### Chinese (中文) AI tells
 
 When the article is in Chinese, cut the machine-typical phrasing the same way:
@@ -404,59 +489,4 @@ When the article is in Chinese, cut the machine-typical phrasing the same way:
 - 列表腔：首先……其次……最后 / 一方面……另一方面（机械套用时）→ 自然过渡或直接陈述。
 - 空对仗：不仅……而且 / 不但……还（堆砌时）→ 拆成短句。
 - 万能黑话：赋能 / 抓手 / 闭环 / 打法 / 一站式 / 无缝 / 强大 → 换成具体动作或数字。
-- 虚词冗余：众所周知 / 毋庸置疑 / 不言而喻 → 删，并给出证据。
-
-### What "human" does NOT mean
-
-This is engineer-to-engineer B2B writing. "Removing AI flavor" means **more specificity, not artificial messiness**. Some popular "humanize to beat AI detectors" advice is wrong for this skill — explicitly reject it:
-
-- ✅ Do: concrete numbers, named mechanisms, real test conditions, one clear idea per sentence, a stated point of view backed by the context_pack.
-- ❌ Do NOT: insert fake typos, deliberate grammar errors, run-ons, filler interjections, slang, or hedging to dodge AI detectors. Do NOT add invented anecdotes or a chatty "over coffee" tone. That destroys B2B credibility, can fabricate unsourced claims, and is not the goal. Authenticity comes from real data and real reasoning, not from sounding sloppy or casual.
-
-### Rhythm Examples
-
-**❌ AI-typical (monotone rhythm)**:
-> The [product unit] maintains 90% [performance metric] at [extreme threshold]. The [control system] provides six layers of protection. The [core components] passed all safety tests. The [product unit] weighs approximately [weight value].
-
-**✅ Human rhythm (varied)**:
-> At [extreme threshold], this [product unit] holds 90% [performance metric]. That's the headline. The [control system] backs it up with six protection layers, and every [core component] cleared safety testing — [test 1], [test 2], [test 3], the full gauntlet. Weight sits at [weight value].
-
-**❌ AI-typical (abstract + banned words)**:
-> This solution is very reliable and essentially provides really good performance in basically all extreme weather conditions.
-
-**✅ Human (concrete + no banned words)**:
-> This [product unit] delivers [N]+ usable [output unit] at [extreme threshold] and survives [N] [operating cycles] before hitting 80% [performance metric].
-
----
-
-### ✅ Correct Tone Examples
-
-1. **Authoritative without arrogance**:
-   > "[Variant B] wins for most [target deployment] applications."
-
-2. **Precise without being academic**:
-   > "At [threshold], [Variant A] retains 70-80% vs [Variant B]'s 50-60%."
-
-3. **Honest about limitations**:
-   > "Below [extreme threshold], or for applications with short expected lifespans, [Variant A] becomes a valid consideration."
-
-4. **Practical with real consequences**:
-   > "Get this wrong, and even the best [core components] and [control system] won't deliver expected performance."
-
-### ❌ Wrong Tone Examples
-
-1. **Too academic**:
-   > "Research indicates that [Variant B] may potentially offer advantages in certain scenarios."
-
-2. **Too marketing**:
-   > "Our revolutionary [product category] delivers unmatched performance!"
-
-3. **Too vague**:
-   > "Performance varies depending on conditions."
-
-4. **Too passive**:
-   > "It should be noted that consideration should be given to..."
-
----
-
-*Use this guide when writing technical blog content to maintain consistent voice and style.*
+- 虚词

@@ -155,6 +155,67 @@ AI_CLICHES_ZH = [
     "一站式",
 ]
 
+# Translationese: phrasing typical of Chinese-to-English transfer (writing_style_guide
+# "Native American English" section). Substring match, warn only.
+TRANSLATIONESE_PHRASES = [
+    "with the development of",
+    "with the rapid development",
+    "in recent years",
+    "more and more",
+    "play an important role",
+    "plays an important role",
+    "played an important role",
+    "pay attention to",
+    "it is worth mentioning",
+    "as we all know",
+    "as is known to all",
+    "attach great importance to",
+    "has become a hot topic",
+    "in our daily life",
+    "last but not least",
+    "generally speaking",
+    "to some extent",
+    "the above-mentioned",
+    "under the background of",
+    "it can be seen that",
+    "there is no denying",
+    "every coin has two sides",
+    "a double-edged sword",
+    "give full play to",
+    "vigorously promote",
+]
+
+# American English enforcement: flag British spellings (warn only).
+BRITISH_SPELLING_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"\borganis(?:e|es|ed|ing|ation|ations)\b", re.IGNORECASE), "organise -> organize"),
+    (re.compile(r"\bcolour\w*\b", re.IGNORECASE), "colour -> color"),
+    (re.compile(r"\bbehaviour\w*\b", re.IGNORECASE), "behaviour -> behavior"),
+    (re.compile(r"\bfavour\w*\b", re.IGNORECASE), "favour -> favor"),
+    (re.compile(r"\bflavour\w*\b", re.IGNORECASE), "flavour -> flavor"),
+    (re.compile(r"\banalys(?:e|es|ed|ing)\b", re.IGNORECASE), "analyse -> analyze"),
+    (re.compile(r"\boptimis(?:e|es|ed|ing|ation|ations)\b", re.IGNORECASE), "optimise -> optimize"),
+    (re.compile(r"\bminimis(?:e|es|ed|ing)\b", re.IGNORECASE), "minimise -> minimize"),
+    (re.compile(r"\bmaximis(?:e|es|ed|ing)\b", re.IGNORECASE), "maximise -> maximize"),
+    (re.compile(r"\butilis(?:e|es|ed|ing|ation)\b", re.IGNORECASE), "utilise -> utilize (or better: use)"),
+    (re.compile(r"\bcentre\w*\b", re.IGNORECASE), "centre -> center"),
+    (re.compile(r"\bfibre\w*\b", re.IGNORECASE), "fibre -> fiber"),
+    (re.compile(r"\blitres?\b", re.IGNORECASE), "litre -> liter"),
+    (re.compile(r"\bmetres?\b", re.IGNORECASE), "metre -> meter"),
+    (re.compile(r"\bwhilst\b", re.IGNORECASE), "whilst -> while"),
+    (re.compile(r"\bamongst\b", re.IGNORECASE), "amongst -> among"),
+    (re.compile(r"\blearnt\b", re.IGNORECASE), "learnt -> learned"),
+    (re.compile(r"\blicence\b", re.IGNORECASE), "licence -> license"),
+    (re.compile(r"\bdefence\b", re.IGNORECASE), "defence -> defense"),
+    (re.compile(r"\bpractise\w*\b", re.IGNORECASE), "practise -> practice"),
+    (re.compile(r"\bprogrammes?\b", re.IGNORECASE), "programme -> program"),
+    (re.compile(r"\bcatalogue\w*\b", re.IGNORECASE), "catalogue -> catalog"),
+    (re.compile(r"\baluminium\b", re.IGNORECASE), "aluminium -> aluminum"),
+    (re.compile(r"\bartefacts?\b", re.IGNORECASE), "artefact -> artifact"),
+    (re.compile(r"\btravell(?:ing|ed|er|ers)\b", re.IGNORECASE), "travelling -> traveling"),
+    (re.compile(r"\bmodell(?:ing|ed)\b", re.IGNORECASE), "modelling -> modeling"),
+    (re.compile(r"\blabell(?:ing|ed)\b", re.IGNORECASE), "labelled -> labeled"),
+]
+
 # Keep technical terms when used as terms of art (writing_style_guide Rule 9).
 AI_TERM_ALLOWLIST_PATTERNS = [
     re.compile(r"\brobust\s+regression\b", re.IGNORECASE),
@@ -228,3 +289,14 @@ SOURCE_PATTERNS = [
 EM_DASH_WARN_PER_1000_WORDS = 15
 EM_DASH_ISSUE_PER_1000_WORDS = 30
 OPENING_MAX_SENTENCES = 3
+
+# Rhythm thresholds (writing_style_guide Rules 1-3; draft_lint_guide appendix A.2).
+RHYTHM_MIN_SENTENCES = 10
+RHYTHM_MEAN_WARN = 25.0
+RHYTHM_MEAN_HARD = 35.0
+RHYTHM_STDEV_WARN = 6.0
+RHYTHM_MONOTONE_RUN = 4
+RHYTHM_MONOTONE_BAND = 3
+RHYTHM_PUNCH_MAX_WORDS = 6
+RHYTHM_PUNCH_MIN_BODY_WORDS = 300
+RHYTHM_MAX_ZH_RATIO = 0.2

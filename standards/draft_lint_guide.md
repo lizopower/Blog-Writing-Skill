@@ -74,6 +74,9 @@ python scripts/blog-writing.py run --stage editorial_review --slug <slug>
 | `hedge` | 弱化词（very、really、just、basically、essentially 等） |
 | `AI-cliche` | 中英 AI 套话；`robust` / `harness` 在技术术语语境有白名单 |
 | `AI-pattern` | 对比重构句式（如 “It's not X, it's Y”） |
+| `translationese` | 中式英语迁移短语（in recent years、more and more、plays an important role 等） |
+| `spelling` | 英式拼写（organise、colour、whilst 等，建议美式拼写） |
+| `rhythm` | 句长节奏（Rule 1–3）：均值 >25 词、标准差 <6、≥4 句连续等长（±3 词）、全文无 <6 词短句。仅英文稿（中文字符占比 >20% 跳过）、≥10 句时启用 |
 | `punctuation` | em-dash 密度 > 15 / 1000 词；单句多 em-dash |
 | `sources` | 疑似无来源的定量表述（与 `validate_article.py` 同源逻辑） |
 | `section-balance` | 单节过短（<40 词）或过长（>1200 词） |
@@ -131,7 +134,7 @@ flowchart LR
 
 ## 规则来源与扩展
 
-- 写作风格：`skills/tech-blog-writer/assets/writing_style_guide.md`（Anti-AI Rules 1–18）
+- 写作风格：`skills/tech-blog-writer/assets/writing_style_guide.md`（Anti-AI Rules 1–18 + Native American English Rules 19–22）
 - 类型配置：`skills/tech-blog-writer/scripts/_article_type_profiles.py`
 - Tavily 调研摘要与来源链接见文末附录；原始 research cache 不随 bundle 发布。
 
@@ -251,7 +254,7 @@ flowchart LR
 | hedge 词 | warn | Rule 禁词 | — |
 | 无来源数字 | warn | 要求归因 | 有 |
 | 开篇句数 | warn (≤3) | Rule 6 | — |
-| 句长节奏 Rule 1–3 | **无** | 有 | — |
+| 句长节奏 Rule 1–3 | warn（`[rhythm]`：均值/标准差/连续等长/短句缺失） | 有 | — |
 | H1 唯一 / TL;DR / FAQ | strict-final 才查 FAQ | 有 | 有 |
 | context_pack 数字交叉 | **无** | fact-check | — |
 | 近重复 | 独立 `audit_near_duplicate.py` | — | — |
@@ -266,7 +269,7 @@ flowchart LR
 | **P0** | hedge 禁词 | ✅ 已实现 |
 | **P0** | 无来源数字扫描 | ✅ 已实现 |
 | **P0** | 单位一致性（°C/℃、kW） | ✅ 已实现 |
-| **P1** | 句长统计（连续相似句、短句、单句段 Rule 1–3） | ⬜ 待做 |
+| **P1** | 句长统计（连续相似句、短句、单句段 Rule 1–3） | ✅ 已实现（`[rhythm]`，2026-07） |
 | **P1** | 开篇首段 ≤3 句 | ✅ 已实现 |
 | **P1** | fact_checking 前默认 `--strict-final` | ⬜ 待做（workflow 文档） |
 | **P2** | 引入 Vale + `.vale/styles/BlogWriting/` | ⬜ 待做 |
@@ -314,8 +317,4 @@ Tavily 与 Winston AI 共识：**补检方向 = 句式正则 + 句长节奏 + em
 
 **问句开篇**：Imagine if, What if, Have you ever wondered, How can we
 
-**虚假直接**：Honestly?, Here's the breakdown, Here's what nobody tells you
-
-**完全避免**：冗长铺垫、与主题无关的伦理段落、人人适用的空话、营销黑话、假深刻/假对立、无细节的 emotionally weighted 词
-
-完整列表见 [Jodie Cook ban-list](https://www.jodiecook.com/ban-list)。
+**虚假直接**：Honestly?, 

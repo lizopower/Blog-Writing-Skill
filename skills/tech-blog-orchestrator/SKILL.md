@@ -231,6 +231,7 @@ Output the following JSON structure:
 - If topic exists: Initiate research workflow to gather online information
 - If files exist: Initiate file parsing workflow to extract content
 - If style/offering materials exist: Classify them into `style_exemplars`, `core_offerings`, `author_experience_notes`, and unsupported claims in `risk_notes`
+- If the user provides NO style materials and the article is in English: populate `style_exemplars` from the project reference corpus — `content/reference/american-voice/` (voice defaults; pick per its README) plus genre-matched files under `content/reference/<topic>/<articleType>/` if present. Set `scope: "style_only"` and copy each file's "Transfer notes" into `what_to_avoid`.
 - Execute both simultaneously if both inputs present
 
 ### Step 3: Aggregate Results
@@ -330,6 +331,4 @@ Warnings:
 ## Important Notes
 
 - **Role Clarity**: This skill is an orchestrator/router ONLY. It coordinates work but does not perform content generation.
-- **Human Review**: The Context Pack output is designed for human review before article writing begins.
-- **Extensibility**: If a Parse skill is not available, use local file-reading/parsing tools where possible. Online research still requires Tavily and must not fall back to generic web search.
-- **Quality Control**: Prioritize source attribution and risk flagging to ensure downstream content is trustworthy.
+- *

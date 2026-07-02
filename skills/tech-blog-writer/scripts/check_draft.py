@@ -24,6 +24,7 @@ from pathlib import Path
 from _article_type_profiles import (
     AI_CLICHES_EN,
     AI_CLICHES_ZH,
+    BRITISH_SPELLING_PATTERNS,
     AI_TERM_ALLOWLIST_PATTERNS,
     ARTICLE_TYPE_PROFILES,
     CONTRAST_REFRAME_PATTERNS,
@@ -34,7 +35,17 @@ from _article_type_profiles import (
     NUMBER_PATTERNS,
     OPENING_MAX_SENTENCES,
     PLACEHOLDER_PATTERNS,
+    RHYTHM_MAX_ZH_RATIO,
+    RHYTHM_MEAN_HARD,
+    RHYTHM_MEAN_WARN,
+    RHYTHM_MIN_SENTENCES,
+    RHYTHM_MONOTONE_BAND,
+    RHYTHM_MONOTONE_RUN,
+    RHYTHM_PUNCH_MAX_WORDS,
+    RHYTHM_PUNCH_MIN_BODY_WORDS,
+    RHYTHM_STDEV_WARN,
     SOURCE_PATTERNS,
+    TRANSLATIONESE_PHRASES,
     VALID_ARTICLE_TYPES,
 )
 
@@ -102,7 +113,7 @@ def _lint_lines(body: str) -> list[str]:
 
 
 def _word_count(body: str) -> int:
-    zh_chars = len(re.findall(r"[\u4e00-\u9fff]", body))
+    zh_chars = len(re.findall(r"[一-鿿]", body))
     return len(re.findall(r"\b\w+\b", body)) + zh_chars
 
 
@@ -171,7 +182,7 @@ def _ai_term_allowed(line: str, term: str) -> bool:
 
 
 def _count_em_dashes(body: str) -> int:
-    return len(re.findall(r"—|\u2014", body))
+    return len(re.findall(r"—|—", body))
 
 
 def _opening_paragraph(body: str) -> str:
@@ -187,6 +198,96 @@ def _opening_paragraph(body: str) -> str:
 def _sentence_count(paragraph: str) -> int:
     parts = re.split(r"[.!?。！？]+", paragraph)
     return len([part for part in parts if part.strip()])
+
+
+
+
+_ABBREVIATION_GUARD = re.compile(
+    r"\b(?:e\.g|i\.e|etc|vs|approx|Fig|No|Dr|Mr|Ms|U\.S|a\.m|p\.m)\.$",
+    re.IGNORECASE,
+)
+
+
+def _split_sentences(lines):
+    text = " ".join(line.strip() for line in lines if line.strip())
+    if not text:
+        return []
+    raw_parts = re.split(r"(?<=[.!?])\s+", text)
+    sentences = []
+    buffer = ""
+    for part in raw_parts:
+        candidate = (buffer + " " + part).strip() if buffer else part
+        if _ABBREVIATION_GUARD.search(part.strip()):
+            buffer = candidate
+            continue
+        sentences.append(candidate)
+        buffer = ""
+    if buffer:
+        sentences.append(buffer)
+    counts = []
+    for sentence in sentences:
+        words = len(re.findall(r"\b\w+\b", sentence))
+        if words > 0:
+            counts.append(words)
+    return counts
+
+
+def _zh_ratio(body):
+    zh = len(re.findall(r"[\u4e00-\u9fff]", body))
+    total = zh + len(re.findall(r"\b\w+\b", body))
+    return zh / total if total else 0.0
+
+
+def _check_rhythm(result, lint_lines, body):
+    if _zh_ratio(body) > RHYTHM_MAX_ZH_RATIO:
+        return
+    counts = _split_sentences(lint_lines)
+    if len(counts) < RHYTHM_MIN_SENTENCES:
+        return
+
+    mean = sum(counts) / len(counts)
+    variance = sum((c - mean) ** 2 for c in counts) / len(counts)
+    stdev = variance ** 0.5
+
+    if mean > RHYTHM_MEAN_HARD:
+        result.warns.append(
+            f"[rhythm] mean sentence length {mean:.1f} words (> {RHYTHM_MEAN_HARD:.0f}; far above native cadence)"
+        )
+    elif mean > RHYTHM_MEAN_WARN:
+        result.warns.append(
+            f"[rhythm] mean sentence length {mean:.1f} words (target <= {RHYTHM_MEAN_WARN:.0f})"
+        )
+    else:
+        result.passes.append(f"[OK] mean sentence length {mean:.1f} words")
+
+    if stdev < RHYTHM_STDEV_WARN:
+        result.warns.append(
+            f"[rhythm] sentence-length std dev {stdev:.1f} (< {RHYTHM_STDEV_WARN:.0f}; monotone rhythm, Rule 1)"
+        )
+    else:
+        result.passes.append(f"[OK] sentence-length std dev {stdev:.1f}")
+
+    longest_run = 1
+    run = 1
+    for prev, curr in zip(counts, counts[1:]):
+        if abs(curr - prev) <= RHYTHM_MONOTONE_BAND:
+            run += 1
+            longest_run = max(longest_run, run)
+        else:
+            run = 1
+    if longest_run >= RHYTHM_MONOTONE_RUN:
+        result.warns.append(
+            f"[rhythm] {longest_run} consecutive sentences within +/-{RHYTHM_MONOTONE_BAND} words (Rule 1: break the pattern)"
+        )
+
+    body_words = sum(counts)
+    punch = sum(1 for c in counts if c < RHYTHM_PUNCH_MAX_WORDS)
+    if body_words >= RHYTHM_PUNCH_MIN_BODY_WORDS and punch == 0:
+        result.warns.append(
+            f"[rhythm] no punch sentence under {RHYTHM_PUNCH_MAX_WORDS} words in ~{body_words} words (Rule 2)"
+        )
+    elif punch:
+        result.passes.append(f"[OK] punch sentences: {punch}")
 
 
 def _resolve_paths(
@@ -301,6 +402,16 @@ def check_draft(
         if phrase in lint_text:
             result.warns.append(f"[AI-cliche] Chinese: {phrase!r}")
 
+    for phrase in TRANSLATIONESE_PHRASES:
+        if phrase.lower() in lint_text.lower():
+            result.warns.append(f"[translationese] detected: {phrase!r}")
+
+    for pattern, suggestion in BRITISH_SPELLING_PATTERNS:
+        if pattern.search(lint_text):
+            result.warns.append(f"[spelling] British spelling: {suggestion}")
+
+    _check_rhythm(result, lint_lines, body)
+
     for pattern, label in CONTRAST_REFRAME_PATTERNS:
         if pattern.search(prose):
             result.warns.append(f"[AI-pattern] contrast reframe: {label}")
@@ -319,7 +430,7 @@ def check_draft(
         elif em_dashes:
             result.passes.append(f"[OK] em-dash count {em_dashes} within density target")
 
-    if re.search(r"—.*—", prose) or re.search(r"\u2014.*\u2014", prose):
+    if re.search(r"—.*—", prose) or re.search(r"—.*—", prose):
         result.warns.append("[punctuation] multiple em-dashes in one sentence")
 
     celsius_variants = set()
@@ -432,5 +543,5 @@ def main() -> int:
     return 0 if result.ok else 1
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     raise SystemExit(main())

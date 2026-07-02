@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for check_draft.py."""
+"""Tests for check_draft.py (incl. rhythm lint)."""
 
 from __future__ import annotations
 
@@ -68,6 +68,22 @@ class CheckDraftTests(unittest.TestCase):
         result = check_draft(draft, article_type="blog")
         self.assertTrue(any("hedge" in warn for warn in result.warns))
 
+    def test_translationese_phrase_warns(self) -> None:
+        draft = _sample_draft() + "\n\nIn recent years, thermal drift plays an important role in accuracy.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("translationese" in warn for warn in result.warns))
+
+    def test_british_spelling_warns(self) -> None:
+        draft = _sample_draft() + "\n\nWe optimise the colour pipeline whilst testing.\n"
+        result = check_draft(draft, article_type="blog")
+        spelling_warns = [w for w in result.warns if "spelling" in w]
+        self.assertGreaterEqual(len(spelling_warns), 3)
+
+    def test_american_spelling_clean(self) -> None:
+        draft = _sample_draft() + "\n\nWe optimize the color pipeline while testing analysis output.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("spelling" in warn for warn in result.warns))
+
     def test_contrast_reframe_warns(self) -> None:
         draft = _sample_draft() + "\n\nIt's not about speed, it's about accuracy.\n"
         result = check_draft(draft, article_type="blog")
@@ -102,6 +118,39 @@ class CheckDraftTests(unittest.TestCase):
         draft = _sample_draft() + "\n\nThis is a robust solution for everyone.\n"
         result = check_draft(draft, article_type="blog")
         self.assertTrue(any("robust" in warn for warn in result.warns))
+
+    def test_monotone_rhythm_warns(self) -> None:
+        sentence = "The sensor reads the target value at every single cycle. "
+        draft = _sample_draft() + "\n\n" + sentence * 14
+        result = check_draft(draft, article_type="blog")
+        rhythm = [w for w in result.warns if "rhythm" in w]
+        self.assertTrue(any("std dev" in w for w in rhythm))
+        self.assertTrue(any("consecutive" in w for w in rhythm))
+
+    def test_varied_rhythm_passes(self) -> None:
+        varied = (
+            "It failed. "
+            "The controller held 12 A for ninety seconds before the thermal cutoff finally tripped on the bench. "
+            "We checked the log. "
+            "Nothing in the fault table matched, so the vendor pulled the firmware trace and found a race in the watchdog reset path. "
+            "That fix shipped. "
+            "Retest ran clean across forty units and three temperature chambers over two weeks of continuous cycling at full load. "
+            "Margins doubled. "
+            "The final report lists every failed unit, its serial number, and the exact cycle count at first fault. "
+            "Read it first. "
+            "Then decide whether the redesign is worth eleven weeks of schedule and the new qualification run it demands. "
+            "We think it is. "
+            "The data backs that call at every operating point we measured on the line. "
+        )
+        draft = _sample_draft() + "\n\n" + varied
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("rhythm" in w for w in result.warns))
+
+    def test_rhythm_skipped_for_chinese(self) -> None:
+        zh = "这个句子的长度完全一样没有变化。" * 15
+        draft = "# 标题\n\n## 一\n\n" + zh + "\n\n## 二\n\n数据为 12% (Source: bench)。\n\n## 三\n\n结论 18% (Source: bench)。\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertFalse(any("rhythm" in w for w in result.warns))
 
     def test_case_study_requires_more_data(self) -> None:
         minimal = "# Title\n\n## Challenge\n\nOne line only.\n\n## Solution\n\nAnother.\n"
