@@ -90,8 +90,8 @@ Orchestrator → Research + Parser → Visualization → Architect → Writer �
 
 4. **style_constraints**
    - Language (default: English US)
-   - Tone, formatting, signal words
-   - Internal link strategy, CTA approach
+   - Tone, formatting, plain-language spec
+   - Internal link strategy, declarative CTA
 
 ### Optional Inputs
 
@@ -180,7 +180,7 @@ keywords: [list]
 ![Capacity vs Temperature](chart_01)
 *Figure 1: Capacity retention across temperature range (Sheet:TestData / Range:A1:D20)*
 
-**Key Insight**: The chart reveals a non-linear degradation pattern below -30°C, with a critical inflection point at -40°C where capacity drops sharply.
+The chart shows a non-linear degradation pattern below -30°C, with a critical inflection point at -40°C where capacity drops sharply.
 ```
 
 ### Without `charts_manifest` ✅
@@ -201,16 +201,15 @@ keywords: [list]
 - No marketing fluff
 - Short paragraphs (3-5 sentences)
 
-### Signal Words
-- **Key Insight**: Critical understanding points
-- **Non-negotiable**: Hard requirements
-- **Common Mistake**: Pitfalls to avoid
-- **Trade-off**: Balanced analysis
+### Plain language (authoritative)
+- Follow `content/specs/writing-plain-language.md`
+- No signal-word label lines (`**Key Insight:**`, etc.)
+- No em dashes; no default "not X but Y"; no "Ready to…?" CTA
 
 ### Formatting
 - ✅ Bulleted/numbered lists
 - ✅ Comparison tables
-- ✅ **Bold** for key conclusions
+- ✅ **Bold** for key clauses inside full sentences
 - ✅ Code blocks for specs/formulas
 - ✅ Internal link placeholders: `[Internal Link: topic-slug]`
 
@@ -258,7 +257,7 @@ Before finalizing, verify:
 - [ ] Engineer-to-engineer tone
 - [ ] Short paragraphs
 - [ ] Lists/tables for complex info
-- [ ] Signal words used appropriately
+- [ ] No signal-word label lines; CTA is declarative
 
 ### Brand
 - [ ] No exaggeration
@@ -345,7 +344,7 @@ Standard [product category] faces three primary failure mechanisms under [extrem
 2. **[Failure Mechanism 2]**: [Triggering operation] below [threshold B] can cause irreversible [degradation effect]
 3. **[Performance Loss Mechanism]**: Condition-dependent [internal resistance/property] reduces usable [output]
 
-**Key Insight**: These mechanisms are NOT uniform across [product variants]. Understanding which limitation dominates in your operating range is **non-negotiable** for system design.
+These mechanisms are not uniform across [product variants]. Knowing which limitation dominates in your operating range is required for system design.
 
 ---
 
@@ -356,14 +355,14 @@ Our testing reveals critical performance characteristics across the operating ra
 ![Performance Metric vs Condition Variable](chart_01)
 *Figure 1: [Performance metric] retention at various [condition values] (Sheet:TestResults / Range:B2:E15)*
 
-**Key Insight**: The data shows three distinct operating zones:
+The data shows three distinct operating zones:
 - **Zone 1 ([baseline] to [threshold A])**: >95% [performance metric] retention
 - **Zone 2 ([threshold A] to [threshold B])**: 87-95% [performance metric] retention
 - **Zone 3 (beyond [threshold B])**: Rapid degradation begins
 
-Testing shows [X]% [performance metric] retention at [extreme threshold] (PDF p.12, Table 3), which is **significantly higher** than the <60% typical for standard units.
+Testing shows [X]% [performance metric] retention at [extreme threshold] (PDF p.12, Table 3), which is significantly higher than the <60% typical for standard units.
 
-**Non-negotiable**: For applications requiring operation beyond [extreme threshold], additional [auxiliary system] becomes mandatory regardless of [core material/variant].
+For applications that must operate beyond [extreme threshold], an [auxiliary system] is required regardless of [core material/variant].
 
 ---
 
@@ -377,25 +376,25 @@ Testing shows [X]% [performance metric] retention at [extreme threshold] (PDF p.
 
 [Our-solution-category] units use specialized [core materials/components] that maintain [key internal property] under [extreme condition]. Unlike conventional [product category] that requires [auxiliary system], these units enable [core capability] down to [extreme threshold] (tested under XX conditions, PDF p.12).
 
-**Trade-off**: Specialized [core materials] typically increase cost by 15-30% compared to standard units (Sheet:CostAnalysis / Range:A5:C12).
+Specialized [core materials] typically increase cost by 15-30% compared to standard units (Sheet:CostAnalysis / Range:A5:C12).
 
 [... 5 more questions ...]
 
 ---
 
-## Ready to Solve Your [Extreme-Condition Deployment] Challenge?
+## Next steps
 
 Every application has unique requirements. Our engineering team can help you:
-- Evaluate if your use case requires specialized [our-solution-category] units
+- Evaluate whether your use case needs specialized [our-solution-category] units
 - Design appropriate [auxiliary system] strategies
 - Specify [control system] requirements for your operating range
 
-**Request a Technical Consultation**:
-- 📧 Email: engineering@yourcompany.com
-- 📞 Phone: +1-XXX-XXX-XXXX
-- 📄 Download Spec Sheet: [Link]
+Request a technical consultation:
+- Email: engineering@yourcompany.com
+- Phone: +1-XXX-XXX-XXXX
+- Download Spec Sheet: [Link]
 
-*No commitment required. We're here to help you make the right technical decision.*
+No commitment required. The goal is a correct technical decision.
 
 ---
 

@@ -48,37 +48,26 @@ This style guide provides detailed formatting rules, tone guidelines, and exampl
 
 ---
 
-## Signal Words for Engineering Decision-Making
+## Label lines repealed (plain-language override)
 
-Use these strategically to highlight critical information:
+Signal-word label lines (`**Key Insight:**`, `**Non-negotiable:**`, `**Common Mistake:**`, `**Trade-off:**`, and similar) are **repealed**. See `content/specs/writing-plain-language.md`.
 
-### "Key Insight"
-**Purpose**: Highlight critical understanding or non-obvious pattern  
-**Usage**: 1-3 times per major section
+Put the same meaning in a complete sentence. Bold a short clause inside the sentence if you need stress.
 
-**Example**:
-> **Key Insight**: The [performance metric] degradation is NOT linear. Small condition changes near [extreme threshold] cause dramatic performance shifts, defining a hard operational boundary.
+**Examples (use these shapes)**:
 
-### "Non-negotiable"
-**Purpose**: Identify hard requirements or constraints  
-**Usage**: For safety-critical or system-critical requirements
+> The [performance metric] degradation is not linear. Small condition changes near [extreme threshold] cause dramatic performance shifts and define a hard operational boundary.
 
-**Example**:
-> **Non-negotiable**: Any system [triggering operation] below [threshold] MUST include condition-based [rate/load] limiting. Failure to implement this causes irreversible [degradation/damage mode].
+> Any system [triggering operation] below [threshold] must include condition-based [rate/load] limiting. Skipping it causes irreversible [degradation/damage mode].
 
-### "Common Mistake"
-**Purpose**: Warn about frequent errors or misconceptions  
-**Usage**: 1-2 times per major section when applicable
+> Do not assume [operation A] and [operation B] are symmetric. Many [products] that can [operation A] at [extreme threshold] can only safely [operation B] above [milder threshold].
 
-**Example**:
-> **Common Mistake**: Assuming [operation A] and [operation B] capabilities are symmetric. Many [products] that can [operation A] at [extreme threshold] can only safely [operation B] above [milder threshold].
-
-### "Trade-off"
+### Trade-off framing (still valid as prose, not as a label)
 **Purpose**: Present balanced analysis of competing factors  
-**Usage**: For decision points with no clear winner
+**Usage**: For decision points with no clear winner — still write full sentences, not a `**Trade-off:**` label line
 
 **Example**:
-> **Trade-off**: Specialized [our-solution] units cost [X-Y]% more but eliminate [auxiliary-system] complexity. Choose based on whether your application prioritizes initial cost ([auxiliary-system-equipped] standard units) or long-term simplicity (specialized units).
+> Specialized [our-solution] units cost [X-Y]% more but eliminate [auxiliary-system] complexity. Choose based on whether your application prioritizes initial cost ([auxiliary-system-equipped] standard units) or long-term simplicity (specialized units).
 
 ---
 
@@ -160,9 +149,9 @@ Implementation steps:
 
 ### Emphasis
 
-**Bold**: For key conclusions, signal words, and critical terms
+**Bold**: For key clauses inside complete sentences, not as label lines
 ```markdown
-**Non-negotiable**: Temperature monitoring is required.
+**Temperature monitoring** is required for this duty cycle.
 ```
 
 **Italic**: For emphasis or definitions (use sparingly)
@@ -242,12 +231,12 @@ Field data from [extreme-deployment regions] shows [N1]-[N2] [cycles/hours] (Cus
 ![Capacity vs Temperature](chart_01)
 *Figure 1: Capacity retention across temperature range (Sheet:TestResults / Range:B2:E15)*
 
-**Key Insight**: The chart reveals three distinct operating zones:
+The chart shows three distinct operating zones:
 - **Zone 1 (0°C to -20°C)**: >95% capacity retention
 - **Zone 2 (-20°C to -40°C)**: 87-95% capacity retention
 - **Zone 3 (<-40°C)**: Rapid degradation begins
 
-**Non-negotiable**: For applications requiring <-40°C operation, additional thermal management becomes mandatory.
+For applications that must run below -40°C, additional thermal management is required.
 ```
 
 **Components**:
@@ -332,7 +321,7 @@ Field data from [extreme-deployment regions] shows [N1]-[N2] [cycles/hours] (Cus
 
 Unlike conventional [products] that require pre-[conditioning] systems, these units enable direct operation down to [extreme threshold] (tested under [standard number], PDF p.[N]).
 
-**Trade-off**: Specialized materials increase cost by [X-Y]% compared to standard units (Sheet:CostAnalysis / Range:[cell range]).
+Specialized materials increase cost by [X-Y]% compared to standard units (Sheet:CostAnalysis / Range:[cell range]).
 
 ### 2. Can I [secondary operation] at [extreme threshold]?
 
@@ -343,7 +332,7 @@ Even specialized [our-solution] units have [secondary-operation] limitations:
 - [threshold range 2]: Max [more conservative value] [rate/load]
 - Beyond [threshold]: Max [most conservative value] or [alternative method]
 
-**Non-negotiable**: Any [secondary operation] below [threshold] requires a [control system] with condition-based [rate/load] limiting. Failure causes [degradation mode] and permanent [capacity/output] loss.
+Any [secondary operation] below [threshold] requires a [control system] with condition-based [rate/load] limiting. Skipping that control causes [degradation mode] and permanent [capacity/output] loss.
 
 [... 4 more questions ...]
 ```
@@ -355,24 +344,24 @@ Even specialized [our-solution] units have [secondary-operation] limitations:
 ### ✅ Good CTA: Consultative
 
 ```markdown
-## Ready to Solve Your [Extreme-Condition Deployment] Challenge?
+## Next steps
 
 Every application has unique requirements. Our engineering team can help you:
 - Evaluate if your use case requires specialized [our-solution-category] units
 - Design appropriate [supporting-system] strategies
 - Specify [control-system] requirements for your operating range
 
-**Request a Technical Consultation** (no commitment required):
-- 📧 Email: engineering@yourcompany.com
-- 📞 Phone: +1-XXX-XXX-XXXX
-- 📄 Download: [Technical Specification Sheet](link)
+Request a technical consultation (no commitment required):
+- Email: engineering@yourcompany.com
+- Phone: +1-XXX-XXX-XXXX
+- Download: [Technical Specification Sheet](link)
 
-**What to Prepare**:
+Bring these details if you have them:
 1. Operating [condition] range (min/max)
 2. Required [performance metric] at extreme conditions
 3. Expected [longevity metric]
 
-*Our team typically responds within 1 business day.*
+Our team typically responds within 1 business day.
 ```
 
 ### ❌ Bad CTA: Hard Sell
@@ -526,7 +515,7 @@ Much better than standard [product category].
 ![Capacity vs Temperature](chart_01)
 *Figure 1: Capacity retention across temperature range (Sheet:TestData / Range:B2:E15)*
 
-**Key Insight**: Note the inflection point at -40°C where degradation accelerates.
+Note the inflection point at -40°C where degradation accelerates.
 ```
 
 ---
@@ -551,7 +540,7 @@ Before finalizing, verify:
 
 ### Style
 - [ ] Engineer-to-engineer tone throughout
-- [ ] Signal words used appropriately (Key Insight, Non-negotiable, etc.)
+- [ ] No signal-word label lines; meaning in full sentences (writing-plain-language.md)
 - [ ] Short paragraphs (3-5 sentences)
 - [ ] Lists and tables for complex info
 - [ ] Bold used for key conclusions
@@ -582,7 +571,7 @@ Before finalizing, verify:
 - Vague claims ("much better", "work great")
 
 **Good Example**:
-> Specialized [our-solution] units maintain [Z]% [performance metric] retention at [extreme threshold] (PDF p.[N], Table [N]), compared to <[W]% for standard units at the same condition ([Industry Reference], [year]). This performance enables direct operation without pre-[conditioning] systems, reducing system complexity by eliminating [auxiliary-system components] and controllers. **Trade-off**: Specialized units cost [X-Y]% more than standard units (Sheet:CostAnalysis / Range:[cell range]), but this is typically offset by savings on [auxiliary-system hardware] ($[A-B]/[unit]) and reduced [resource] consumption ([C-D]% loss per cycle).
+> Specialized [our-solution] units maintain [Z]% [performance metric] retention at [extreme threshold] (PDF p.[N], Table [N]), compared to <[W]% for standard units at the same condition ([Industry Reference], [year]). This performance enables direct operation without pre-[conditioning] systems, reducing system complexity by eliminating [auxiliary-system components] and controllers. Specialized units cost [X-Y]% more than standard units (Sheet:CostAnalysis / Range:[cell range]), but that premium is typically offset by savings on [auxiliary-system hardware] ($[A-B]/[unit]) and reduced [resource] consumption ([C-D]% loss per cycle).
 
 **Strengths**:
 - Specific quantitative data ([Z]%, <[W]%, [X-Y]%, $[A-B]/[unit])

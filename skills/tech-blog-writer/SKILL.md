@@ -127,10 +127,10 @@ You receive:
   "style_constraints": {
     "language": "English (US or as specified)",
     "tone": "Engineer-to-engineer, direct, verifiable",
-    "formatting": "Lists, comparison tables, **bold** for key conclusions",
-    "signal_words": ["Key Insight", "Non-negotiable", "Common Mistake"],
+    "formatting": "Lists, comparison tables, **bold** key clauses inside full sentences (no label lines)",
+    "plain_language_spec": "content/specs/writing-plain-language.md",
     "internal_links": true,
-    "cta": "Request specs/sample testing/consultation (no hard sell)"
+    "cta": "Declarative next-steps H2; request specs/sample testing/consultation (no 'Ready to…?' hook)"
   }
 }
 ```
@@ -179,12 +179,31 @@ If an exemplar contains a useful claim, that claim must appear separately in `co
 Exemplars beat rules: imitating verified native prose produces native cadence more reliably than following constraints. If the article is in English and `context_pack.style_exemplars` is empty or missing, load defaults from the project reference corpus **before drafting**:
 
 0. `assets/cadence_card.md` — ALWAYS read first (one page; verbatim native micro-excerpts grouped by move). This is the minimum calibration even when full exemplars are skipped.
-1. `content/reference/american-voice/README.md` — read next when available; it lists eight verified exemplars and the transfer rules (what carries into B2B prose, what is oratory-only).
-2. Pick 2–3 exemplars matched to the task: `business-prose/buffett-1989-letter.md` for any B2B article (closest register match); `speeches/mcraven-ut-austin-2014.md` for how-to; `speeches/feynman-cargo-cult-1974.md` for engineer-to-engineer explainers; genre-matched pieces from `content/reference/<topic>/<articleType>/` (e.g. `industrial-b2b/`) when they exist.
-3. **Match the cadence, not the content**: sentence-length variance, verb plainness, punch-sentence placement, register mixing. All §1a prohibitions apply — these files are style-only, never sources. When in doubt, run `audit_near_duplicate.py`.
-4. Treat each exemplar file's "Transfer notes" as binding guardrails (e.g. McRaven's refrain and JFK's antithesis do NOT transfer).
+1. `content/specs/writing-plain-language.md` — ALWAYS read next for English (authoritative plain-language spec; alias `assets/speak-plainly.md`). See §1c.
+2. `content/reference/american-voice/README.md` — read next when available; it lists eight verified exemplars and the transfer rules (what carries into B2B prose, what is oratory-only).
+3. Pick 2–3 exemplars matched to the task: `business-prose/buffett-1989-letter.md` for any B2B article (closest register match); `speeches/mcraven-ut-austin-2014.md` for how-to; `speeches/feynman-cargo-cult-1974.md` for engineer-to-engineer explainers; genre-matched pieces from `content/reference/<topic>/<articleType>/` (e.g. `industrial-b2b/`) when they exist.
+4. **Match the cadence, not the content**: sentence-length variance, verb plainness, punch-sentence placement, register mixing. All §1a prohibitions apply — these files are style-only, never sources. When in doubt, run `audit_near_duplicate.py`.
+5. Treat each exemplar file's "Transfer notes" as binding guardrails (e.g. McRaven's refrain and JFK's antithesis do NOT transfer).
 
-If the reference corpus is absent from the project, proceed with the style guide alone and note it in the Self-Audit.
+If the reference corpus is absent from the project, proceed with the plain-language spec + the style guide and note the missing corpus in the Self-Audit.
+
+---
+
+### 1c. Speak Plainly (Mandatory for English)
+
+For every English draft, read the authoritative spec first:
+
+`content/specs/writing-plain-language.md`
+
+(`assets/speak-plainly.md` is an entry alias to the same doctrine.) Whether or not `style_exemplars` are present, read it before the first section and re-check on the editing pass.
+
+**Two gate tests** (every sentence):
+1. If you delete it, does the meaning suffer?
+2. If a reader asks "what does this specifically mean?", can you answer with facts or logic?
+
+Fail either → rewrite or delete. The eight rules expand these tests.
+
+**Precedence / overrides**: The spec owns an explicit override table. Scaffolding that fought plain language is **repealed** there (signal-word label lines, em-dash density allowance, default "not X but Y" hooks, "Ready to…?" CTA questions). Cadence exemplars still shape rhythm; they never override the spec. Older examples in this SKILL that still show repealed patterns are **not requirements**.
 
 ---
 
@@ -214,7 +233,7 @@ If the reference corpus is absent from the project, proceed with the style guide
 ![Performance vs Test Variable](chart_01)
 *Figure 1: Performance retention across the test range (Sheet:TestData / Range:A1:D20)*
 
-**Key Insight**: The chart reveals a non-linear degradation pattern beyond [moderate threshold], with a critical inflection point at [extreme threshold] where performance drops sharply. This informs the non-negotiable requirement for [auxiliary system] under extreme conditions.
+The chart shows non-linear degradation beyond [moderate threshold], with a sharp drop at [extreme threshold]. That inflection is why [auxiliary system] is required under extreme conditions.
 ```
 
 #### If `charts_manifest` does NOT exist:
@@ -277,7 +296,7 @@ For each section:
 1. Confirm the section follows the outline's stated intent and word budget.
 2. Verify every factual claim comes from `context_pack.key_claims`, `extracted_tables`, `glossary`, or approved source-backed notes.
 3. Apply the style guide and anti-AI checklist for rhythm, specificity, and banned phrasing.
-4. Use `style_exemplars` (or the §1b default exemplars) only for voice and structure, never for claims. Before each section, briefly re-check your cadence against one exemplar: is the sentence-length variance and verb plainness comparable?
+4. Use `style_exemplars` (or the §1b default exemplars) only for voice and structure, never for claims. Before each section, briefly re-check cadence against one exemplar and the §1c speak-plainly gate tests (delete-or-keep; can you unpack every claim?).
 5. Mention a `core_offerings` item only when it answers the current reader problem and its `source_ref` supports the value claim.
 6. Use `author_experience_notes` only as supplied; do not invent first-person lessons.
 
@@ -299,7 +318,7 @@ Your `final_article.md` MUST include:
 8. **Self-Audit Section**:
    - High-risk statements (may exaggerate/lack conditions/insufficient data)
    - Assumptions / To Verify (explicit data gaps)
-   - Voice calibration (English articles): which exemplars/cadence card were read, plus ONE concrete cadence observation applied to this draft (e.g. "kept punch sentences after long setups per Feynman excerpt"). A generic statement ("I matched the style") does not satisfy this item.
+   - Voice calibration (English articles): confirm `cadence_card.md` + `content/specs/writing-plain-language.md` were read; list exemplars used; ONE concrete cadence observation; ONE plain-language check (e.g. "deleted a Key Insight label" / "removed a false not-X-but-Y" / "rewrote Ready-to CTA as a statement"). A generic statement ("I matched the style") does not satisfy this item.
 9. **Optional**: JSON-LD FAQ Schema (only if user explicitly requests)
 
 ---
@@ -455,31 +474,29 @@ These rules override default writing habits. Violation = rewrite.
 - ✅ Use code blocks for formulas, specifications, or data structures
 - ✅ Include internal link placeholders: `[Internal Link: topic-slug]`
 
-### Signal Words (Engineering Decision Language)
-Use these to enhance engineering decision-making tone:
-- **Key Insight**: Critical understanding points
-- **Non-negotiable**: Hard requirements/constraints
-- **Common Mistake**: Pitfalls to avoid
-- **Trade-off**: Balanced analysis
-- **Selection Criteria**: Decision framework
+### Label lines repealed (plain-language override)
+
+Do **not** open paragraphs with signal-word labels such as `**Key Insight:**`, `**Non-negotiable:**`, `**Common Mistake:**`, `**Trade-off:**`, `**Key takeaway:**`, or `**Bottom line:**`. Put the same meaning in a complete sentence. Bold a short clause inside the sentence if you need stress.
 
 **Example**:
-> **Non-negotiable**: Ensure the [control/monitoring subsystem] supports real-time monitoring under [extreme operating condition].
+> The [control/monitoring subsystem] must support real-time monitoring under [extreme operating condition]. That requirement is fixed for this duty cycle.
 
-### Opening Strategy: Counter-Intuitive Hook
+See `content/specs/writing-plain-language.md` override table.
 
-**Pattern**: Challenge common assumptions, then explain the nuance.
+### Opening Strategy: Lead with the decision-relevant fact
+
+**Pattern**: Open with a sourced fact the reader can act on, then give the condition and the trade-off. Do **not** invent a straw "not X but Y" contrast or a rhetorical question hook.
 
 **Structure**:
-1. State surprising fact with data
-2. Present opposite conclusion
-3. Explain why (create cognitive tension)
-4. Promise resolution in article
+1. State the decision-relevant fact with data
+2. Attach the condition / scope
+3. Say which option wins for which project constraint
+4. Point forward to where the article resolves the rest
 
 **Example**:
-> [Variant A] actually outperforms [Variant B] under [extreme condition]. At [stress level], [Variant A] retains 70-80% vs [Variant B]'s 50-60%.
+> [Variant A] retains 70-80% at [stress level] versus [Variant B]'s 50-60% (Source: …).
 >
-> Yet [Variant B] remains the better choice for most projects. Why? Because [the tested dimension] is only one parameter...
+> For most projects [Variant B] is still the better pick, because [the tested dimension] is only one parameter...
 
 ### Data Presentation: Precise with Conditions
 
@@ -632,9 +649,9 @@ date: [YYYY-MM-DD]
 
 ## Next Steps
 
-**Ready to solve your [problem domain] challenges?**
+Request specs, a sample test plan, or a consultation for your [problem domain] duty cycle.
 
-[CTA content - no hard sell]
+[CTA content - no hard sell; declarative, not "Ready to…?"]
 
 ---
 
@@ -672,12 +689,12 @@ Our testing reveals critical performance characteristics across the operating ra
 ![Performance vs Test Variable](chart_01)
 *Figure 1: Performance retention across the test range (Sheet:TestResults / Range:B2:E15)*
 
-**Key Insight**: The data shows three distinct operating zones:
+The data shows three distinct operating zones:
 - **Zone 1 ([mild range])**: >95% performance retention
 - **Zone 2 ([moderate-stress range])**: 87-95% performance retention  
 - **Zone 3 ([extreme range])**: Rapid degradation begins
 
-**Non-negotiable**: For applications requiring operation in [extreme range], additional [auxiliary system] becomes mandatory.
+For applications that must run in [extreme range], an [auxiliary system] is required.
 ```
 
 ### Without charts_manifest (✅)
@@ -716,15 +733,15 @@ Learn more about [stress condition] management strategies in [Internal Link: ext
 
 ### ✅ Good CTA (Consultative)
 ```markdown
-## Ready to Solve Your [Problem Domain] Challenge?
+## Next steps
 
 Every application has unique requirements. Our engineering team can help you:
 - Evaluate if your use case requires a specialized configuration
 - Design appropriate [auxiliary system] strategies
 - Specify [control/monitoring subsystem] requirements for your operating range
 
-**Request a Technical Consultation**:
-- 📧 Email: engineering@yourcompany.com
+Request a technical consultation:
+- Email: engineering@yourcompany.com
 - 📞 Phone: +1-XXX-XXX-XXXX
 - 📄 Download Spec Sheet: [Link]
 
@@ -765,16 +782,19 @@ Before finalizing `final_article.md`, verify:
 
 ### Style Consistency
 - [ ] Engineer-to-engineer tone throughout
-- [ ] Uses signal words appropriately
+- [ ] No signal-word label lines (`**Key Insight:**` etc.); meaning in full sentences
 - [ ] Short paragraphs (3-5 sentences)
 - [ ] Lists and tables for complex info
-- [ ] **Bold** used for key conclusions
+- [ ] **Bold** used for key clauses inside sentences (not as label lines)
+- [ ] CTA H2/prose is declarative (no "Ready to…?" hook)
 
-### Anti-AI Tone & Native Fluency (Rules 1–22)
+### Anti-AI Tone & Native Fluency (Rules 1–22 + plain-language spec)
+- [ ] **English**: read `content/specs/writing-plain-language.md`; every sentence passes deletion + specificity tests (§1c)
+- [ ] No false contrasts / empty "not X but Y"; no hype substituting for argument; no unpackable metaphors
 - [ ] No banned filler words (very/really/just/actually/basically/essentially)
 - [ ] No corporate-AI buzzwords (leverage/robust/seamless/delve/harness/realm/transformative…) except genuine technical terms
 - [ ] No filler signposts or academic connectives ("It's worth noting", "When it comes to", furthermore/moreover/consequently/thus/hence) and no empty antithesis ("not just X, it's Y")
-- [ ] Em-dashes ≤ ~1 per 200 words; no double em-dash asides in one paragraph
+- [ ] **No em dashes** (rewrite asides into normal sentences; `speak-plainly.md` Rule 8)
 - [ ] List lengths varied (not everything in threes); sentence openers varied; active voice preferred
 - [ ] (中文稿) 无 值得注意的是/综上所述/首先…其次/在当今…的时代/赋能·抓手·闭环
 - [ ] Empty hedges cut (arguably/perhaps), but evidence qualifiers kept (under [condition]/in [sample])
@@ -925,7 +945,7 @@ Output:
 > ![Performance vs Test Variable](chart_01)
 > *Figure 1: Performance retention across the test range (Sheet:TestData / Range:A1:D20)*
 > 
-> **Key Insight**: Note the inflection point at [extreme threshold] where degradation accelerates. This defines the operational boundary for [deployment without auxiliary system].
+> Note the inflection point at [extreme threshold] where degradation accelerates. That point is the operational boundary for [deployment without auxiliary system].
 
 ---
 

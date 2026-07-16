@@ -194,13 +194,29 @@ class CheckDraftTests(unittest.TestCase):
         result = check_draft(draft, article_type="blog")
         self.assertTrue(any("CTA" in w for w in result.warns))
 
-    def test_em_dash_rule11_density_warns(self) -> None:
-        # ~10 em-dashes over ~400 words = 25/1000: above warn (6), above issue (15)
+    def test_em_dash_rule11_any_warns(self) -> None:
+        # plain-language spec: any em dash warns
+        draft = _sample_draft() + "\n\nThe pack failed — then recovered.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("em-dash" in item for item in result.warns + result.issues))
+
+    def test_label_line_warns(self) -> None:
+        draft = _sample_draft() + "\n\n**Key Insight**: The curve bends hard below -30 C.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("label line" in item for item in result.warns))
+
+    def test_ready_to_cta_warns(self) -> None:
+        draft = _sample_draft() + "\n\n## Ready to Solve Your Cold-Weather Challenge?\n\nContact us.\n"
+        result = check_draft(draft, article_type="blog")
+        self.assertTrue(any("Ready to" in item for item in result.warns))
+
+    def test_em_dash_rule11_density_issue(self) -> None:
+        # Dense em-dashes still escalate to P0 density issue
         filler = ("word " * 40 + "— aside. ") * 10
         draft = _sample_draft() + "\n\n" + filler
         result = check_draft(draft, article_type="blog")
         combined = result.warns + result.issues
-        self.assertTrue(any("em-dash density" in item for item in combined))
+        self.assertTrue(any("em-dash" in item for item in combined))
 
     def test_case_study_requires_more_data(self) -> None:
         minimal = "# Title\n\n## Challenge\n\nOne line only.\n\n## Solution\n\nAnother.\n"

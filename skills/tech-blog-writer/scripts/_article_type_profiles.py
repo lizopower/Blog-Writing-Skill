@@ -346,10 +346,22 @@ SOURCE_PATTERNS = [
     re.compile(r"\[[^\]]+\]\([^)]+\)"),
 ]
 
-# Rule 11: at most one em-dash per ~200 words = 5/1000. Warn just above that;
-# issue at 3x the budget.
-EM_DASH_WARN_PER_1000_WORDS = 6
+# Rule 11 / writing-plain-language.md: no em dashes in English prose.
+# Any em dash warns; density above ISSUE still escalates to P0.
+EM_DASH_WARN_PER_1000_WORDS = 0
 EM_DASH_ISSUE_PER_1000_WORDS = 15
+
+# Label lines repealed by content/specs/writing-plain-language.md
+LABEL_LINE_PATTERN = re.compile(
+    r"(?im)^\s*\*{0,2}("
+    r"Key Insight|Non-negotiable|Common Mistake|Trade-off|Selection Criteria|"
+    r"Key takeaway|Bottom line|Pro tip|Takeaway"
+    r")\*{0,2}\s*:\s*"
+)
+
+READY_TO_CTA_PATTERN = re.compile(
+    r"(?im)^\s*#{1,3}\s*Ready to\b|^\s*\*{0,2}Ready to\b.{0,80}\?",
+)
 OPENING_MAX_SENTENCES = 3
 
 # Rhythm thresholds (writing_style_guide Rules 1-3; draft_lint_guide appendix A.2).

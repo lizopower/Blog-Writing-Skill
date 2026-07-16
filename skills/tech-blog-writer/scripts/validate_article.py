@@ -110,7 +110,7 @@ class ArticleValidator:
         required_sections = {
             'FAQ': r'##\s+FAQ',
             'Self-Audit': r'##\s+Self-Audit Report',
-            'CTA': r'##\s+(Ready to|Next Steps|Contact)',
+            'CTA': r'##\s+(Next Steps?|Contact|Get |Request |Talk to|Book )',
         }
         
         for name, pattern in required_sections.items():
@@ -190,20 +190,22 @@ class ArticleValidator:
             if word.lower() in self.content.lower():
                 self.warnings.append(f"Marketing language detected: '{word}'")
         
-        # Check for signal words (good usage)
-        signal_words = {
-            'Key Insight': 0,
-            'Non-negotiable': 0,
-            'Common Mistake': 0,
-            'Trade-off': 0,
-        }
-        
-        for signal in signal_words:
-            count = len(re.findall(signal, self.content, re.IGNORECASE))
-            signal_words[signal] = count
-        
-        self.info.append(f"Signal word usage: {signal_words}")
-        
+        # Label lines repealed by writing-plain-language.md
+        label_hits = re.findall(
+            r'(?im)^\s*\*{0,2}(Key Insight|Non-negotiable|Common Mistake|Trade-off|'
+            r'Key takeaway|Bottom line)\*{0,2}\s*:',
+            self.content,
+        )
+        if label_hits:
+            self.warnings.append(
+                f"Plain-language: label lines still present ({', '.join(sorted(set(label_hits)))}); "
+                "fold into complete sentences"
+            )
+        if re.search(r'(?im)^\s*#{1,3}\s*Ready to\b|Ready to .{0,80}\?', self.content):
+            self.warnings.append(
+                "Plain-language: 'Ready to…?' CTA/hook detected; use a declarative next-steps heading"
+            )
+
         # Check for overly long paragraphs
         paragraphs = re.split(r'\n\n+', self.content)
         long_paragraphs = []

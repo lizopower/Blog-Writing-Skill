@@ -33,7 +33,8 @@ from _article_type_profiles import (
     MASS_NOUN_PLURALS,
     PRONOUN_OPENER,
     EM_DASH_ISSUE_PER_1000_WORDS,
-    EM_DASH_WARN_PER_1000_WORDS,
+    LABEL_LINE_PATTERN,
+    READY_TO_CTA_PATTERN,
     HEDGE_WORDS,
     MARKETING_WORDS,
     NUMBER_PATTERNS,
@@ -440,21 +441,39 @@ def check_draft(
         if pattern.search(prose):
             result.warns.append(f"[AI-pattern] contrast reframe: {label}")
 
-    em_dashes = _count_em_dashes(prose)
-    if words > 0:
-        per_1000 = em_dashes * 1000 / words
-        if per_1000 > EM_DASH_ISSUE_PER_1000_WORDS:
-            result.issues.append(
-                f"[P0-punctuation] em-dash density {per_1000:.1f}/1000 words (>{EM_DASH_ISSUE_PER_1000_WORDS})"
-            )
-        elif per_1000 > EM_DASH_WARN_PER_1000_WORDS:
-            result.warns.append(
-                f"[punctuation] em-dash density {per_1000:.1f}/1000 words (>{EM_DASH_WARN_PER_1000_WORDS})"
-            )
-        elif em_dashes:
-            result.passes.append(f"[OK] em-dash count {em_dashes} within density target")
+    for match in LABEL_LINE_PATTERN.finditer(prose):
+        result.warns.append(
+            f"[plain-language] label line {match.group(1)!r}: fold into a complete sentence "
+            "(writing-plain-language.md override)"
+        )
 
-    if re.search(r"—.*—", prose) or re.search(r"—.*—", prose):
+    if READY_TO_CTA_PATTERN.search(prose):
+        result.warns.append(
+            "[plain-language] 'Ready to…?' CTA/hook: use a declarative next-steps heading "
+            "(writing-plain-language.md override)"
+        )
+
+    em_dashes = _count_em_dashes(prose)
+    if em_dashes:
+        # writing-plain-language.md Rule 8: ban em dashes in body prose.
+        if words > 0:
+            per_1000 = em_dashes * 1000 / words
+            if per_1000 > EM_DASH_ISSUE_PER_1000_WORDS:
+                result.issues.append(
+                    f"[P0-punctuation] em-dash density {per_1000:.1f}/1000 words "
+                    f"(>{EM_DASH_ISSUE_PER_1000_WORDS}); rewrite asides into normal sentences"
+                )
+            else:
+                result.warns.append(
+                    f"[punctuation] em-dash count {em_dashes} "
+                    f"({per_1000:.1f}/1000 words); plain-language spec bans em dashes; rewrite asides"
+                )
+        else:
+            result.warns.append(
+                f"[punctuation] em-dash count {em_dashes}; plain-language spec bans em dashes; rewrite asides"
+            )
+
+    if re.search(r"—.*—", prose):
         result.warns.append("[punctuation] multiple em-dashes in one sentence")
 
     celsius_variants = set()

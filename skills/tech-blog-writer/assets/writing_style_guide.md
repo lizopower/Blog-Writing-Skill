@@ -267,6 +267,8 @@ I've seen projects specify excellent [core components] paired with bargain [cont
 
 These constraints eliminate robotic patterns. Every rule is non-negotiable.
 
+**English plain-prose doctrine (read first)**: `content/specs/writing-plain-language.md` is the authoritative spec for every English draft (alias: `assets/speak-plainly.md`). It owns scope, precedence, an explicit override table (signal-word labels, em dashes, false contrasts, "Ready to…?" CTAs repealed), the two gate tests, and eight rules. Where older rules or examples below are looser, follow the spec.
+
 ### Rhythm Constraints
 
 **Rule 1**: No more than two consecutive sentences of similar length.
@@ -368,7 +370,7 @@ The last sentence of every section should push the reader forward — pose a que
 
 ### Punctuation & Pattern Constraints
 
-**Rule 11**: Em-dash discipline. The em-dash flood is a top AI tell. At most one em-dash per ~200 words; never two em-dash asides in the same paragraph. Default to a comma, a period, or parentheses. Ask: would a period work here? Then use a period.
+**Rule 11**: No em dashes (per `speak-plainly.md`). Rewrite parenthetical asides as a period, a comma, or a normal sentence. Do not use em dashes for emphasis or asides. (`check_draft.py` flags any em dash in English prose.)
 
 **Rule 12**: Break the rule of three. AI defaults to three-item lists and tricolons ("fast, cheap, and reliable") even when the content has two items or five. Vary list length deliberately — use 2, 4, 5, 7. Group three things only when there are genuinely three.
 

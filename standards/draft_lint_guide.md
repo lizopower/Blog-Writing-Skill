@@ -79,7 +79,8 @@ python scripts/blog-writing.py run --stage editorial_review --slug <slug>
 | `grammar` | 不可数名词误加复数（equipments、feedbacks、informations 等，Rule 22 自查区） |
 | `definition` | 模糊定义开头（can be considered、may be regarded as、is a kind of 等，Rule 15：直接写 "X is Y"） |
 | `rhythm` | 句长节奏（Rule 1–3）：均值 >25 词、标准差 <6、≥4 句连续等长（±3 词）、全文无 <6 词短句。仅英文稿（中文字符占比 >20% 跳过）、≥10 句时启用 |
-| `punctuation` | em-dash 密度 > 6 / 1000 词（Rule 11：约每 200 词最多 1 个）；单句多 em-dash |
+| `punctuation` | 出现任意 em-dash（`writing-plain-language.md`：正文 0 个）；单句多 em-dash |
+| `plain-language` | signal-word 标签行（`**Key Insight:**` 等）；`Ready to…?` CTA/钩子 |
 | `sources` | 疑似无来源的定量表述（与 `validate_article.py` 同源逻辑） |
 | `section-balance` | 单节过短（<40 词）或过长（>1200 词） |
 | `structure` | 开篇段落句子数 > 3；问句 H2 下首段以代词开头（Rule 16：须复现问题主体实体） |
@@ -213,7 +214,7 @@ flowchart LR
 | 同句多个 em-dash | 出现即 warn | warn | regex |
 | 连字符 / en-dash / em-dash 混用 | 与选定风格冲突 | warn | Vale substitution |
 
-**本项目现状**：**已实现** 密度与同句聚类，阈值已对齐 writing_style_guide Rule 11（约每 200 词最多 1 个）：>6/千词 warn，>15/千词 issue。Jodie Cook 建议技术营销文**完全不用 em-dash**（见附录 B），与 B2B 技术文惯例可二选一，当前采用密度阈值而非零容忍。
+**本项目现状**：**已实现** 计数与同句聚类。已对齐 `speak-plainly.md` Rule 8 + writing_style_guide Rule 11：**英文禁止 em-dash**——出现即 warn；密度 >15/千词仍为 P0 issue。改写为句号、逗号或完整句。
 
 #### 5. 横切项（Cross-cutting）
 
